@@ -9,8 +9,9 @@
  *
  */
 
-#include <stdlib.h>
 #include "buf_pool.hpp"
+
+#include <stdlib.h>
 
 #include "qc.hpp"
 
@@ -177,7 +178,7 @@ void buf_pool::revert(io_buf *buffer) {
 
     buffer->next = _pool[index];
     _pool[index] = buffer;
-    pthread_mutex_lock(&_mutex);
+    pthread_mutex_unlock(&_mutex);
 }
 
 }  // namespace qc

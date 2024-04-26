@@ -28,6 +28,7 @@ void reactor_buf::pop(int len) {
 
     _buf->pop(len);
 
+    //printf("cur _buf->length = %d\n", _buf->m_length);
     //当此时_buf的可用长度已经为0
     if (_buf->m_length == 0) {
         //将_buf重新放回buf_pool中
@@ -128,6 +129,7 @@ int output_buf::send_data(const char *data, int datalen) {
         }
     } else {
         //如果io_buf可用，判断是否够存
+        //printf("cur _buf->m_head = %d\n", _buf->m_head);
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < datalen) {
             //不够存，冲内存池申请

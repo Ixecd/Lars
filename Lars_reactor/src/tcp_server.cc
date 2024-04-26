@@ -100,12 +100,19 @@ void tcp_server::do_accept() {
 
                 //将读到的数据放在msg中
                 msg_len = ibuf.length();
+                printf("msg_len = %d\n", msg_len);
                 msg = (char*)malloc(msg_len);
                 bzero(msg, msg_len);
+                //printf("ibuf.data() = %s\n", ibuf.data());
+
                 memcpy(msg, ibuf.data(), msg_len);
+                //printf("recv data = %s\n", msg);
+
                 ibuf.pop(msg_len);
+                // printf("pop success\n");
                 ibuf.adjust();
-                
+                // printf("adjust success\n");
+
                 qc_assert(msg);
                 
                 printf("recv data = %s\n", msg);
