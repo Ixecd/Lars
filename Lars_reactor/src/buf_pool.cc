@@ -18,7 +18,7 @@ namespace qc {
 
 buf_pool *buf_pool::_instance = nullptr;
 
-pthread_once_t buf_pool::_once = PTHRED_ONCE_INIT;
+pthread_once_t buf_pool::_once = PTHREAD_ONCE_INIT;
 
 pthread_mutex_t buf_pool::_mutex = PTHREAD_MUTEX_INITIALIZER;
 

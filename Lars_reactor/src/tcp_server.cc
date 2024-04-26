@@ -8,9 +8,10 @@
 #include <string.h>
 
 #include "qc.hpp"
+#include "reactor_buf.hpp"
 
 namespace qc {
-    
+
 tcp_server::tcp_server(const char* ip, uint16_t port) {
     bzero(&_connaddr, sizeof(_connaddr));
     /**
@@ -81,19 +82,53 @@ void tcp_server::do_accept() {
                 exit(0);
             }
         } else {
-            int writed;
-            char* data = "Hello Lars\n";
-            /// @brief 如果writed err
-            /// 并且错误码为EINTR表示被信号中断,此时应该继续写,其他情况直接退出
-            do {
-                writed = write(connfd, data, strlen(data) + 1);
-            } while (writed == -1 && errno == EINTR);
+            // accept succ!
 
-            if (writed > 0) printf("write success!\n");
-            // socket -> NONBLOCK
-            if (writed == -1 && errno == EAGAIN) {
-                writed = 0;
-            }
+            int ret = 0;
+            input_buf ibuf;
+            output_buf obuf;
+
+            char* msg = NULL;
+            int msg_len = 0;
+            do {
+                ret = ibuf.read_data(connfd);
+                if (ret == -1) {
+                    fprintf(stderr, "ibuf read_data error\n");
+                    break;
+                }
+                printf("ibuf.length() = %d\n", ibuf.length());
+
+                //将读到的数据放在msg中
+                msg_len = ibuf.length();
+                msg = (char*)malloc(msg_len);
+                bzero(msg, msg_len);
+                memcpy(msg, ibuf.data(), msg_len);
+                ibuf.pop(msg_len);
+                ibuf.adjust();
+                
+                qc_assert(msg);
+                
+                printf("recv data = %s\n", msg);
+
+                //回显数据
+                obuf.send_data(msg, msg_len);
+                while (obuf.length()) {
+                    int write_ret = obuf.write2fd(connfd);
+                    if (write_ret == -1) {
+                        fprintf(stderr, "write connfd error\n");
+                        return;
+                    } else if (write_ret == 0) {
+                        //不是错误，表示此时不可写
+                        break;
+                    }
+                }
+
+                free(msg);
+
+            } while (ret != 0);
+
+            // Peer is closed
+            close(connfd);
         }
     }
 }
