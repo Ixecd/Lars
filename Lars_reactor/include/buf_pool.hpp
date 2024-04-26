@@ -24,7 +24,10 @@
 namespace qc {
 /// @brief 每个key下面挂一个io_buf链表,会预先开辟好一定数量的内存块,上层取一块,就从这里头去掉一块,用完再放回来
 typedef std::unordered_map<int, io_buf *> pool_t;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5971f493a96759445760c6c8176ab4aded6ec09c
 // typedef Singleton<buf_pool> _instance;
 
 enum MEM_CAP {
