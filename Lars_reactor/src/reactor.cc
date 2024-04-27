@@ -157,6 +157,7 @@ int output_buf::send_data(const char *data, int datalen) {
 
 //将reactor_buf中的数据写到一个fd中
 int output_buf::write2fd(int fd) {
+    // !! _buf->m_head == 0; _buf->m_head = 6 ??
     qc_assert(_buf != NULL && _buf->m_head == 0);
 
     int already_write = 0;

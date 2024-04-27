@@ -96,7 +96,7 @@ void tcp_server::do_accept() {
                     fprintf(stderr, "ibuf read_data error\n");
                     break;
                 }
-                printf("ibuf.length() = %d\n", ibuf.length());
+                //printf("ibuf.length() = %d\n", ibuf.length());
 
                 //将读到的数据放在msg中
                 msg_len = ibuf.length();
@@ -110,6 +110,7 @@ void tcp_server::do_accept() {
 
                 ibuf.pop(msg_len);
                 // printf("pop success\n");
+                
                 ibuf.adjust();
                 // printf("adjust success\n");
 

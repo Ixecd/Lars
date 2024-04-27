@@ -26,10 +26,11 @@ void io_buf::clear() {
 }
 
 void io_buf::adjust() {
-    if (!m_head) {
+    if (m_head) {
         if (!m_length) {
             memmove(m_data, m_data + m_head, m_length);
         }
+        m_head = 0;
     }
 }
 
