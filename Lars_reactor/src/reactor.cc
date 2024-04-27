@@ -60,13 +60,11 @@ int input_buf::read_data(int fd) {
     if (_buf == NULL) {
         //如果io_buf为空,从内存池申请
         _buf = buf_pool::instance()->alloc_buf(need_read);
-        if (_buf == NULL) {
-            fprintf(stderr, "no idle buf for alloc\n");
-            return -1;
-        }
+        qc_assert(_buf != nullptr);
     } else {
         //如果io_buf可用，判断是否够存
         // 这里_buf->m_head == 0 表示所有的数据都已经处理完了.
+        // _buf->m_head != 表示有数据还没有处理,m_head指向没有处理的数据
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < (int)need_read) {
             //不够存，内存池申请
@@ -115,7 +113,7 @@ const char *input_buf::data() const {
 //重置缓冲区
 void input_buf::adjust() {
     if (_buf != NULL) {
-        _buf->adjust();
+        _buf->adjust();   
     }
 }
 

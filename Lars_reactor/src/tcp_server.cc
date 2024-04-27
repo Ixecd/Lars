@@ -92,15 +92,10 @@ void tcp_server::do_accept() {
             int msg_len = 0;
             do {
                 ret = ibuf.read_data(connfd);
-                if (ret == -1) {
-                    fprintf(stderr, "ibuf read_data error\n");
-                    break;
-                }
-                //printf("ibuf.length() = %d\n", ibuf.length());
+                qc_assert(ret != -1);
 
                 //将读到的数据放在msg中
                 msg_len = ibuf.length();
-                printf("msg_len = %d\n", msg_len);
                 msg = (char*)malloc(msg_len);
                 bzero(msg, msg_len);
                 //printf("ibuf.data() = %s\n", ibuf.data());
