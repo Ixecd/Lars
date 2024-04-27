@@ -1,4 +1,4 @@
-# Lars
+# Lars C++负载均衡远程调度服务系统
 --- Reactor 模型服务器框架 ---
 eventLoop/thread Tcp Server Model
 

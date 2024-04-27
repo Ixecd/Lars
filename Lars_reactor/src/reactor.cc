@@ -66,6 +66,7 @@ int input_buf::read_data(int fd) {
         }
     } else {
         //如果io_buf可用，判断是否够存
+        // 这里_buf->m_head == 0 表示所有的数据都已经处理完了.
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < (int)need_read) {
             //不够存，内存池申请
