@@ -72,17 +72,18 @@ void event_loop::add_io_event(int fd, io_callback proc, int mask, void *args) {
 
     // 1 找到当前fd是否已经有事件
     io_event_map_it it = _io_evs.find(fd);
-    if (it == _io_evs.end()) {
-        // 2 如果没有操作动作就是ADD
-        //没有找到
-        final_mask = mask;
-        op = EPOLL_CTL_ADD;
-    } else {
-        // 3 如果有操作董酒是MOD
-        //添加事件标识位
-        final_mask = it->second.mask | mask;
-        op = EPOLL_CTL_MOD;
-    }
+    // if (it == _io_evs.end()) {
+    //     // 2 如果没有操作动作就是ADD
+    //     //没有找到
+    //     final_mask = mask;
+    //     op = EPOLL_CTL_ADD;
+    // } else {
+    //     // 3 如果有操作董酒是MOD
+    //     //添加事件标识位
+    //     final_mask = it->second.mask | mask;
+    //     op = EPOLL_CTL_MOD;
+    // }
+    op = it == _io_evs.end() ? (final_mask = mask, EPOLL_CTL_ADD) : (final_mask = it->second.mask | mask, EPOLL_CTL_MOD);
 
     // 4 注册回调函数
     if (mask & EPOLLIN) {
@@ -100,10 +101,7 @@ void event_loop::add_io_event(int fd, io_callback proc, int mask, void *args) {
     struct epoll_event event;
     event.events = final_mask;
     event.data.fd = fd;
-    if (epoll_ctl(_epfd, op, fd, &event) == -1) {
-        fprintf(stderr, "epoll ctl %d error\n", fd);
-        return;
-    }
+    qc_assert(epoll_ctl(_epfd, op, fd, &event) != -1);
 
     // 6 将fd添加到监听集合中
     _listen_fds.insert(fd);
@@ -141,7 +139,7 @@ void event_loop::del_io_event(int fd, int mask) {
         struct epoll_event event;
         event.events = o_mask;
         event.data.fd = fd;
-        epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event);
+        qc_assert(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) != -1);
     }
 }
 
