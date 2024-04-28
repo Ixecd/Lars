@@ -1,0 +1,56 @@
+/**
+ * @file tcp_conn.hpp
+ * @author qc
+ * @brief tcp_conn连接类
+ * @version 0.1
+ * @date 2024-04-28
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+#ifndef __TCP_CONN_HPP__
+#define __TCP_CONN_HPP__
+
+#include "qc.hpp"
+#include "event_loop.hpp"
+#include "reactor_buf.hpp"
+
+
+namespace qc {
+
+/**
+ * @brief tcp_conn class
+ * @details 一个tcp_conn 对应两个独立的buff,可以有多个epoll实例,这里面是一个指针,指向管理这个tcp连接的epoll实例
+ * 
+ */
+class tcp_conn {
+public:
+    /// @brief 初始化tcp_conn
+    tcp_conn(int connfd, event_loop *loop);
+    /// @brief 处理读事件
+    void do_read();
+    /// @brief 处理写事件
+    void do_write();
+    /// @brief 销毁tcp_conn
+    void clean_conn();
+    /// @brief 发送消息的方法 
+    int send_message(const char *data, int msglen, int msgid);
+private:    
+    /// @brief 当前连接的fd
+    int _connfd;
+    /// @brief 该连接所属的event_poll
+    event_loop *_loop;
+    /// @brief 输出buff
+    output_buf obuf;    
+    /// @brief 输入buff
+    input_buf ibuf;
+};
+
+
+
+} // namespace q
+
+
+
+#endif

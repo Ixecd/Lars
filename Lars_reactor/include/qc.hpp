@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include "unistd.h"
 
 namespace qc {
 
@@ -14,6 +15,14 @@ namespace qc {
             std::abort();                                                    \
         }                                                                    \
     } while (0)
+ 
+/// @return 1 success
+int SetNonblocking(int fd) {
+    int flag = fcntl(fd, F_GETFL, 0);
+    qc_assert(fcntl(fd, F_SETFL, O_NONBLOCK | flag) != -1);
+    return 1;
+}
+
 
 }  // namespace qc
 

@@ -63,3 +63,8 @@ eventLoop/thread Tcp Server Model
     wildcard函数 会返回当前目录下所有以.cc结尾的文件列表
     basename函数 用于去掉文件名中的扩展名(把.cc去掉)
     addsuffix .o函数 用于在每个文件名后面添加后缀. 
+
+9. 解决TCP粘包问题
+    我们要将我们所发送的数据做一个规定,采用TLV的格式
+    DataLen Id   Data    DataLen Id  Data
+    |--head--| |-body-|  |-head---| |-body-| 
