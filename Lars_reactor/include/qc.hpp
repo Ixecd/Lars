@@ -24,7 +24,7 @@ int SetNonblocking(int fd) {
     return 1;
 }
 
-
+     
 }  // namespace qc
 
 #endif
