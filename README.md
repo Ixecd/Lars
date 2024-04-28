@@ -68,3 +68,9 @@ eventLoop/thread Tcp Server Model
     我们要将我们所发送的数据做一个规定,采用TLV的格式
     DataLen Id   Data    DataLen Id  Data
     |--head--| |-body-|  |-head---| |-body-| 
+
+10. 关于TCP连接
+    设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
+    int op = 1;
+    setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op, sizeof(op));
+    

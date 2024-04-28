@@ -9,6 +9,7 @@
 
 #include "qc.hpp"
 #include "reactor_buf.hpp"
+#include "tcp_conn.hpp"
 
 namespace qc {
 
@@ -164,6 +165,13 @@ void tcp_server::do_accept() {
 
             // --------- V0.2 -------------
             this->_loop->add_io_event(connfd, server_rd_callback, EPOLLIN, &msg);
+            break;
+
+            // --------- V0.3 -------------
+            tcp_conn *conn = new tcp_conn(connfd, _loop);
+            qc_assert(conn);
+            
+            printf("get new connection succ!\n");
             break;
         }
     }
