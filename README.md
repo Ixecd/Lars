@@ -73,4 +73,18 @@ eventLoop/thread Tcp Server Model
     设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
     int op = 1;
     setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op, sizeof(op));
-    
+
+11. 关于TCP-conn中客户端socket
+    当客户端socket没有设置为非阻塞的情况下,connect()可能会出现EINPROGRESS状态,
+	
+    客户端测试程序时，由于出现很多客户端，经过connect成功后，代码卡在recv系统调用中，后来发现可能是由于socket默认是阻塞模式，所以会令很多客户端链接处于链接却不能传输数据状态。
+
+	后来修改socket为非阻塞模式，但在connect的时候，发现返回值为-1，刚开始以为是connect出现错误，但在服务器上看到了链接是ESTABLISED状态。证明链接是成功的
+
+	但为什么会出现返回值是-1呢？ 经过查询资料，以及看stevens的APUE，也发现有这么一说。
+
+	当connect在非阻塞模式下，会出现返回-1值，错误码是EINPROGRESS，但如何判断connect是联通的呢？stevens书中说明要在connect后，继续判断该socket是否可写？
+
+	若可写，则证明链接成功。
+
+	给epoll立即添加写事件,如果可写说明连接建立成功
