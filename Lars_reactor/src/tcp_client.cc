@@ -21,14 +21,19 @@
 #include "qc.hpp"
 namespace qc {
 
-static io_callback read_callback(event_loop *loop, int fd, void *args) {
+static io_callback read_callback(event_loop *loop, int fd, void *args) {    
     ((tcp_client *)args)->do_read();
+    // tcp_client *cli = (tcp_client *)args;
+    // cli->do_read();
 }
 
 static io_callback write_callback(event_loop *loop, int fd, void *args) {
     ((tcp_client *)args)->do_write();
+    // tcp_client *cli = (tcp_client *)args;
+    // cli->do_write();
 }
 //判断链接是否是创建链接，主要是针对非阻塞socket 返回EINPROGRESS错误
+// 这里一个conn只能执行一次这个函数
 static io_callback connection_delay(event_loop *loop, int fd, void *args) {
     tcp_client *cli = (tcp_client *)args;
     loop->del_io_event(fd);
@@ -96,7 +101,7 @@ void tcp_client::do_connect() {
     qc_assert(_sockfd != -1);
 
     int rt = connect(_sockfd, (const struct sockaddr *)&_server_addr, _addrlen);
-
+    // rt == -1
     if (rt == 0) {
         // connect success !!
         connected = true;

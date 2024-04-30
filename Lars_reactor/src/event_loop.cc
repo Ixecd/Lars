@@ -9,8 +9,9 @@
  *
  */
 
-#include "qc.hpp"
 #include "event_loop.hpp"
+
+#include "qc.hpp"
 
 namespace qc {
 
@@ -20,6 +21,7 @@ event_loop::event_loop() {
 }
 
 // 阻塞循环处理函数
+// 这里执行完一次必须从epoll中将相应的事件删除,要不然就会持续监听,导致tcp_conn那边的test_conn执行两次
 void event_loop::event_process() {
     while (true) {
         io_event_map_it ev_it;
@@ -54,6 +56,20 @@ void event_loop::event_process() {
                     this->del_io_event(_fired_evs[i].data.fd);
                 }
             }
+            // 执行完毕之后,应该将这个事件从epoll中清除
+            int last_mask;
+            if (_fired_evs[i].events & EPOLLIN)
+                last_mask = _fired_evs[i].events & (~EPOLLIN);
+            else if (_fired_evs[i].events & EPOLLOUT) 
+                last_mask = _fired_evs[i].events & (~EPOLLOUT);
+            
+            int op = last_mask ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
+            epoll_event epevent;
+            epevent.data.fd = _fired_evs[i].data.fd;
+            epevent.events = last_mask;
+            epevent.data.ptr = &_fired_evs[i].data.ptr;
+            int rt = epoll_ctl(_epfd, op, _fired_evs[i].data.fd, &epevent);
+            qc_assert(rt != -1);
         }
     }
 }
@@ -83,7 +99,9 @@ void event_loop::add_io_event(int fd, io_callback proc, int mask, void *args) {
     //     final_mask = it->second.mask | mask;
     //     op = EPOLL_CTL_MOD;
     // }
-    op = it == _io_evs.end() ? (final_mask = mask, EPOLL_CTL_ADD) : (final_mask = it->second.mask | mask, EPOLL_CTL_MOD);
+    op = it == _io_evs.end()
+             ? (final_mask = mask, EPOLL_CTL_ADD)
+             : (final_mask = it->second.mask | mask, EPOLL_CTL_MOD);
 
     // 4 注册回调函数
     if (mask & EPOLLIN) {
@@ -143,4 +161,4 @@ void event_loop::del_io_event(int fd, int mask) {
     }
 }
 
-}
+}  // namespace qc

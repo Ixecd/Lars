@@ -40,7 +40,8 @@ tcp_conn::tcp_conn(int connfd, event_loop *loop) {
     _connfd = connfd;
     _loop = loop;
     // 设置connfd 为非阻塞
-    qc_assert(qc::SetNonblocking(_connfd) == 1);
+    int flag = fcntl(connfd, F_GETFL, 0);
+    qc_assert(fcntl(connfd, F_SETFL, O_NONBLOCK | flag) != -1);
 
     // 设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
     int op = 1;
