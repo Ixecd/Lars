@@ -46,12 +46,7 @@ public:
     /// @brief 断开连接
     ~tcp_client();
 
-    void set_msg_callback(
-        std::function<void(const char *data, uint32_t len, int msgid,
-                           tcp_client *conn, void *user_data)>
-            msg_cb) {
-        this->_msg_callback = msg_cb;
-    }
+    void set_msg_callback(msg_callback* msg_cb) { this->_msg_callback = msg_cb; }
 
 public:
     /// @brief 读buff
@@ -72,11 +67,8 @@ private:
     event_loop *_loop;
     /// @brief 客户端名称
     const char *_name;
-    /// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
-    std::function<void(const char *data, uint32_t len, int msgid,
-                       tcp_client *conn, void *user_data)>
-        _msg_callback;
-    // msg_callback *_msg_callback;
+    /// @brief 信息处理回调函数
+    msg_callback *_msg_callback;
 };
 
 }  // namespace qc

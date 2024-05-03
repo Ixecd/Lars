@@ -25,6 +25,12 @@ struct msg_head {
     int msglen;
 };
 
+// msg 业务回调函数原型
+/// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
+typedef std::function<void(const char *data, uint32_t len, int msgid, tcp_client *conn,
+                   void *user_data)> msg_callback;
+
+
 }  // namespace qc
 
 #endif
