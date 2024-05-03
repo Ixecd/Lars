@@ -19,8 +19,12 @@ int main() {
     //创建tcp客户端
     tcp_client client(&loop, "127.0.0.1", 7777, "clientv0.4");
 
+    //printf("create connection success!\n");
+
     //注册回调业务
-    client.set_msg_callback(busi);
+    client.set_msg_callback((msg_callback*)busi);
+    //printf("set_callback_success!\n");
+    // 注册完之后向服务端发送消息
 
     //开启事件监听
     loop.event_process();

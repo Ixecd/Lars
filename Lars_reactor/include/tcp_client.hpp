@@ -30,6 +30,7 @@ namespace qc {
  */
 class tcp_client {
 public:
+
     /// @brief 完成基本的socket初始化和connect操作
     tcp_client(event_loop *loop, const char *ip, uint16_t prot,
                const char *name);
@@ -46,7 +47,9 @@ public:
     /// @brief 断开连接
     ~tcp_client();
 
-    void set_msg_callback(msg_callback* msg_cb) { this->_msg_callback = msg_cb; }
+    void set_msg_callback(msg_callback *msg_cb) {
+        this->_msg_callback = msg_cb;
+    }
 
 public:
     /// @brief 读buff

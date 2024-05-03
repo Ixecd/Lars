@@ -56,20 +56,20 @@ void event_loop::event_process() {
                     this->del_io_event(_fired_evs[i].data.fd);
                 }
             }
-            // 执行完毕之后,应该将这个事件从epoll中清除
-            int last_mask;
-            if (_fired_evs[i].events & EPOLLIN)
-                last_mask = _fired_evs[i].events & (~EPOLLIN);
-            else if (_fired_evs[i].events & EPOLLOUT) 
-                last_mask = _fired_evs[i].events & (~EPOLLOUT);
+            // // 执行完毕之后,应该将这个事件从epoll中清除
+            // int last_mask;
+            // if (_fired_evs[i].events & EPOLLIN)
+            //     last_mask = _fired_evs[i].events & (~EPOLLIN);
+            // else if (_fired_evs[i].events & EPOLLOUT) 
+            //     last_mask = _fired_evs[i].events & (~EPOLLOUT);
             
-            int op = last_mask ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
-            epoll_event epevent;
-            epevent.data.fd = _fired_evs[i].data.fd;
-            epevent.events = last_mask;
-            epevent.data.ptr = &_fired_evs[i].data.ptr;
-            int rt = epoll_ctl(_epfd, op, _fired_evs[i].data.fd, &epevent);
-            qc_assert(rt != -1);
+            // int op = last_mask ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
+            // epoll_event epevent;
+            // epevent.data.fd = _fired_evs[i].data.fd;
+            // epevent.events = last_mask;
+            // epevent.data.ptr = &_fired_evs[i].data.ptr;
+            // int rt = epoll_ctl(_epfd, op, _fired_evs[i].data.fd, &epevent);
+            // qc_assert(rt != -1);
         }
     }
 }
@@ -82,7 +82,7 @@ void event_loop::event_process() {
  * */
 
 //添加一个io事件到loop中
-void event_loop::add_io_event(int fd, io_callback proc, int mask, void *args) {
+void event_loop::add_io_event(int fd, io_callback* proc, int mask, void *args) {
     int final_mask;
     int op;
 
@@ -157,7 +157,9 @@ void event_loop::del_io_event(int fd, int mask) {
         struct epoll_event event;
         event.events = o_mask;
         event.data.fd = fd;
-        qc_assert(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) != -1);
+
+        int rt = epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event);
+        qc_assert(rt != -1);
     }
 }
 

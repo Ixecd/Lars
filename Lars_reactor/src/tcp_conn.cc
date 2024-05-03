@@ -21,54 +21,59 @@
 namespace qc {
 
 /// @brief 回显业务
-void callback_busi(const char *data, uint32_t len, int msgid, void *args, tcp_conn *conn) {
+//回显业务
+void callback_busi(const char *data, uint32_t len, int msgid, void *args,
+                   tcp_conn *conn) {
     conn->send_message(data, len, msgid);
 }
 
+//连接的读事件回调
 static void conn_rd_callback(event_loop *loop, int fd, void *args) {
-    tcp_conn *conn = (tcp_conn*) args;
+    tcp_conn *conn = (tcp_conn *)args;
     conn->do_read();
 }
-
+//连接的写事件回调
 static void conn_wt_callback(event_loop *loop, int fd, void *args) {
     tcp_conn *conn = (tcp_conn *)args;
     conn->do_write();
 }
 
-// 初始化tcp_conn
+//初始化tcp_conn
 tcp_conn::tcp_conn(int connfd, event_loop *loop) {
     _connfd = connfd;
     _loop = loop;
-    // 设置connfd 为非阻塞
-    int flag = fcntl(connfd, F_GETFL, 0);
-    qc_assert(fcntl(connfd, F_SETFL, O_NONBLOCK | flag) != -1);
+    // 1. 将connfd设置成非阻塞状态
+    int flag = fcntl(_connfd, F_GETFL, 0);
+    fcntl(_connfd, F_SETFL, O_NONBLOCK | flag);
 
-    // 设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
+    // 2. 设置TCP_NODELAY禁止做读写缓存，降低小包延迟
     int op = 1;
-    setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op, sizeof(op));
+    setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op,
+               sizeof(op));  // need netinet/in.h netinet/tcp.h
 
-    //3.将该链接的读事件让epoll检测
+    // 3. 将该链接的读事件让event_loop监控
     _loop->add_io_event(_connfd, conn_rd_callback, EPOLLIN, this);
 
-    //4.集成到tcp_server中
-    // TODO
-
+    // 4 将该链接集成到对应的tcp_server中
+    //tcp_server::increase_conn(_connfd, this);
 }
 
-/// @brief 处理读事件
+//处理读业务
 void tcp_conn::do_read() {
-    int rt = ibuf.read_data(_connfd);
-    if (rt == -1) {
+    // 1. 从套接字读取数据
+    int ret = ibuf.read_data(_connfd);
+    if (ret == -1) {
         fprintf(stderr, "read data from socket\n");
         this->clean_conn();
         return;
-    } else if (rt == 0) {
-        // 对端关闭
-        printf("connecction closed by peer\n");
+    } else if (ret == 0) {
+        //对端正常关闭
+        printf("connection closed by peer\n");
         clean_conn();
         return;
     }
-    //2. 解析msg_head数据
+
+    // 2. 解析msg_head数据
     msg_head head;
 
     //[这里用while，可能一次性读取多个完整包过来]
@@ -88,18 +93,11 @@ void tcp_conn::do_read() {
         }
 
         // 2.2 再根据头长度读取数据体，然后针对数据体处理 业务
-        // TODO 添加包路由模式
 
         //头部处理完了，往后偏移MESSAGE_HEAD_LEN长度
         ibuf.pop(MESSAGE_HEAD_LEN);
 
-        //处理ibuf.data()业务数据
-        printf("read data: %s\n", ibuf.data());
-
-        //回显业务
-        callback_busi(ibuf.data(), head.msglen, head.msgid, NULL, this);
-
-        //消息体处理完了,往后遍历msglen长度
+        //消息体处理完了,往后便宜msglen长度
         ibuf.pop(head.msglen);
     }
 
@@ -110,7 +108,7 @@ void tcp_conn::do_read() {
 
 //处理写业务
 void tcp_conn::do_write() {
-    // do_write是触发完event事件要处理的事情，
+    // do_write是触发玩event事件要处理的事情，
     //应该是直接将out_buf力度数据io写会对方客户端
     //而不是在这里组装一个message再发
     //组装message的过程应该是主动调用
@@ -139,8 +137,6 @@ void tcp_conn::do_write() {
 
 //发送消息的方法
 int tcp_conn::send_message(const char *data, int msglen, int msgid) {
-    printf("server send_message: %s:%d, msgid = %d\n", data, msglen, msgid);
-    // 是否激活事件
     bool active_epollout = false;
     if (obuf.length() == 0) {
         //如果现在已经数据都发送完了，那么是一定要激活写事件的
@@ -169,7 +165,7 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
     }
 
     if (active_epollout == true) {
-        // 2. 激活EPOLLOUT写事件
+        //激活EPOLLOUT写事件
         _loop->add_io_event(_connfd, conn_wt_callback, EPOLLOUT, this);
     }
 
@@ -178,9 +174,10 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
 
 //销毁tcp_conn
 void tcp_conn::clean_conn() {
+
     //链接清理工作
     // 1 将该链接从tcp_server摘除掉
-    // TODO
+    // tcp_server::decrease_conn(_connfd);
     // 2 将该链接从event_loop中摘除
     _loop->del_io_event(_connfd);
     // 3 buf清空

@@ -33,7 +33,7 @@ public:
     /// @brief 阻塞循环处理事件
     void event_process();
     /// @brief 添加一个io事件到loop中
-    void add_io_event(int fd, io_callback proc, int mask, void *args = nullptr);
+    void add_io_event(int fd, io_callback* proc, int mask, void *args = nullptr);
     /// @brief 删除一个io事件从loop中
     void del_io_event(int fd);
     /// @brief 删除一个io事件的EPOLLIN/EPOLLOUT

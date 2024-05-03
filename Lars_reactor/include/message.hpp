@@ -12,6 +12,8 @@
 #ifndef __MESSAGE_HPP__
 #define __MESSAGE_HPP__
 
+#include "tcp_conn.hpp"
+
 // DataLen  Id    Data        DataLen Id   Data
 // | --head-- | |--body --| | --head-- | |--body--|
 
@@ -27,9 +29,11 @@ struct msg_head {
 
 // msg 业务回调函数原型
 /// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
-typedef std::function<void(const char *data, uint32_t len, int msgid, tcp_client *conn,
-                   void *user_data)> msg_callback;
-
+// typedef std::function<void(const char *data, uint32_t len, int msgid,
+// tcp_client *conn,
+//                    void *user_data)> msg_callback;
+typedef void msg_callback(const char *data, uint32_t len, int msgid,
+                          tcp_conn *conn, void *user_data);
 
 }  // namespace qc
 

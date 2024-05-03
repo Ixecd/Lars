@@ -11,67 +11,31 @@
 
 #include "tcp_client.hpp"
 
+#include <stdio.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 
 #include "qc.hpp"
 namespace qc {
 
-static io_callback read_callback(event_loop *loop, int fd, void *args) {    
-    ((tcp_client *)args)->do_read();
-    // tcp_client *cli = (tcp_client *)args;
-    // cli->do_read();
-}
-
-static io_callback write_callback(event_loop *loop, int fd, void *args) {
-    ((tcp_client *)args)->do_write();
-    // tcp_client *cli = (tcp_client *)args;
-    // cli->do_write();
-}
-//判断链接是否是创建链接，主要是针对非阻塞socket 返回EINPROGRESS错误
-// 这里一个conn只能执行一次这个函数
-static io_callback connection_delay(event_loop *loop, int fd, void *args) {
+static void write_callback(event_loop *loop, int fd, void *args) {
     tcp_client *cli = (tcp_client *)args;
-    loop->del_io_event(fd);
-
-    int result = 0;
-    socklen_t result_len = sizeof(result);
-    getsockopt(fd, SOL_SOCKET, SO_ERROR, &result, &result_len);
-    if (result == 0) {
-        //链接是建立成功的
-        cli->connected = true;
-
-        printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
-               ntohs(cli->_server_addr.sin_port));
-
-        //建立连接成功之后，主动发送send_message
-        const char *msg = "hello lars!";
-        int msgid = 1;
-        cli->send_message(msg, strlen(msg), msgid);
-
-        loop->add_io_event(fd, read_callback, EPOLLIN, cli);
-
-        if (cli->_obuf.m_length != 0) {
-            //输出缓冲有数据可写
-            loop->add_io_event(fd, write_callback, EPOLLOUT, cli);
-        }
-    } else {
-        //链接创建失败
-        fprintf(stderr, "connection %s:%d error\n",
-                inet_ntoa(cli->_server_addr.sin_addr),
-                ntohs(cli->_server_addr.sin_port));
-    }
+    cli->do_write();
 }
 
-tcp_client::tcp_client(event_loop *loop, const char *ip, uint16_t port,
+static void read_callback(event_loop *loop, int fd, void *args) {
+    tcp_client *cli = (tcp_client *)args;
+    cli->do_read();
+}
+
+tcp_client::tcp_client(event_loop *loop, const char *ip, unsigned short port,
                        const char *name)
-    : _ibuf(4194304), _obuf(4194304) {
+    : _obuf(4194304), _ibuf(4194304) {
     _sockfd = -1;
-    _msg_callback = NULL;
     _name = name;
     _loop = loop;
 
@@ -86,24 +50,56 @@ tcp_client::tcp_client(event_loop *loop, const char *ip, uint16_t port,
     this->do_connect();
 }
 
-tcp_client::~tcp_client() {
-    // 释放相应的资源
-    close(_sockfd);
+
+//判断链接是否是创建链接，主要是针对非阻塞socket 返回EINPROGRESS错误
+static void connection_delay(event_loop *loop, int fd, void *args) {
+    tcp_client *cli = (tcp_client *)args;
+    loop->del_io_event(fd);
+
+    int result = 0;
+    socklen_t result_len = sizeof(result);
+    getsockopt(fd, SOL_SOCKET, SO_ERROR, &result, &result_len);
+    if (result == 0) {
+        //链接是建立成功的
+        cli->connected = true;
+
+        printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
+               ntohs(cli->_server_addr.sin_port));
+
+        /// @brief 连接建立好就检测读事件,和写事件
+        loop->add_io_event(fd, read_callback, EPOLLIN, cli);
+
+        if (cli->_obuf.m_length != 0) {
+            //输出缓冲有数据可写
+            loop->add_io_event(fd, write_callback, EPOLLOUT, cli);
+        }
+    } else {
+        //链接创建失败
+        fprintf(stderr, "connection %s:%d error\n",
+                inet_ntoa(cli->_server_addr.sin_addr),
+                ntohs(cli->_server_addr.sin_port));
+    }
 }
 
+//创建链接
 void tcp_client::do_connect() {
-    // 如果之前有连接,先关掉,重新连上
-    if (_sockfd != -1) close(_sockfd);
+    if (_sockfd != -1) {
+        close(_sockfd);
+    }
 
+    //创建套接字
     _sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC | SOCK_NONBLOCK,
                      IPPROTO_TCP);
+    if (_sockfd == -1) {
+        fprintf(stderr, "create tcp client socket error\n");
+        exit(1);
+    }
 
-    qc_assert(_sockfd != -1);
+    int ret =
+        connect(_sockfd, (const struct sockaddr *)&_server_addr, _addrlen);
+    if (ret == 0) {
+        //链接创建成功
 
-    int rt = connect(_sockfd, (const struct sockaddr *)&_server_addr, _addrlen);
-    // rt == -1
-    if (rt == 0) {
-        // connect success !!
         connected = true;
         //注册读回调
         _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
@@ -127,6 +123,38 @@ void tcp_client::do_connect() {
             exit(1);
         }
     }
+}
+
+//主动发送message方法
+int tcp_client::send_message(const char *data, int msglen, int msgid) {
+    if (connected == false) {
+        fprintf(stderr, "no connected , send message stop!\n");
+        return -1;
+    }
+    //是否需要添加写事件触发
+    //如果obuf中有数据，没必要添加，如果没有数据，添加完数据需要触发
+    bool need_add_event = (_obuf.m_length == 0) ? true : false;
+    if (msglen + MESSAGE_HEAD_LEN > this->_obuf.m_capacity - _obuf.m_length) {
+        fprintf(stderr, "No more space to Write socket!\n");
+        return -1;
+    }
+
+    //封装消息头
+    msg_head head;
+    head.msgid = msgid;
+    head.msglen = msglen;
+
+    memcpy(_obuf.m_data + _obuf.m_length, &head, MESSAGE_HEAD_LEN);
+    _obuf.m_length += MESSAGE_HEAD_LEN;
+
+    memcpy(_obuf.m_data + _obuf.m_length, data, msglen);
+    _obuf.m_length += msglen;
+
+    if (need_add_event) {
+        _loop->add_io_event(_sockfd, write_callback, EPOLLOUT, this);
+    }
+
+    return 0;
 }
 
 //处理读业务
@@ -187,12 +215,6 @@ int tcp_client::do_read() {
         //头部读取完毕
         _ibuf.pop(MESSAGE_HEAD_LEN);
 
-        // 3. 交给业务函数处理
-        if (_msg_callback != NULL) {
-            this->_msg_callback(_ibuf.m_data + _ibuf.m_head, length, msgid, this,
-                                NULL);
-        }
-
         //数据区域处理完毕
         _ibuf.pop(length);
     }
@@ -230,7 +252,7 @@ int tcp_client::do_write() {
 
     if (_obuf.m_length == 0) {
         //已经写完，删除写事件
-        printf("do write over, del EPOLLOUT\n");
+        // printf("do write over, del EPOLLOUT\n");
         this->_loop->del_io_event(_sockfd, EPOLLOUT);
     }
 
@@ -247,41 +269,11 @@ void tcp_client::clean_conn() {
 
     connected = false;
 
+
     //重新连接
     this->do_connect();
 }
 
-//主动发送message方法
-int tcp_client::send_message(const char *data, int msglen, int msgid) {
-    if (connected == false) {
-        fprintf(stderr, "no connected , send message stop!\n");
-        return -1;
-    }
-
-    //是否需要添加写事件触发
-    //如果obuf中有数据，没必要添加，如果没有数据，添加完数据需要触发
-    bool need_add_event = (_obuf.m_length == 0) ? true : false;
-    if (msglen + MESSAGE_HEAD_LEN > this->_obuf.m_capacity - _obuf.m_length) {
-        fprintf(stderr, "No more space to Write socket!\n");
-        return -1;
-    }
-
-    //封装消息头
-    msg_head head;
-    head.msgid = msgid;
-    head.msglen = msglen;
-
-    memcpy(_obuf.m_data + _obuf.m_length, &head, MESSAGE_HEAD_LEN);
-    _obuf.m_length += MESSAGE_HEAD_LEN;
-
-    memcpy(_obuf.m_data + _obuf.m_length, data, msglen);
-    _obuf.m_length += msglen;
-
-    if (need_add_event) {
-        _loop->add_io_event(_sockfd, write_callback, EPOLLOUT, this);
-    }
-
-    return 0;
-}
+tcp_client::~tcp_client() { close(_sockfd); }
 
 }  // namespace qc
