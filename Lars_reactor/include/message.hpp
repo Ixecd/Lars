@@ -31,9 +31,6 @@ struct msg_head {
 /// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
 using msg_callback = std::function<void(const char *data, uint32_t len, int msgid, tcp_conn *conn, void *user_data)>;
 
-// typedef void msg_callback(const char *data, uint32_t len, int msgid,
-//                           tcp_conn *conn, void *user_data);
-
 }  // namespace qc
 
 #endif

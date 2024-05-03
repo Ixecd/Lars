@@ -18,11 +18,7 @@ namespace qc {
 
 class event_loop;
 
-//typedef std::function<void(event_loop*, int, void*)> io_callback;
-
 using io_callback = std::function<void(event_loop*, int, void*)>;
-
-//typedef void io_callback(event_loop *loop, int fd, void *args);
 
 class io_event {
 public:
