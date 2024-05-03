@@ -77,9 +77,12 @@ void tcp_conn::do_read() {
     msg_head head;
 
     //[这里用while，可能一次性读取多个完整包过来]
+    // printf("cur ibuf.length() = %d\n", ibuf.length()); --> 19
     while (ibuf.length() >= MESSAGE_HEAD_LEN) {
         // 2.1 读取msg_head头部，固定长度MESSAGE_HEAD_LEN
         memcpy(&head, ibuf.data(), MESSAGE_HEAD_LEN);
+        printf("cur head.msgid = %d, head.msglen = %d\n", head.msgid,
+               head.msglen);
         if (head.msglen > MESSAGE_LENGTH_LIMIT || head.msglen < 0) {
             fprintf(stderr, "data format error, need close, msglen = %d\n",
                     head.msglen);
@@ -93,6 +96,9 @@ void tcp_conn::do_read() {
         }
 
         // 2.2 再根据头长度读取数据体，然后针对数据体处理 业务
+        // 添加写IO,触发回调函数
+        // 回显数据,触发client的业务回调函数
+        _loop->add_io_event(_connfd, conn_wt_callback, EPOLLOUT, this);
 
         //头部处理完了，往后偏移MESSAGE_HEAD_LEN长度
         ibuf.pop(MESSAGE_HEAD_LEN);

@@ -66,9 +66,14 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
                ntohs(cli->_server_addr.sin_port));
 
-        /// @brief 连接建立好就检测读事件,和写事件
+        /// @brief 连接建立好就检测读事件
         loop->add_io_event(fd, read_callback, EPOLLIN, cli);
 
+        ///
+        printf("before send_message\n");
+        cli->send_message("hello,lars!", 11, 1);
+        printf("after send_message\n");
+        printf("cur cli->_obuf.m_length = %d\n", cli->_obuf.m_length);
         if (cli->_obuf.m_length != 0) {
             //输出缓冲有数据可写
             loop->add_io_event(fd, write_callback, EPOLLOUT, cli);
@@ -95,11 +100,9 @@ void tcp_client::do_connect() {
         exit(1);
     }
 
-    int ret =
-        connect(_sockfd, (const struct sockaddr *)&_server_addr, _addrlen);
+    int ret = connect(_sockfd, (const struct sockaddr *)&_server_addr, _addrlen);
     if (ret == 0) {
         //链接创建成功
-
         connected = true;
         //注册读回调
         _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
@@ -218,6 +221,9 @@ int tcp_client::do_read() {
         //数据区域处理完毕
         _ibuf.pop(length);
     }
+    // 调用业务回调函数
+    this->_msg_callback((const char*)&head, head.msglen, msgid,
+                       nullptr,nullptr);
 
     //重置head指针
     _ibuf.adjust();
@@ -227,6 +233,7 @@ int tcp_client::do_read() {
 
 //处理写业务
 int tcp_client::do_write() {
+    printf("tcp_client::do_write() begin()...\n");
     //数据有长度，切头部索引是起始位置
     qc_assert(_obuf.m_head == 0 && _obuf.m_length);
 
@@ -252,7 +259,7 @@ int tcp_client::do_write() {
 
     if (_obuf.m_length == 0) {
         //已经写完，删除写事件
-        // printf("do write over, del EPOLLOUT\n");
+        printf("do write over, del EPOLLOUT\n");
         this->_loop->del_io_event(_sockfd, EPOLLOUT);
     }
 
