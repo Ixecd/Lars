@@ -1,8 +1,8 @@
 CXX=g++
-CFLAGS=-g -O2 -Wall -fPIC -Wno-deprecated 
+CFLAGS=-g -O2 -Wall -fPIC -Wno-deprecated
 
 INC=-I../../include
-LIB=-L../../lib -llreactor -lpthread
+LIB=-L../../lib -lLars_reactor -lpthread
 OBJS = $(addsuffix .o, $(basename $(wildcard *.cc)))
 
 all:

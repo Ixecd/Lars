@@ -1,0 +1,2 @@
+/usr/bin/ar qc libLars_reactor.a CMakeFiles/Lars_reactor.dir/src/buf_pool.cc.o CMakeFiles/Lars_reactor.dir/src/event_loop.cc.o CMakeFiles/Lars_reactor.dir/src/io_buf.cc.o CMakeFiles/Lars_reactor.dir/src/reactor.cc.o CMakeFiles/Lars_reactor.dir/src/tcp_client.cc.o CMakeFiles/Lars_reactor.dir/src/tcp_conn.cc.o CMakeFiles/Lars_reactor.dir/src/tcp_server.cc.o
+/usr/bin/ranlib libLars_reactor.a
