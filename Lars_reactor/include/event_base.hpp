@@ -20,15 +20,17 @@ class event_loop;
 
 //typedef std::function<void(event_loop*, int, void*)> io_callback;
 
-typedef void io_callback(event_loop *loop, int fd, void *args);
+using io_callback = std::function<void(event_loop*, int, void*)>;
+
+//typedef void io_callback(event_loop *loop, int fd, void *args);
 
 class io_event {
 public:
     io_event():read_callback(nullptr), write_callback(nullptr), rcb_args(nullptr),
     wcb_args(nullptr) {}
     int mask;                   // EPOLLIN EPOLLOUT
-    io_callback *read_callback;  // EPOLLIN
-    io_callback *write_callback; // EPOLLOUT
+    io_callback read_callback;  // EPOLLIN
+    io_callback write_callback; // EPOLLOUT
     void *rcb_args;             // read_callback args
     void *wcb_args;             // write_callbck args
 };

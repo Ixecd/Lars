@@ -22,14 +22,13 @@
 #include "qc.hpp"
 namespace qc {
 
+
 static void write_callback(event_loop *loop, int fd, void *args) {
-    tcp_client *cli = (tcp_client *)args;
-    cli->do_write();
+    ((tcp_client *)args)->do_write();
 }
 
 static void read_callback(event_loop *loop, int fd, void *args) {
-    tcp_client *cli = (tcp_client *)args;
-    cli->do_read();
+    ((tcp_client *)args)->do_read();
 }
 
 tcp_client::tcp_client(event_loop *loop, const char *ip, unsigned short port,
@@ -70,10 +69,10 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         loop->add_io_event(fd, read_callback, EPOLLIN, cli);
 
         ///
-        printf("before send_message\n");
+        //printf("before send_message\n");
         cli->send_message("hello,lars!", 11, 1);
-        printf("after send_message\n");
-        printf("cur cli->_obuf.m_length = %d\n", cli->_obuf.m_length);
+        //printf("after send_message\n");
+        //printf("cur cli->_obuf.m_length = %d\n", cli->_obuf.m_length);
         if (cli->_obuf.m_length != 0) {
             //输出缓冲有数据可写
             loop->add_io_event(fd, write_callback, EPOLLOUT, cli);

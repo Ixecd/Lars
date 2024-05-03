@@ -88,3 +88,9 @@ eventLoop/thread Tcp Server Model
 	若可写，则证明链接成功。
 
 	给epoll立即添加写事件,如果可写说明连接建立成功
+
+12. 关于epoll
+    底层是红黑树+双向链表
+    事件驱动型IO模型 --> 意味着如果对一个文件描述符fd先进行写操作(对应的obuf不为空),之后再epoll_ctl()注册对应的写回调函数会立即执行
+                      如果一个文件描述符要read (其有对应的ibuf,如果ibuf不为空),那么之后epoll_ctl()注册的读回调函数会立即执行
+

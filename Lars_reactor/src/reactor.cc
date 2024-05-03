@@ -68,8 +68,7 @@ int input_buf::read_data(int fd) {
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < (int)need_read) {
             //不够存，内存池申请
-            io_buf *new_buf =
-                buf_pool::instance()->alloc_buf(need_read + _buf->m_length);
+            io_buf *new_buf = buf_pool::instance()->alloc_buf(need_read + _buf->m_length);
             if (new_buf == NULL) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;

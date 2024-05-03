@@ -47,9 +47,7 @@ public:
     /// @brief 断开连接
     ~tcp_client();
 
-    void set_msg_callback(msg_callback *msg_cb) {
-        this->_msg_callback = msg_cb;
-    }
+    void set_msg_callback(msg_callback msg_cb) { this->_msg_callback = msg_cb; }
 
 public:
     /// @brief 读buff
@@ -71,7 +69,7 @@ private:
     /// @brief 客户端名称
     const char *_name;
     /// @brief 信息处理回调函数
-    msg_callback *_msg_callback;
+    msg_callback _msg_callback;
 };
 
 }  // namespace qc

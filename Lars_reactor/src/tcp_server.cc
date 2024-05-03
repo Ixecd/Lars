@@ -37,7 +37,7 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     }
 
     // 1. 创建socket
-    _sockfd = socket(AF_INET, SOCK_STREAM /*| SOCK_NONBLOCK*/ | SOCK_CLOEXEC,
+    _sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
                      IPPROTO_TCP);
     if (_sockfd == -1) {
         fprintf(stderr, "tcp_server::socket()\n");

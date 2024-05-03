@@ -56,20 +56,6 @@ void event_loop::event_process() {
                     this->del_io_event(_fired_evs[i].data.fd);
                 }
             }
-            // // 执行完毕之后,应该将这个事件从epoll中清除
-            // int last_mask;
-            // if (_fired_evs[i].events & EPOLLIN)
-            //     last_mask = _fired_evs[i].events & (~EPOLLIN);
-            // else if (_fired_evs[i].events & EPOLLOUT) 
-            //     last_mask = _fired_evs[i].events & (~EPOLLOUT);
-            
-            // int op = last_mask ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
-            // epoll_event epevent;
-            // epevent.data.fd = _fired_evs[i].data.fd;
-            // epevent.events = last_mask;
-            // epevent.data.ptr = &_fired_evs[i].data.ptr;
-            // int rt = epoll_ctl(_epfd, op, _fired_evs[i].data.fd, &epevent);
-            // qc_assert(rt != -1);
         }
     }
 }
@@ -82,28 +68,18 @@ void event_loop::event_process() {
  * */
 
 //添加一个io事件到loop中
-void event_loop::add_io_event(int fd, io_callback* proc, int mask, void *args) {
+void event_loop::add_io_event(int fd, io_callback proc, int mask, void *args) {
     int final_mask;
     int op;
 
-    // 1 找到当前fd是否已经有事件
+    //  找到当前fd是否已经有事件
     io_event_map_it it = _io_evs.find(fd);
-    // if (it == _io_evs.end()) {
-    //     // 2 如果没有操作动作就是ADD
-    //     //没有找到
-    //     final_mask = mask;
-    //     op = EPOLL_CTL_ADD;
-    // } else {
-    //     // 3 如果有操作董酒是MOD
-    //     //添加事件标识位
-    //     final_mask = it->second.mask | mask;
-    //     op = EPOLL_CTL_MOD;
-    // }
+    
     op = it == _io_evs.end()
              ? (final_mask = mask, EPOLL_CTL_ADD)
              : (final_mask = it->second.mask | mask, EPOLL_CTL_MOD);
 
-    // 4 注册回调函数
+    // 注册回调函数
     if (mask & EPOLLIN) {
         //读事件回调函数注册
         _io_evs[fd].read_callback = proc;
@@ -113,7 +89,7 @@ void event_loop::add_io_event(int fd, io_callback* proc, int mask, void *args) {
         _io_evs[fd].wcb_args = args;
     }
 
-    // 5 epoll_ctl添加到epoll堆里
+    // epoll_ctl添加到epoll堆里
     _io_evs[fd].mask = final_mask;
     //创建原生epoll事件
     struct epoll_event event;
@@ -121,7 +97,7 @@ void event_loop::add_io_event(int fd, io_callback* proc, int mask, void *args) {
     event.data.fd = fd;
     qc_assert(epoll_ctl(_epfd, op, fd, &event) != -1);
 
-    // 6 将fd添加到监听集合中
+    // 将fd添加到监听集合中
     _listen_fds.insert(fd);
 }
 
