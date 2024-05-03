@@ -118,6 +118,10 @@ void tcp_conn::do_write() {
     //应该是直接将out_buf力度数据io写会对方客户端
     //而不是在这里组装一个message再发
     //组装message的过程应该是主动调用
+    /**
+     * @brief 暂时在这里整一下
+     */
+    this->send_message("hello,Lars!", 11, 2);
 
     //只要obuf中有数据就写
     while (obuf.length()) {
