@@ -44,8 +44,13 @@ public:
     int do_write();
     /// @brief 清空连接资源
     void clean_conn();
+    /// @brief 获取通信socket
+    int get_socket() { return _sockfd; }
+    /// @brief 获取event_loop
+    event_loop *get_event_loop() { return _loop; }
     /// @brief 断开连接
     ~tcp_client();
+
 
     void set_msg_callback(msg_callback msg_cb) { this->_msg_callback = msg_cb; }
 

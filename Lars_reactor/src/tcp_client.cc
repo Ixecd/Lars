@@ -10,7 +10,7 @@
  */
 
 #include "tcp_client.hpp"
-
+#include "tcp_server.hpp"
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -53,6 +53,14 @@ tcp_client::tcp_client(event_loop *loop, const char *ip, unsigned short port,
 //判断链接是否是创建链接，主要是针对非阻塞socket 返回EINPROGRESS错误
 static void connection_delay(event_loop *loop, int fd, void *args) {
     tcp_client *cli = (tcp_client *)args;
+    
+    // printf("cur fd = %d\n", fd);
+
+    // fd = cli->get_socket();
+    // loop = cli->get_event_loop();
+
+    // printf("cur fd = %d\n", fd);
+
     loop->del_io_event(fd);
 
     int result = 0;
@@ -70,7 +78,7 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
 
         ///
         //printf("before send_message\n");
-        cli->send_message("hello,lars!", 11, 1);
+        cli->send_message("hello,lars!", 12, 1);
         //printf("after send_message\n");
         //printf("cur cli->_obuf.m_length = %d\n", cli->_obuf.m_length);
         if (cli->_obuf.m_length != 0) {
@@ -114,6 +122,8 @@ void tcp_client::do_connect() {
                ntohs(_server_addr.sin_port));
     } else {
         if (errno == EINPROGRESS) {
+            // ======== 判断链接管理 =========
+
             // fd是非阻塞的，可能会出现这个错误,但是并不表示链接创建失败
             //如果fd是可写状态，则为链接是创建成功的.
             fprintf(stderr, "do_connect EINPROGRESS\n");

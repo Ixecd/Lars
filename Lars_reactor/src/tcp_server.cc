@@ -13,8 +13,41 @@
 
 namespace qc {
 
+// ========链接资源管理=========
+tcp_conn **tcp_server::conns = nullptr;
 
-// =======================
+int tcp_server::_max_conns = 0;
+
+int tcp_server::_curr_conns = 0;
+
+// 静态初始化互斥锁
+pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
+// 动态初始化互斥锁 -->
+// 先声明一个pthread_mutex_t类型的互斥锁,之后再pthread_mutex_init();
+
+// 添加一个conn
+void tcp_server::increase_conn(int connfd, tcp_conn *conn) {
+    pthread_mutex_lock(&_conns_mutex);
+    conns[connfd] = conn;
+    _curr_conns++;
+    pthread_mutex_unlock(&_conns_mutex);
+}
+
+// 删除一个conn
+void tcp_server::decrease_conn(int connfd) {
+    pthread_mutex_lock(&_conns_mutex);
+    conns[connfd] = nullptr;
+    --_curr_conns;
+    pthread_mutex_unlock(&_conns_mutex);
+}
+
+/// @brief 获取当前所有链接的数量
+/// @param[out] curr_conn 数量
+void tcp_server::get_conn_num(int *curr_conn) {
+    pthread_mutex_lock(&_conns_mutex);
+    *curr_conn = _curr_conns;
+    pthread_mutex_unlock(&_conns_mutex);
+}
 
 // listen fd 客户端有新链接请求过来的回调函数
 void accept_callback(event_loop *loop, int fd, void *args) {
@@ -37,7 +70,7 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     }
 
     // 1. 创建socket
-    _sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+    _sockfd = socket(AF_INET, SOCK_STREAM | /*SOCK_NONBLOCK |*/ SOCK_CLOEXEC,
                      IPPROTO_TCP);
     if (_sockfd == -1) {
         fprintf(stderr, "tcp_server::socket()\n");
@@ -73,6 +106,13 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     // 5 将_sockfd添加到event_loop中
     _loop = loop;
 
+    // 6 ========== 链接管理 ===========
+    _max_conns = MAX_CONNS;
+    // 这里动态的创建链接信息数组, +3 是因为stdin, stdout, stderr已经被占用,fd 一定是从3开始
+    conns = new tcp_conn*[_max_conns + 3]; 
+    qc_assert(conns);
+    // printf("cour _max_conns = %d\n", _max_conns);
+
     // 7 创建线程池
 
     // 8 注册_socket读事件-->accept处理
@@ -80,6 +120,7 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
 }
 
 //开始提供创建链接服务
+// accept 之后会将其封装成tcp_conn类
 void tcp_server::do_accept() {
     int connfd;
     while (true) {
@@ -103,15 +144,25 @@ void tcp_server::do_accept() {
         } else {
             // accept succ!
 
-            //启动单线程模式
-            tcp_conn *conn = new tcp_conn(connfd, _loop);
-            if (conn == NULL) {
-                fprintf(stderr, "new tcp_conn error\n");
-                exit(1);
+            // ======== 加入链接管理 ========
+            int cur_conns;
+            get_conn_num(&cur_conns);
+            // printf("after get_conn_num, the num = %d\n", cur_conns);
+            if (cur_conns >= _max_conns) {
+                fprintf(stderr, "so many connections, max = %d\n", _max_conns);
+                close(connfd);
+            } else {
+                //启动单线程模式
+                tcp_conn *conn = new tcp_conn(connfd, _loop);
+                if (conn == NULL) {
+                    fprintf(stderr, "new tcp_conn error\n");
+                    exit(1);
+                }
+                // 这里是否应该将其加入到数组中? 不需要,要降低耦合(设计到锁),在tcp_conn中increase_conn即可
+                //conns[connfd] = conn;
+                printf("[tcp_server]: get new connection succ!\n");
             }
-            printf("[tcp_server]: get new connection succ!\n");
             break;
-    
         }
     }
 }

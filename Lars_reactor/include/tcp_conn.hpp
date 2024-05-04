@@ -40,11 +40,11 @@ private:
     /// @brief 当前连接的fd
     int _connfd;
     /// @brief 该连接所属的event_poll
-    event_loop *_loop;
-    /// @brief 输出buff
-    output_buf obuf;    
+    event_loop *_loop; 
     /// @brief 输入buff
     input_buf ibuf;
+    /// @brief 输出buff
+    output_buf obuf;
 };
 
 

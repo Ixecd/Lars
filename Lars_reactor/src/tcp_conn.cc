@@ -4,20 +4,23 @@
  * @brief tcp_conn 封装类
  * @version 0.1
  * @date 2024-04-28
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
-#include <unistd.h>
+#include "tcp_conn.hpp"
+
 #include <fcntl.h>
+#include <netinet/in.h>   // for IPPROTO_TCP
+#include <netinet/tcp.h>  // for TCP_NODELAY
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/tcp.h>    // for TCP_NODELAY
-#include <netinet/in.h>     // for IPPROTO_TCP
-#include <string.h>
-#include "tcp_conn.hpp"
+#include <unistd.h>
+
 #include "message.hpp"
+#include "tcp_server.hpp"
 namespace qc {
 
 /// @brief 回显业务
@@ -55,7 +58,7 @@ tcp_conn::tcp_conn(int connfd, event_loop *loop) {
     _loop->add_io_event(_connfd, conn_rd_callback, EPOLLIN, this);
 
     // 4 将该链接集成到对应的tcp_server中
-    //tcp_server::increase_conn(_connfd, this);
+    tcp_server::increase_conn(_connfd, this);
 }
 
 //处理读业务
@@ -103,6 +106,10 @@ void tcp_conn::do_read() {
         //头部处理完了，往后偏移MESSAGE_HEAD_LEN长度
         ibuf.pop(MESSAGE_HEAD_LEN);
 
+        //char *buf;
+        //memcpy(buf, ibuf.data(), head.msglen);
+        //printf("[tcp_server]: get message : %s\n", buf);
+
         //消息体处理完了,往后便宜msglen长度
         ibuf.pop(head.msglen);
     }
@@ -121,7 +128,7 @@ void tcp_conn::do_write() {
     /**
      * @brief 暂时在这里整一下
      */
-    this->send_message("hello,Lars!", 11, 2);
+    this->send_message("hello,Lars!", 12, 2);
 
     //只要obuf中有数据就写
     while (obuf.length()) {
@@ -184,10 +191,9 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
 
 //销毁tcp_conn
 void tcp_conn::clean_conn() {
-
     //链接清理工作
     // 1 将该链接从tcp_server摘除掉
-    // tcp_server::decrease_conn(_connfd);
+    tcp_server::decrease_conn(_connfd);
     // 2 将该链接从event_loop中摘除
     _loop->del_io_event(_connfd);
     // 3 buf清空
@@ -199,4 +205,4 @@ void tcp_conn::clean_conn() {
     close(fd);
 }
 
-}
+}  // namespace qc

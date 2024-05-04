@@ -1,9 +1,11 @@
 #ifndef __TCP_SERVER_HPP__
 #define __TCP_SERVER_HPP__
 
+#include <pthread.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include "event_loop.hpp"
+#include "tcp_conn.hpp"
 
 namespace qc {
 /**
@@ -33,6 +35,28 @@ private:
 
     /// @brief 再当前tcp_server中添加event_loop epoll事件机制,这里使用指针,解耦合
     event_loop* _loop;
+
+    /// @brief 下面是对tcp_conn的封装,我们将tcp_server封装再tcp_conn中,之后调用tcp_conn方便管理
+
+public:
+    /// @brief 新增一个链接
+    static void increase_conn(int connfd, tcp_conn *conn);
+    /// @brief 减掉一个链接
+    static void decrease_conn(int connfd);
+    /// @brief 获得当前链接的数量
+    /// @param[out] curr_conn 
+    static void get_conn_num(int *curr_conn);
+    /// @brief 全部在线的链接信息
+    /// @details 如果是动态数量的链接,使用二级指针更灵活;如果是静态数量的链接,使用数组更好一点
+    static tcp_conn **conns;
+
+private:
+    /// @brief 默认最大连接数量为2
+    #define MAX_CONNS 2
+    static int _max_conns;
+    static int _curr_conns;
+    /// @brief 互斥锁
+    static pthread_mutex_t _conns_mutex;
 };
 }  // namespace qc
 
