@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include "event_loop.hpp"
 #include "tcp_conn.hpp"
+#include "message.hpp"
+
 
 namespace qc {
 /**
@@ -37,6 +39,14 @@ private:
     event_loop* _loop;
 
     /// @brief 下面是对tcp_conn的封装,我们将tcp_server封装再tcp_conn中,之后调用tcp_conn方便管理
+
+public:
+    // ======== 消息分发路由 ========
+    void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr) {
+        router.register_msg_router(msgid, cb, user_data);
+    }
+
+    static msg_router router;
 
 public:
     /// @brief 新增一个链接

@@ -20,8 +20,10 @@ int tcp_server::_max_conns = 0;
 
 int tcp_server::_curr_conns = 0;
 
-// 静态初始化互斥锁
-pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
+msg_router tcp_server::router;
+
+    // 静态初始化互斥锁
+    pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
 // 动态初始化互斥锁 -->
 // 先声明一个pthread_mutex_t类型的互斥锁,之后再pthread_mutex_init();
 
@@ -174,5 +176,7 @@ tcp_server::~tcp_server() {
     //关闭套接字
     close(_sockfd);
 }
+
+
 
 }  // namespace qc

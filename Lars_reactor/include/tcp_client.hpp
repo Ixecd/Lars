@@ -21,6 +21,7 @@
 #include "event_loop.hpp"
 #include "io_buf.hpp"
 #include "message.hpp"
+#include "net_connection.hpp"
 
 namespace qc {
 
@@ -28,14 +29,14 @@ namespace qc {
  * @brief 封装Tcp连接客户端信息
  * @details 单纯为写客户端提供的接口
  */
-class tcp_client {
+class tcp_client : public net_connection{
 public:
 
     /// @brief 完成基本的socket初始化和connect操作
     tcp_client(event_loop *loop, const char *ip, uint16_t prot,
                const char *name);
     /// @brief 发送消息
-    int send_message(const char *data, int msglen, int msgid);
+    int send_message(const char *data, int msglen, int msgid) override;
     /// @brief 创建连接
     void do_connect();
     /// @brief 处理链接的读事件
@@ -51,8 +52,16 @@ public:
     /// @brief 断开连接
     ~tcp_client();
 
+    // 业务处理回调函数,有了消息路由就不需要了
+    
+    // void set_msg_callback(msg_callback msg_cb) { this->_msg_callback = msg_cb; }
+    void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr) {
+        _router.register_msg_router(msgid, cb, user_data);
+    }
+private:
+    // 处理消息的分发路由
+    msg_router _router;
 
-    void set_msg_callback(msg_callback msg_cb) { this->_msg_callback = msg_cb; }
 
 public:
     /// @brief 读buff

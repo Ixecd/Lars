@@ -106,9 +106,13 @@ void tcp_conn::do_read() {
         //头部处理完了，往后偏移MESSAGE_HEAD_LEN长度
         ibuf.pop(MESSAGE_HEAD_LEN);
 
+        printf("[tcp_server] : get data : %s\n", ibuf.data());
         //char *buf;
         //memcpy(buf, ibuf.data(), head.msglen);
         //printf("[tcp_server]: get message : %s\n", buf);
+        
+        // 消息包路由模式
+        tcp_server::router.call(head.msgid, head.msglen, ibuf.data(), this);
 
         //消息体处理完了,往后便宜msglen长度
         ibuf.pop(head.msglen);

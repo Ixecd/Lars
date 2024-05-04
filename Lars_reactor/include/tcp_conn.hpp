@@ -15,6 +15,7 @@
 #include "qc.hpp"
 #include "event_loop.hpp"
 #include "reactor_buf.hpp"
+#include "net_connection.hpp"
 
 
 namespace qc {
@@ -24,7 +25,7 @@ namespace qc {
  * @details 一个tcp_conn 对应两个独立的buff,可以有多个epoll实例,这里面是一个指针,指向管理这个tcp连接的epoll实例
  * 
  */
-class tcp_conn {
+class tcp_conn : public net_connection{
 public:
     /// @brief 初始化tcp_conn
     tcp_conn(int connfd, event_loop *loop);

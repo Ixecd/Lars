@@ -73,12 +73,24 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
                ntohs(cli->_server_addr.sin_port));
 
+        // ================ 发送msgid：1 =====
+        //建立连接成功之后，主动发送send_message
+        const char *msg = "hello lars!";
+        int msgid = 1;
+        cli->send_message(msg, strlen(msg), msgid);
+
+        // ================ 发送msgid：2 =====
+        const char *msg2 = "hello Aceld!";
+        msgid = 2;
+        cli->send_message(msg2, strlen(msg2), msgid);
+        // ================
+
         /// @brief 连接建立好就检测读事件
         loop->add_io_event(fd, read_callback, EPOLLIN, cli);
 
         ///
         //printf("before send_message\n");
-        cli->send_message("hello,lars!", 12, 1);
+        ///cli->send_message("hello,lars!", 12, 1);
         //printf("after send_message\n");
         //printf("cur cli->_obuf.m_length = %d\n", cli->_obuf.m_length);
         if (cli->_obuf.m_length != 0) {
@@ -231,8 +243,12 @@ int tcp_client::do_read() {
         _ibuf.pop(length);
     }
     // 调用业务回调函数
-    this->_msg_callback((const char*)&head, head.msglen, msgid,
-                       nullptr,nullptr);
+    // this->_msg_callback((const char*)&head, head.msglen, msgid,
+    //                    nullptr,nullptr);
+
+    // 消息路由分发
+    this->_router.call(msgid, length, _ibuf.m_data + _ibuf.m_head, this);
+
 
     //重置head指针
     _ibuf.adjust();

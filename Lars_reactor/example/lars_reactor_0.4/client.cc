@@ -2,12 +2,13 @@
 #include <string.h>
 #include <functional>
 #include "tcp_client.hpp"
+#include "net_connection.hpp"
 
 using namespace qc;
 //客户端业务
 // msg_callback const char *data, uint32_t len, int msgid, tcp_conn *conn, void *user_data
 // 这里busi类型如果是msg_callback类型,得返回
-void busi(const char *data, uint32_t len, int msgid, tcp_conn *conn,
+void busi(const char *data, uint32_t len, int msgid, net_connection *conn,
                   void *user_data) {
     printf("recv server: [%s]\n", data);
     printf("msgid: [%d]\n", msgid);
