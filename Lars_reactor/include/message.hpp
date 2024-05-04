@@ -31,7 +31,6 @@ struct msg_head {
 
 // msg 业务回调函数原型
 /// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
-class tcp_client;
 using msg_callback = std::function<void(const char *data, uint32_t len, int msgid, net_connection *client, void *user_data)>;
 
 // ============= 消息分发路由机制 =============

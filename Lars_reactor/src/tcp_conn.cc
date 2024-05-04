@@ -21,12 +21,14 @@
 
 #include "message.hpp"
 #include "tcp_server.hpp"
+#include "net_connection.hpp"
+
 namespace qc {
 
 /// @brief 回显业务
 //回显业务
 void callback_busi(const char *data, uint32_t len, int msgid, void *args,
-                   tcp_conn *conn) {
+                   net_connection *conn) {
     conn->send_message(data, len, msgid);
 }
 
@@ -101,7 +103,8 @@ void tcp_conn::do_read() {
         // 2.2 再根据头长度读取数据体，然后针对数据体处理 业务
         // 添加写IO,触发回调函数
         // 回显数据,触发client的业务回调函数
-        _loop->add_io_event(_connfd, conn_wt_callback, EPOLLOUT, this);
+        
+        // _loop->add_io_event(_connfd, conn_wt_callback, EPOLLOUT, this);
 
         //头部处理完了，往后偏移MESSAGE_HEAD_LEN长度
         ibuf.pop(MESSAGE_HEAD_LEN);
@@ -113,6 +116,12 @@ void tcp_conn::do_read() {
         
         // 消息包路由模式
         tcp_server::router.call(head.msgid, head.msglen, ibuf.data(), this);
+
+        // 回显
+        //if (head.msgid == 1)
+        //    callback_busi(ibuf.data(), strlen(ibuf.data()), head.msgid, nullptr, this);
+        // this->send_message(ibuf.data(), strlen(ibuf.data()),
+        //                                  head.msgid);
 
         //消息体处理完了,往后便宜msglen长度
         ibuf.pop(head.msglen);
@@ -132,7 +141,9 @@ void tcp_conn::do_write() {
     /**
      * @brief 暂时在这里整一下
      */
-    this->send_message("hello,Lars!", 12, 2);
+    // this->send_message("hello,Lars!", 12, 2);
+
+    printf("cur server obuf.length() = %d\n", obuf.length());
 
     //只要obuf中有数据就写
     while (obuf.length()) {
@@ -159,6 +170,8 @@ void tcp_conn::do_write() {
 //发送消息的方法
 int tcp_conn::send_message(const char *data, int msglen, int msgid) {
     bool active_epollout = false;
+    printf("tcp_conn::send_message start...\n");
+    printf("cur obuf.length() = %d\n", obuf.length());
     if (obuf.length() == 0) {
         //如果现在已经数据都发送完了，那么是一定要激活写事件的
         //如果有数据，说明数据还没有完全写完到对端，那么没必要再激活等写完再激活
@@ -184,6 +197,8 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
         obuf.pop(MESSAGE_HEAD_LEN);
         return -1;
     }
+
+    printf("call backing, and the obuf.length() = %d\n", obuf.length());
 
     if (active_epollout == true) {
         //激活EPOLLOUT写事件

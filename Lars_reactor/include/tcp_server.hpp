@@ -1,6 +1,8 @@
 #ifndef __TCP_SERVER_HPP__
 #define __TCP_SERVER_HPP__
 
+#define MAX_CONNS 2
+
 #include <pthread.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -62,7 +64,6 @@ public:
 
 private:
     /// @brief 默认最大连接数量为2
-    #define MAX_CONNS 2
     static int _max_conns;
     static int _curr_conns;
     /// @brief 互斥锁

@@ -167,10 +167,10 @@ int tcp_client::send_message(const char *data, int msglen, int msgid) {
     msg_head head;
     head.msgid = msgid;
     head.msglen = msglen;
-
+    // 先是头
     memcpy(_obuf.m_data + _obuf.m_length, &head, MESSAGE_HEAD_LEN);
     _obuf.m_length += MESSAGE_HEAD_LEN;
-
+    // 再是体
     memcpy(_obuf.m_data + _obuf.m_length, data, msglen);
     _obuf.m_length += msglen;
 
@@ -225,6 +225,7 @@ int tcp_client::do_read() {
     // 2. 解包
     msg_head head;
     int msgid, length;
+    char *buf;
     while (_ibuf.m_length >= MESSAGE_HEAD_LEN) {
         memcpy(&head, _ibuf.m_data + _ibuf.m_head, MESSAGE_HEAD_LEN);
         msgid = head.msgid;
@@ -239,6 +240,9 @@ int tcp_client::do_read() {
         //头部读取完毕
         _ibuf.pop(MESSAGE_HEAD_LEN);
 
+        // 消息路由分发
+        this->_router.call(msgid, length, _ibuf.m_data + _ibuf.m_head, this);
+
         //数据区域处理完毕
         _ibuf.pop(length);
     }
@@ -246,8 +250,7 @@ int tcp_client::do_read() {
     // this->_msg_callback((const char*)&head, head.msglen, msgid,
     //                    nullptr,nullptr);
 
-    // 消息路由分发
-    this->_router.call(msgid, length, _ibuf.m_data + _ibuf.m_head, this);
+    
 
 
     //重置head指针
