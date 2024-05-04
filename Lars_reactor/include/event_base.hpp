@@ -18,6 +18,7 @@ namespace qc {
 
 class event_loop;
 
+// event_loop *_loop, int fd, void *args
 using io_callback = std::function<void(event_loop*, int, void*)>;
 
 class io_event {

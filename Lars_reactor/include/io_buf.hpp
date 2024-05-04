@@ -37,7 +37,7 @@ public:
     int m_capacity;
     /// @brief buffer有效数据长度
     int m_length;
-    /// @brief 未处理数据的头部位置索引
+    /// @brief 未处理数据的头部位置索引,head之前的都是处理过的
     int m_head;
     /// @brief 当前io_buf所保存的数据地址
     char *m_data;

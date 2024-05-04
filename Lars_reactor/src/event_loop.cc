@@ -21,7 +21,7 @@ event_loop::event_loop() {
 }
 
 // 阻塞循环处理函数
-// 这里执行完一次必须从epoll中将相应的事件删除,要不然就会持续监听,导致tcp_conn那边的test_conn执行两次
+// read事件一直监听,write事件触发一次删除一次
 void event_loop::event_process() {
     while (true) {
         io_event_map_it ev_it;

@@ -21,16 +21,16 @@
 namespace qc {
 
 #define MESSAGE_HEAD_LEN 8
-#define MESSAGE_LENGTH_LIMIT (65535 - MESSAGE_HEAD_LEN)
+#define MESSAGE_LENGTH_LIMIT (65535 - MESSAGE_HEAD_LEN) //2^16 -> 两个字节
 
-/// @brief 用来解决tcp粘包问题
+/// @brief 用来解决tcp粘包问题 -> id + len 一共8个字节
 struct msg_head {
     int msgid;
     int msglen;
 };
 
 // msg 业务回调函数原型
-/// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数
+/// @brief 信息回调函数 用户开发者自己在业务上注册的回调业务函数 -> net_connection -> tcp_client - tcp_conn(tcp_server)
 using msg_callback = std::function<void(const char *data, uint32_t len, int msgid, net_connection *client, void *user_data)>;
 
 // ============= 消息分发路由机制 =============

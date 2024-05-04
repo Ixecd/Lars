@@ -19,7 +19,7 @@
 namespace qc {
 
 /**
- * @brief 提供给业务层
+ * @brief 提供给业务层,封装io_buf
  */
 class reactor_buf {
 public:

@@ -145,7 +145,7 @@ io_buf *buf_pool::alloc_buf(int N) {
     }
     pthread_mutex_lock(&_mutex);
     if (_pool[index] == nullptr) {
-        if (_total_mem + index / 1024 >= EXTRA_MEM_LIMIT) {
+        if (_total_mem + index / 1024 >= MAX_MEM_LIMIT) {
             fprintf(stderr, "already use too many memory!\n");
             exit(1);
         }

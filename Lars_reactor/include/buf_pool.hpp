@@ -19,7 +19,7 @@
 #include "singleton.hpp"
 
 // 总内存池最大限制 Kb 5GB
-#define EXTRA_MEM_LIMIT (5U * 1024 * 1024)
+#define MAX_MEM_LIMIT (5U * 1024 * 1024)
 
 namespace qc {
 /// @brief 每个key下面挂一个io_buf链表,会预先开辟好一定数量的内存块,上层取一块,就从这里头去掉一块,用完再放回来

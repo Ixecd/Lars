@@ -29,7 +29,7 @@ void reactor_buf::pop(int len) {
     _buf->pop(len);
 
     //printf("cur _buf->length = %d\n", _buf->m_length);
-    //当此时_buf的可用长度已经为0
+    //如果此时_buf的可用长度为0
     if (_buf->m_length == 0) {
         //将_buf重新放回buf_pool中
         buf_pool::instance()->revert(_buf);
@@ -65,9 +65,10 @@ int input_buf::read_data(int fd) {
         //如果io_buf可用，判断是否够存
         // 这里_buf->m_head == 0 表示所有的数据都已经处理完了.
         // _buf->m_head != 表示有数据还没有处理,m_head指向没有处理的数据
+        // 读的时候m_head必须是0 意味着之前所有数据都被处理了
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < (int)need_read) {
-            //不够存，内存池申请
+            //不够存,内存池申请,申请一块更大的
             io_buf *new_buf = buf_pool::instance()->alloc_buf(need_read + _buf->m_length);
             if (new_buf == NULL) {
                 fprintf(stderr, "no ilde buf for alloc\n");
@@ -131,8 +132,7 @@ int output_buf::send_data(const char *data, int datalen) {
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < datalen) {
             //不够存，冲内存池申请
-            io_buf *new_buf =
-                buf_pool::instance()->alloc_buf(datalen + _buf->m_length);
+            io_buf *new_buf = buf_pool::instance()->alloc_buf(datalen + _buf->m_length);
             if (new_buf == NULL) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;
