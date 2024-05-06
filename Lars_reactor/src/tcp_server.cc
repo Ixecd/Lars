@@ -115,7 +115,10 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     qc_assert(conns);
     // printf("cour _max_conns = %d\n", _max_conns);
 
-    // 7 创建线程池
+    // 7 创建线程池,从配置文件中获取
+    int threads = 3;
+    _thread_pool = new thread_pool(threads);
+    qc_assert(_thread_pool != nullptr);
 
     // 8 注册_socket读事件-->accept处理
     _loop->add_io_event(_sockfd, accept_callback, EPOLLIN, this);
@@ -145,25 +148,43 @@ void tcp_server::do_accept() {
             }
         } else {
             // accept succ!
+            // ======== 由线程池处理 ========
+            if (_thread_pool != nullptr) {
+                // 启动多线程模式
+                thread_queue<task_msg> *queue = _thread_pool->get_thread();
+
+                task_msg task;
+
+                task.type = task_msg::NEW_CONN;
+
+                task.connfd = connfd;
+
+                queue->send(task);
+            } else {
+                // 单线程模式
+                tcp_conn *conn = new tcp_conn(connfd, _loop);
+                qc_assert(conn != nullptr);
+                printf("[tcp server]: get new connection succ!\n");
+            }
 
             // ======== 加入链接管理 ========
-            int cur_conns;
-            get_conn_num(&cur_conns);
-            // printf("after get_conn_num, the num = %d\n", cur_conns);
-            if (cur_conns >= _max_conns) {
-                fprintf(stderr, "so many connections, max = %d\n", _max_conns);
-                close(connfd);
-            } else {
-                //启动单线程模式
-                tcp_conn *conn = new tcp_conn(connfd, _loop);
-                if (conn == NULL) {
-                    fprintf(stderr, "new tcp_conn error\n");
-                    exit(1);
-                }
-                // 这里是否应该将其加入到数组中? 不需要,要降低耦合(设计到锁),在tcp_conn中increase_conn即可
-                //conns[connfd] = conn;
-                printf("[tcp_server]: get new connection succ!\n");
-            }
+            // int cur_conns;
+            // get_conn_num(&cur_conns);
+            // // printf("after get_conn_num, the num = %d\n", cur_conns);
+            // if (cur_conns >= _max_conns) {
+            //     fprintf(stderr, "so many connections, max = %d\n", _max_conns);
+            //     close(connfd);
+            // } else {
+            //     //启动单线程模式
+            //     tcp_conn *conn = new tcp_conn(connfd, _loop);
+            //     if (conn == NULL) {
+            //         fprintf(stderr, "new tcp_conn error\n");
+            //         exit(1);
+            //     }
+            //     // 这里是否应该将其加入到数组中? 不需要,要降低耦合(设计到锁),在tcp_conn中increase_conn即可
+            //     //conns[connfd] = conn;
+            //     printf("[tcp_server]: get new connection succ!\n");
+            // }
             break;
         }
     }

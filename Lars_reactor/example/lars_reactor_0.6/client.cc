@@ -8,7 +8,7 @@ using namespace qc;
 // 客户端回调函数
 void busi(const char *data, uint32_t len, int msgid, net_connection *conn, void *args) {
     // get data from server
-    printf("[client] get data : %s", data);
+    printf("[client] get data : %s\n", data);
     printf("[msgid] = [%d]\n", msgid);
     printf("[len] = [%d]\n", len);
 }

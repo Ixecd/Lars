@@ -7,6 +7,7 @@
 #include "event_loop.hpp"
 #include "tcp_conn.hpp"
 #include "message.hpp"
+#include "thread_pool.hpp"
 
 
 namespace qc {
@@ -88,6 +89,10 @@ private:
     static int _curr_conns;
     /// @brief 互斥锁
     static pthread_mutex_t _conns_mutex;
+
+private:
+    thread_pool *_thread_pool;
+
 };
 }  // namespace qc
 
