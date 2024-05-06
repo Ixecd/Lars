@@ -177,6 +177,13 @@ tcp_server::~tcp_server() {
     close(_sockfd);
 }
 
+// --- Hook ---
 
+// 创建链接之后要触发的回调函数
+conn_callback tcp_server::conn_start_cb = nullptr;
+void* tcp_server::conn_start_cb_args = nullptr;
+// 销毁链接之后要触发的回调函数
+conn_callback tcp_server::conn_close_cb = nullptr;
+void* tcp_server::conn_close_cb_args = nullptr;
 
 }  // namespace qc

@@ -48,7 +48,7 @@ public:
     }
 
     // 给一个消息ID注册一个对应的回调业务函数
-    int register_msg_router(int msgid, msg_callback msg_cb, void *user_data) {
+    int register_msg_router(int msgid, msg_callback msg_cb, void *user_data = nullptr) {
         if (_router.find(msgid) != _router.end()) return -1;
         printf("add msg cb msgid = %d\n", msgid);
         _router[msgid] = msg_cb;
