@@ -10,10 +10,17 @@
  */
 #pragma once
 
+#include <functional>
+
 namespace qc {
 
+// 创建Hook机制
+class net_connection;
+using conn_callback = std::function<void(net_connection*, void*)>;
 class net_connection{
 public:
+    net_connection() {}
+
     virtual int send_message(const char *data, int datalen, int msgid) = 0;
 };
 

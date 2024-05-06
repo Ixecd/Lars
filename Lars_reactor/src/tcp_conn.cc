@@ -56,6 +56,11 @@ tcp_conn::tcp_conn(int connfd, event_loop *loop) {
     setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op,
                sizeof(op));  // need netinet/in.h netinet/tcp.h
 
+    // 2.5 如果用户注册了Hook就立即调用
+    if (tcp_server::conn_start_cb) {
+        tcp_server::conn_start_cb(this, tcp_server::conn_start_cb_args);
+    }
+
     // 3. 将该链接的读事件让event_loop监控
     _loop->add_io_event(_connfd, conn_rd_callback, EPOLLIN, this);
 
@@ -211,6 +216,12 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
 //销毁tcp_conn
 void tcp_conn::clean_conn() {
     //链接清理工作
+
+    // 0 如果注册了连接销毁Hook函数
+    if (tcp_server::conn_close_cb) {
+        tcp_server::conn_close_cb(this, tcp_server::conn_close_cb_args);
+    }
+
     // 1 将该链接从tcp_server摘除掉
     tcp_server::decrease_conn(_connfd);
     // 2 将该链接从event_loop中摘除

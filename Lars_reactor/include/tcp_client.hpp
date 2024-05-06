@@ -58,10 +58,27 @@ public:
     void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr) {
         _router.register_msg_router(msgid, cb, user_data);
     }
-private:
+public:
     // 处理消息的分发路由
     msg_router _router;
 
+public:
+    // --------- Hook ---------
+    void set_conn_start(conn_callback cb, void *args = nullptr) {
+        _conn_start_cb = cb;
+        _conn_start_cb_args = args;
+    }
+
+    void set_conn_close(conn_callback cb, void *args = nullptr) {
+        _conn_close_cb = cb;
+        _conn_start_cb_args = args;
+    }
+
+    conn_callback _conn_start_cb;
+    void * _conn_start_cb_args;
+
+    conn_callback _conn_close_cb;
+    void * _conn_close_cb_args;
 
 public:
     /// @brief 读buff

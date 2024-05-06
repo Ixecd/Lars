@@ -1,8 +1,6 @@
 #ifndef __TCP_SERVER_HPP__
 #define __TCP_SERVER_HPP__
 
-#define MAX_CONNS 2
-
 #include <pthread.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -62,7 +60,29 @@ public:
     /// @details 如果是动态数量的链接,使用二级指针更灵活;如果是静态数量的链接,使用数组更好一点
     static tcp_conn **conns;
 
+public:
+    // ------------ 下面是Hook部分 ------------
+    /// 客户端的Hook是自己的,服务端的Hook只有一份.
+    /// 设置链接创建hook函数
+    static void set_conn_start(conn_callback cb, void *args = nullptr) {
+        conn_start_cb = cb;
+        conn_start_cb_args = args;
+    }
+    /// 设置链接销毁hook函数
+    static void set_conn_close(conn_callback cb, void *args = nullptr) {
+        conn_close_cb = cb;
+        conn_close_cb_args = args;
+    }
+    // 创建链接之后要触发的回调函数
+    static conn_callback conn_start_cb;
+    static void *conn_start_cb_args;
+    // 销毁链接之后要触发的回调函数
+    static conn_callback conn_close_cb;
+    static void *conn_close_cb_args;
+
 private:
+
+#define MAX_CONNS 2
     /// @brief 默认最大连接数量为2
     static int _max_conns;
     static int _curr_conns;

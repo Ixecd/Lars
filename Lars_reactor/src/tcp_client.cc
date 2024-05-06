@@ -73,6 +73,11 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
                ntohs(cli->_server_addr.sin_port));
 
+        // --- 调用开发者注册的创建的Hook链接
+        if (cli->_conn_start_cb) {
+            cli->_conn_start_cb(cli, cli->_conn_start_cb_args);
+        }
+
         // ================ 发送msgid：1 =====
         //建立连接成功之后，主动发送send_message
         const char *msg = "hello lars!";
@@ -123,6 +128,13 @@ void tcp_client::do_connect() {
     if (ret == 0) {
         //链接创建成功
         connected = true;
+
+        // --- 处理Hook
+        if (_conn_start_cb) {
+            _conn_start_cb(this, _conn_start_cb_args);
+        }
+
+
         //注册读回调
         _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
         //如果写缓冲去有数据，那么也需要触发写回调
@@ -304,6 +316,9 @@ void tcp_client::clean_conn() {
 
     connected = false;
 
+    if (_conn_close_cb) {
+        _conn_close_cb(this, _conn_close_cb_args);
+    }
 
     //重新连接
     this->do_connect();
