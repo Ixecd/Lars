@@ -8,6 +8,8 @@
 
 namespace qc {
 
+typedef unsigned long long ull;
+
 #define qc_assert(expr)                                                      \
     do {                                                                     \
         if (!(expr)) {                                                       \
