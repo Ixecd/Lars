@@ -98,3 +98,42 @@ eventLoop/thread Tcp Server Model
     分为外挂式和内侵式,修改代码,本质上根据符号表将系统中的系统调用修改为程序员自己编写的函数(外挂式)
     直接修改内核源码(内侵式)
 
+14. 关于pthread_mutex_t 的初始化
+    原型：
+        int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
+        可以通过attr 设置一些锁属性
+    锁类型：
+        PTHREAD_MUTEX_NORMAL： 这是默认的锁类型，没有死锁检测和错误检测。
+        PTHREAD_MUTEX_ERRORCHECK： 这种类型的锁支持错误检测，当同一线程尝试重复加锁时会返回错误。
+        PTHREAD_MUTEX_RECURSIVE： 这种类型的锁支持递归加锁，同一线程可以多次加锁，每次加锁后需要相同次数的解锁。
+        PTHREAD_MUTEX_DEFAULT： 与 PTHREAD_MUTEX_NORMAL 相同。
+        使用场景：
+            如果你希望能够在同一线程中多次获取锁而不产生死锁，可以使用 PTHREAD_MUTEX_RECURSIVE。
+            如果你希望在调试时能够捕获到重复加锁的错误，可以使用 PTHREAD_MUTEX_ERRORCHECK。
+        锁的进程共享属性：
+            PTHREAD_PROCESS_PRIVATE： 锁只在创建它的进程内有效，即不跨进程共享。
+            PTHREAD_PROCESS_SHARED： 锁可以跨进程共享。
+        使用场景：
+            如果需要在多个进程间共享锁，可以使用 PTHREAD_PROCESS_SHARED。
+
+    这些特定的锁属性可以通过 pthread_mutexattr_settype()、pthread_mutexattr_setpshared() 等函数进行设置。注意这些函数
+    是在调用pthread_mutex_init()之前。
+    eg:
+        pthread_mutex_t my_mutex;
+        pthread_mutexattr_t attr;
+
+        // 初始化属性对象
+        pthread_mutexattr_init(&attr);
+        // 设置属性为错误检测类型
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+        // 初始化互斥锁并使用属性对象
+        pthread_mutex_init(&my_mutex, &attr);
+
+    静态初始化 PTHREAD_MUTEX_INITIALIZER(直接就定死了,属性就是PTHREAD_MUTEX_NORMAL)
+    动态初始化 pthread_mutex_t mutex; pthread_mutex_init(&mutex, nullptr);(调用完init就定死了)
+    区别：
+        时机： 静态初始化是在编译时进行的，而动态初始化是在运行时进行的。
+        方式： 静态初始化是通过直接赋值进行的，而动态初始化是通过调用 pthread_mutex_init() 函数进行的。
+        适用性： 静态初始化适用于那些在编译时就可以确定初值的情况，而动态初始化适用于在运行时才能确定初值的情况，或者需要动态配置参数的情况。
+
+    
