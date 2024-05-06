@@ -19,7 +19,7 @@
 namespace qc {
 
 
-// 尽量不要在匿名联合体中使用class
+// 不要在匿名联合体中使用class
 // using task_cb = std::function<void(event_loop*, void*)>;
 
 struct task_msg {
@@ -38,6 +38,7 @@ struct task_msg {
         int connfd;  // 4
 
         struct {
+            // DO NOT USE std::function<void()>
             void (*task_cb)(event_loop *loop, void *args); // 8
             void* args;  // 8
         };

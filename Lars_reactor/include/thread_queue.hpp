@@ -32,6 +32,8 @@ public:
     thread_queue() {
         _loop = nullptr;
         /// @brief 创建一个事件文件描述符_evfd,用于在后续的程序中进行事件通知,并设置了非阻塞的读取模式。
+        ///        主要用来在多线程或多进程中进行事件通知和同步
+        ///         前面这个参数是计数器,read减少,write增加,计数器的值发生变化的时候,就可以出发事件.
         _evfd = eventfd(0, EFD_NONBLOCK);
 
         qc_assert(_evfd != -1);

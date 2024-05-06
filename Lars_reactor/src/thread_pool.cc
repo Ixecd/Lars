@@ -27,6 +27,8 @@ void deal_task_message(event_loop *loop, int fd, void *args) {
             printf("[thread] : get new connection succ!\n");
         } else if (task.type == task_msg::NEW_TASK) {
             // TODO
+
+            
         } else {
             fprintf(stderr, "unknow task!\n");
         }
