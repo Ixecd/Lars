@@ -145,6 +145,7 @@ bool config_file::GetBool(const std::string& section, const std::string& key, bo
     return default_value;
 }
 
+// [section]
 bool config_file::isSection(std::string line, std::string& section) {
     section = trim(line);
     if (section.empty() || section.length() <= 2) return false;
@@ -157,6 +158,7 @@ bool config_file::isSection(std::string line, std::string& section) {
     return true;
 }
 
+/// @brief string -> long long 
 unsigned config_file::parseNumber(const std::string& s) {
     std::istringstream iss(s);
     long long v = 0;
