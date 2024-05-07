@@ -55,7 +55,7 @@ thread_pool::thread_pool(size_t threads) {
     _index = 0;
     _queues = nullptr;
     _thread_cnt = threads;
-    if (_thread_cnt <= 0) fprintf(stderr, "threads = 0!\n");
+    if (_thread_cnt <= 0) fprintf(stderr, "threads <= 0!\n");
 
     // 任务队列的个数要和线程池中线程的数量一致
     _queues = new thread_queue<task_msg>*[threads];
