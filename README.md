@@ -147,3 +147,59 @@ eventLoop/thread Tcp Server Model
 
 16. 关于std::function
     本质上是标准库中的一个模板类,不能在一个匿名联合(anonymous union)的匿名结构体中定义具有构造函数、析构函数、拷贝构造函数的成员,因为编译器无法知道什么时候调用这些成员的析构函数.
+
+17. 配置文件格式如下：
+    [reactor]
+    ip = 127.0.0.1
+    port = 7777
+    maxConn = 1024
+    thredNum = 5
+
+18. 关于sstream
+    istringstream ->  将字符串作为输入流
+        eg:
+            std::string str = "123 456 789"
+            std::istringstream ss(str)
+            int num1, num2, num3;
+            iss >> num1 >> num2 >> num3;
+                    123     456     789
+    ostringstream -> 将数据写入字符串流,可以将数据格式化为字符串
+        eg:
+            std::ostringstream oss;
+            int num1 = 123, num2 = 456, num3 = 789;
+            oss << num1 << " " << num2 << " " << num3;
+            std::string str = oss.str(); // str = 123 456 789
+    stringstream  -> istringstream 和 ostringstream的组合
+        eg:
+            std::string str = "123 456 789"
+            std::stringstream ss(str);
+            可以in 也可以out
+
+19. 关于fstream
+    用于简单的读取和写入文件
+    std::ifstream 类似于从文件中读取数据,继承自std::istream类
+        eg:
+            std::ifstream inputFile("input.txt");
+            if (!inputFile.is_open()) {
+                fprintf(stderr, "input.txt open failed\n");
+            }
+
+            std::ofstream outputFile("output.txt");
+            if (!outputFile.is_open()) {
+                cerr << "output.txt open failed\n";
+            }
+
+            // 读取输入文件内容并写入输出文件
+            std::string line;
+            while (std::getline(inputFile, line)) {
+                outputFile << line << std::endl;
+            }
+    std::ofstream 类似于从文件中写入数据,继承自std::ostream类
+
+20. 在string或者vector中
+    使用at比[]更加安全,前者会检查越界报错,后者越界的话会UB(未定义的行为)
+    
+
+
+
+
