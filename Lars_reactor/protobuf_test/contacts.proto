@@ -1,0 +1,18 @@
+// 首行：语法指定行
+syntax = "proto3";
+package contacts;
+
+// 随便定义一个
+message StudentInfo {
+  int32 id = 1;   // ID 
+  string str = 2;// str
+  int32 opt = 3;  // optional field
+}
+
+// 定义联系人message
+message PeopleInfo {
+  string name = 1;  // 姓名
+  int32 age = 2;    // 年龄  
+}
+
+
