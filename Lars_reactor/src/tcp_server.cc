@@ -64,12 +64,8 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     //忽略一些信号 SIGHUP, SIGPIPE
     // SIGPIPE:如果客户端关闭，服务端再次write就会产生
     // SIGHUP:如果terminal关闭，会给当前进程发送该信号
-    if (signal(SIGHUP, SIG_IGN) == SIG_ERR) {
-        fprintf(stderr, "signal ignore SIGHUP\n");
-    }
-    if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-        fprintf(stderr, "signal ignore SIGPIPE\n");
-    }
+    qc_assert(signal(SIGHUP, SIG_IGN) != SIG_ERR);
+    qc_assert(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
 
     // 1. 创建socket
     _sockfd = socket(AF_INET, SOCK_STREAM | /*SOCK_NONBLOCK |*/ SOCK_CLOEXEC,
