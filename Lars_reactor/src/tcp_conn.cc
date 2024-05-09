@@ -91,8 +91,7 @@ void tcp_conn::do_read() {
     while (ibuf.length() >= MESSAGE_HEAD_LEN) {
         // 2.1 读取msg_head头部，固定长度MESSAGE_HEAD_LEN
         memcpy(&head, ibuf.data(), MESSAGE_HEAD_LEN);
-        printf("cur head.msgid = %d, head.msglen = %d\n", head.msgid,
-               head.msglen);
+        // printf("cur head.msgid = %d, head.msglen = %d\n", head.msgid, head.msglen);
         if (head.msglen > MESSAGE_LENGTH_LIMIT || head.msglen < 0) {
             fprintf(stderr, "data format error, need close, msglen = %d\n",
                     head.msglen);
@@ -148,7 +147,7 @@ void tcp_conn::do_write() {
      */
     // this->send_message("hello,Lars!", 12, 2);
 
-    printf("cur server obuf.length() = %d\n", obuf.length());
+    // printf("cur server obuf.length() = %d\n", obuf.length());
 
     //只要obuf中有数据就写
     while (obuf.length()) {
@@ -175,8 +174,8 @@ void tcp_conn::do_write() {
 //发送消息的方法
 int tcp_conn::send_message(const char *data, int msglen, int msgid) {
     bool active_epollout = false;
-    printf("tcp_conn::send_message start...\n");
-    printf("cur obuf.length() = %d\n", obuf.length());
+    // printf("tcp_conn::send_message start...\n");
+    // printf("cur obuf.length() = %d\n", obuf.length());
     if (obuf.length() == 0) {
         //如果现在已经数据都发送完了，那么是一定要激活写事件的
         //如果有数据，说明数据还没有完全写完到对端，那么没必要再激活等写完再激活
@@ -203,7 +202,7 @@ int tcp_conn::send_message(const char *data, int msglen, int msgid) {
         return -1;
     }
 
-    printf("call backing, and the obuf.length() = %d\n", obuf.length());
+    //  printf("call backing, and the obuf.length() = %d\n", obuf.length());
 
     if (active_epollout == true) {
         //激活EPOLLOUT写事件

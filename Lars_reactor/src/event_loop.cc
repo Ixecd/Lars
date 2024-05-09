@@ -57,6 +57,9 @@ void event_loop::event_process() {
                 }
             }
         }
+
+        // 执行任务函数在每次event_loop执行完一组fd之后触发一次额外的处理任务函数
+        this->execute_ready_tasks();
     }
 }
 
@@ -137,6 +140,22 @@ void event_loop::del_io_event(int fd, int mask) {
         int rt = epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event);
         qc_assert(rt != -1);
     }
+}
+
+// =========== 一般任务处理 ===========
+void event_loop::add_task(task_func func, void *args) {
+    task_func_pair func_pair(func, args);
+    _ready_tasks.push_back(func_pair);
+}
+
+void event_loop::execute_ready_tasks() {
+    // std::vector<task_func_pair>::iterator it;
+    for (auto it = _ready_tasks.begin(); it != _ready_tasks.end(); ++it) {
+        task_func func = it->first;
+        void *args = it->second;
+        func(this, args);
+    }
+    _ready_tasks.clear();
 }
 
 }  // namespace qc

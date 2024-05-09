@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "thread_pool.hpp"
 #include "event_loop.hpp"
 #include "tcp_conn.hpp"
@@ -8,6 +9,7 @@ namespace qc {
 /**
  * @brief 一旦有task任务过来,就会执行这个函数,这个函数时处理task消息业务的主流程
  *        只要有人调用thread_queue::send()方法就会触发这个函数
+ * @details 添加NEW_TASKS之后在这里应该处理一下
  */
 void deal_task_message(event_loop *loop, int fd, void *args) {
     thread_queue<task_msg>* queue = (thread_queue<task_msg>*) args;
@@ -27,8 +29,8 @@ void deal_task_message(event_loop *loop, int fd, void *args) {
             printf("[thread] : get new connection succ!\n");
         } else if (task.type == task_msg::NEW_TASK) {
             // TODO
-
-            
+            // 直接将这个task加入到epoll中即可
+            loop->add_task(task.task_cb, task.args);    
         } else {
             fprintf(stderr, "unknow task!\n");
         }
@@ -44,6 +46,7 @@ void *thread_main(void *args) {
     qc_assert(loop != nullptr);
 
     queue->set_loop(loop);
+    // 后面的参数时任务队列
     queue->set_callback(deal_task_message, queue);
 
     loop->event_process();
@@ -51,13 +54,30 @@ void *thread_main(void *args) {
     return nullptr;
 }
 
+// ===== 处理异步任务 =====
+void thread_pool::send_task(task_func func, void *args) {
+    task_msg task;
+
+    // 给当前每个thread都发送当前任务
+    for (int i = 0; i < _thread_cnt; ++i) {
+        task.type = task_msg::NEW_TASK;
+        task.task_cb = func;
+        task.args = args;
+        // 一个thread对应一个消息队列,这里由于要发送给所有线程
+        // 要拿到所有消息队列
+        thread_queue<task_msg> *queue = _queues[i];
+        queue->send(task);
+    }
+}
+
 thread_pool::thread_pool(size_t threads) {
+    qc_assert(threads > 0);
     _index = 0;
     _queues = nullptr;
     _thread_cnt = threads;
-    if (_thread_cnt <= 0) fprintf(stderr, "threads <= 0!\n");
 
     // 任务队列的个数要和线程池中线程的数量一致
+    // printf("cur threads = %d \n", threads);
     _queues = new thread_queue<task_msg>*[threads];
     _tids = new pthread_t[threads];
 
@@ -66,6 +86,7 @@ thread_pool::thread_pool(size_t threads) {
         // 创建一个线程
         printf("create %ld thread\n", i);
         // 给当前线程创建一个任务消息队列
+        // 一个thread_queue<task_msg>中单独有一个evfd和loop
         _queues[i] = new thread_queue<task_msg>();
         qc_assert(_queues[i] != nullptr);
 
@@ -78,6 +99,7 @@ thread_pool::thread_pool(size_t threads) {
 }
 
 thread_queue<task_msg>* thread_pool::get_thread() {
+    // 这里_index一直是0??一直返回第一个任务队列.
     if (_index == _thread_cnt) _index = 0;
     return _queues[_index];
 }

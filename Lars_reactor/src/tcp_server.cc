@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config_file.hpp"
 #include "qc.hpp"
 #include "reactor_buf.hpp"
 #include "tcp_conn.hpp"
@@ -22,8 +23,8 @@ int tcp_server::_curr_conns = 0;
 
 msg_router tcp_server::router;
 
-    // 静态初始化互斥锁
-    pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
+// 静态初始化互斥锁
+pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
 // 动态初始化互斥锁 -->
 // 先声明一个pthread_mutex_t类型的互斥锁,之后再pthread_mutex_init();
 
@@ -70,10 +71,8 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     // 1. 创建socket
     _sockfd = socket(AF_INET, SOCK_STREAM | /*SOCK_NONBLOCK |*/ SOCK_CLOEXEC,
                      IPPROTO_TCP);
-    if (_sockfd == -1) {
-        fprintf(stderr, "tcp_server::socket()\n");
-        exit(1);
-    }
+
+    qc_assert(_sockfd != -1);
 
     // 2 初始化地址
     struct sockaddr_in server_addr;
@@ -89,30 +88,26 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     }
 
     // 3 绑定端口
-    if (bind(_sockfd, (const struct sockaddr *)&server_addr,
-             sizeof(server_addr)) < 0) {
-        fprintf(stderr, "bind error\n");
-        exit(1);
-    }
+    qc_assert(bind(_sockfd, (const struct sockaddr *)&server_addr, sizeof(server_addr)) >= 0);
 
     // 4 监听ip端口
-    if (listen(_sockfd, 500) == -1) {
-        fprintf(stderr, "listen error\n");
-        exit(1);
-    }
+    qc_assert(listen(_sockfd, 500) != -1);
 
     // 5 将_sockfd添加到event_loop中
     _loop = loop;
 
     // 6 ========== 链接管理 ===========
-    _max_conns = MAX_CONNS;
-    // 这里动态的创建链接信息数组, +3 是因为stdin, stdout, stderr已经被占用,fd 一定是从3开始
-    conns = new tcp_conn*[_max_conns + 3]; 
+    _max_conns = config_file::GetInstance()->GetNumber("reactor", "maxConn", 1024);
+    // 这里动态的创建链接信息数组, +3 是因为stdin, stdout, stderr已经被占用,fd
+    // 一定是从3开始
+    conns = new tcp_conn *[_max_conns + 3];
     qc_assert(conns);
     // printf("cour _max_conns = %d\n", _max_conns);
+    bzero(conns, sizeof(tcp_conn*) * (_max_conns + 3));
 
-    // 7 创建线程池,从配置文件中获取
-    int threads = 3;
+    // 7 创建线程池,从配置文件中获取,默认5个线程
+    int threads =
+        config_file::GetInstance()->GetNumber("reactor", "threadNum", 5);
     _thread_pool = new thread_pool(threads);
     qc_assert(_thread_pool != nullptr);
 
@@ -144,32 +139,42 @@ void tcp_server::do_accept() {
             }
         } else {
             // accept succ!
-            // ======== 由线程池处理 ========
-            if (_thread_pool != nullptr) {
-                // 启动多线程模式
-                thread_queue<task_msg> *queue = _thread_pool->get_thread();
-
-                task_msg task;
-
-                task.type = task_msg::NEW_CONN;
-
-                task.connfd = connfd;
-
-                queue->send(task);
+            // ========   链接管理  ========
+            int cur_conns = 0;
+            get_conn_num(&cur_conns);
+            if (cur_conns >= _max_conns) {
+                fprintf(stderr, "so many connection, max = %d\n", _max_conns);
+                close(connfd);
             } else {
-                // 单线程模式
-                tcp_conn *conn = new tcp_conn(connfd, _loop);
-                qc_assert(conn != nullptr);
-                printf("[tcp server]: get new connection succ!\n");
+                // ======== 由线程池处理 ========
+                if (_thread_pool != nullptr) {
+                    // 启动多线程模式
+                    thread_queue<task_msg> *queue = _thread_pool->get_thread();
+
+                    task_msg task;
+
+                    task.type = task_msg::NEW_CONN;
+
+                    task.connfd = connfd;
+
+                    queue->send(task);
+                } else {
+                    // 单线程模式
+                    tcp_conn *conn = new tcp_conn(connfd, _loop);
+                    qc_assert(conn != nullptr);
+                    printf("[tcp server]: get new connection succ!\n");
+                    break;
+                }
             }
+            
 
             // ======== 加入链接管理 ========
             // int cur_conns;
             // get_conn_num(&cur_conns);
             // // printf("after get_conn_num, the num = %d\n", cur_conns);
             // if (cur_conns >= _max_conns) {
-            //     fprintf(stderr, "so many connections, max = %d\n", _max_conns);
-            //     close(connfd);
+            //     fprintf(stderr, "so many connections, max = %d\n",
+            //     _max_conns); close(connfd);
             // } else {
             //     //启动单线程模式
             //     tcp_conn *conn = new tcp_conn(connfd, _loop);
@@ -177,11 +182,11 @@ void tcp_server::do_accept() {
             //         fprintf(stderr, "new tcp_conn error\n");
             //         exit(1);
             //     }
-            //     // 这里是否应该将其加入到数组中? 不需要,要降低耦合(设计到锁),在tcp_conn中increase_conn即可
+            //     // 这里是否应该将其加入到数组中?
+            //     不需要,要降低耦合(设计到锁),在tcp_conn中increase_conn即可
             //     //conns[connfd] = conn;
             //     printf("[tcp_server]: get new connection succ!\n");
             // }
-            break;
         }
     }
 }
@@ -198,9 +203,9 @@ tcp_server::~tcp_server() {
 
 // 创建链接之后要触发的回调函数
 conn_callback tcp_server::conn_start_cb = nullptr;
-void* tcp_server::conn_start_cb_args = nullptr;
+void *tcp_server::conn_start_cb_args = nullptr;
 // 销毁链接之后要触发的回调函数
 conn_callback tcp_server::conn_close_cb = nullptr;
-void* tcp_server::conn_close_cb_args = nullptr;
+void *tcp_server::conn_close_cb_args = nullptr;
 
 }  // namespace qc
