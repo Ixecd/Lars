@@ -80,14 +80,14 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
 
         // ================ 发送msgid：1 =====
         //建立连接成功之后，主动发送send_message
-        const char *msg = "hello lars!";
-        int msgid = 1;
-        cli->send_message(msg, strlen(msg), msgid);
+        //const char *msg = "hello lars!";
+        //int msgid = 1;
+        //cli->send_message(msg, strlen(msg), msgid);
 
         // ================ 发送msgid：2 =====
-        const char *msg2 = "hello Aceld!";
-        msgid = 2;
-        cli->send_message(msg2, strlen(msg2), msgid);
+        //const char *msg2 = "hello Aceld!";
+        //msgid = 2;
+        //cli->send_message(msg2, strlen(msg2), msgid);
         // ================
 
         /// @brief 连接建立好就检测读事件
@@ -273,7 +273,7 @@ int tcp_client::do_read() {
 
 //处理写业务
 int tcp_client::do_write() {
-    printf("tcp_client::do_write() begin()...\n");
+    // printf("tcp_client::do_write() begin()...\n");
     //数据有长度，切头部索引是起始位置
     qc_assert(_obuf.m_head == 0 && _obuf.m_length);
 
@@ -299,7 +299,7 @@ int tcp_client::do_write() {
 
     if (_obuf.m_length == 0) {
         //已经写完，删除写事件
-        printf("do write over, del EPOLLOUT\n");
+        //printf("do write over, del EPOLLOUT\n");
         this->_loop->del_io_event(_sockfd, EPOLLOUT);
     }
 

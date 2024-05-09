@@ -58,7 +58,7 @@ public:
 
     // 调用注册的对应的回调业务函数
     void call(int msgid, uint32_t msglen, const char *data, net_connection *client) {
-        printf("call msgid = %d\n", msgid);
+        //printf("call msgid = %d\n", msgid);
         if (_router.find(msgid) == _router.end()) {
             fprintf(stderr, "msgid %d is not register!\n", msgid);
             return;
@@ -68,7 +68,7 @@ public:
         msg_callback callback = _router[msgid];
         void *user_data = _args[msgid];
         callback(data, msglen, msgid, client, user_data);
-        printf("=======\n");
+        //printf("=======\n");
     }
 
 

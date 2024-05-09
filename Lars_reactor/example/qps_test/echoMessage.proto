@@ -1,0 +1,10 @@
+// 承载客户端和服务端通信的媒介
+
+syntax = "proto3";
+
+package qps_test;
+
+message EchoMessage {
+    string content = 1;
+    int32 id = 2;
+}
