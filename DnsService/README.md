@@ -1,5 +1,9 @@
 --- DnsService ---
 0. Agent 对 modid, cmdid的请求并返回modid,cmdid下的所有节点,为agent提供路由服务
+    cmdid:通常指"Command ID",即命令标识符.在 DNS 服务中,cmdid 可能用于标识执行的特定命令或操作。例如，当使用 DNS 管理工具执行某些操作
+    (如添加、删除、修改 DNS 记录等)时,这个 cmdid 可能会指示执行的具体命令类型.cmdid 可能是一个数字、一个字符串或其他类型的标识符。
+    modid:通常指"Module ID",即模块标识符.在 DNS 系统中,modid 可能用于标识特定的模块或组件.这个模块或组件可能是 DNS 服务器软件的一个部分
+    ,或者是与 DNS 相关的其他系统（如监控系统、管理界面等）中的一个模块.modid 可能也是一个数字、一个字符串或其他类型的标识符。
 
 1. 框架
     Agent                   MQ --> thread Loop
