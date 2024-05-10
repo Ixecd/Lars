@@ -37,6 +37,9 @@ public:
     void clean_conn();
     /// @brief 发送消息的方法 
     int send_message(const char *data, int msglen, int msgid);
+    /// @brief 获取当前连接fd
+    /// @return 
+    int get_fd() { return _connfd; }
 private:    
     /// @brief 当前连接的fd
     int _connfd;

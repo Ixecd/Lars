@@ -81,6 +81,10 @@ public:
     void * _conn_close_cb_args;
 
 public:
+    /// @brief 获取当前通信描述符
+    int get_fd() { return _sockfd; }
+
+public:
     /// @brief 读buff
     io_buf _ibuf;
     /// @brief 写buff
