@@ -7,7 +7,8 @@
             "command": "/usr/bin/g++",
             "includePath": [
                 "${workspaceFolder}/Lars_reactor/include",
-                "${workspaceFolder}/lars_dns/include"
+                "${workspaceFolder}/lars_dns/include",
+                "${workspaceFolder}/base/mysql-connector-c/include"
             ],
             "args": [
                 "-g",

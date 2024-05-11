@@ -1,8 +1,9 @@
 #include "lars_reactor.hpp"
+#include "mysql.h"
 
 using namespace qc;
 
-int main(int argc) {
+int main(int argc, char **argv) {
 
     event_loop loop;
 
@@ -12,6 +13,11 @@ int main(int argc) {
     short port = config_file::GetInstance()->GetNumber("reactor", "port", 9876);
 
     tcp_server *server = new tcp_server(&loop, ip.c_str(), port);
+
+
+    // 测试mysql接口
+    MYSQL dbconn;
+    mysql_init(&dbconn);
 
     // 注册路由信息
     printf("lars dns service ...\n");
