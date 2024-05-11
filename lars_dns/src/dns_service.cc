@@ -14,7 +14,6 @@ int main(int argc, char **argv) {
 
     tcp_server *server = new tcp_server(&loop, ip.c_str(), port);
 
-
     // 测试mysql接口
     MYSQL dbconn;
     mysql_init(&dbconn);
