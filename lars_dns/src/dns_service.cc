@@ -1,5 +1,5 @@
 #include "lars_reactor.hpp"
-#include "mysql.h"
+#include <mysql.h>
 
 using namespace qc;
 
