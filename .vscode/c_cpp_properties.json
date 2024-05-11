@@ -3,7 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Lars_reactor/include",
+                "${workspaceFolder}/lars_dns/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
