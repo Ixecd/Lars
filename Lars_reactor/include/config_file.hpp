@@ -54,7 +54,7 @@ public:
     // config_file::GetInstance();
 private:
     /// @brief 构造函数私有化
-    config_file() {}
+    // config_file() {}
 
     /// @brief 字符串配置文件解析基础方法
     bool isSection(std::string line, std::string& section);

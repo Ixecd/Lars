@@ -55,7 +55,11 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "*.ipp": "cpp",
+        "condition_variable": "cpp",
+        "executor": "cpp",
+        "mutex": "cpp"
     },
     "cmake.sourceDirectory": "/home/qc/Lars/Lars_reactor"
 }

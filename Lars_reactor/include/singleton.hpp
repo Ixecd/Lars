@@ -28,6 +28,12 @@ public:
         static T v;
         return &v;
     }
+private:
+    /// @brief 构造函数私有化
+    // Singleton<T>() {}
+    // Singleton<T>(const Singleton<T>&);
+    // const Singleton<T>& operator=(const Singleton<T>&);
+
 };
 
 template <class T, class X = void, int N = 0>

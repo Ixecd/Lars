@@ -30,28 +30,23 @@ Route::Route() {
     _temp_pointer = new route_map();
 
     /// @brief 链接数据库
-    this->connect_db();
+    // this->connect_db();
     /// @brief 在数据库中创建两个map
-    this->build_maps();
+    // this->build_maps();
 }
 
 void Route::connect_db() {
     // --- mysql 配置 ---
     std::string db_host =
         config_file::GetInstance()->GetString("mysql", "db_host", "127.0.0.1");
-    cout << db_host << endl;
     short db_port =
         config_file::GetInstance()->GetNumber("mysql", "db_port", 3306);
-    cout << db_port << endl;
     std::string db_user =
         config_file::GetInstance()->GetString("mysql", "db_user", "qc");
-    cout << db_user << endl;
     std::string db_passwd =
         config_file::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
-    cout << db_passwd << endl;
     std::string db_name =
         config_file::GetInstance()->GetString("mysql", "db_name", "lars_dns");
-    cout << db_name << endl;
     /// @brief 开始链接
     mysql_init(&_db_conn);
     /// @brief mysql超时30ms自动断开
@@ -59,21 +54,53 @@ void Route::connect_db() {
     /// @brief 设置重连
     char reconnect = 1;
     mysql_options(&_db_conn, MYSQL_OPT_RECONNECT, &reconnect);
+    cout << "after mysql_init" << endl;
 
-    MYSQL *connection = mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378", "lars_dns", 3306, nullptr, 0);
-    if (connection == nullptr) {
-        cout << "connection error\n" << endl;
-        // 获取错误信息
-        fprintf(stderr, "连接到MySQL数据库失败: %s\n", mysql_error(&_db_conn));
-        exit(1);
-    }
+    qc_assert(mysql_real_connect(&_db_conn, "localhost", db_user.c_str(), db_passwd.c_str(), db_name.c_str(), db_port, nullptr, 0) != nullptr);
+
+    // MYSQL *connection = mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378", "lars_dns", 3306, nullptr, 0);
+    // if (connection == nullptr) {
+    //     cout << "connection error\n" << endl;
+    //     // 获取错误信息
+    //     fprintf(stderr, "连接到MySQL数据库失败: %s\n", mysql_error(&_db_conn));
+    //     exit(1);
+    // }
+    cout << "end of connect_db()..." << endl;
 
 }
 
 void Route::build_maps() {
-    int rt = 0;
-    snprintf(_sql, 1000, "select * from RouteData;");
-    qc_assert(mysql_real_query(&_db_conn, _sql, strlen(_sql)) != 0);
+    snprintf(_sql, 1000, "SELECT * FROM RouteData;");
+    /// @brief success return 0
+    qc_assert(mysql_real_query(&_db_conn, _sql, strlen(_sql)) == 0);
+
+    /// @brief 将得到的结果存起来
+    MYSQL_RES *result = mysql_store_result(&_db_conn);
+
+    /// @得到行数
+    long line_num = mysql_num_rows(result);
+
+    cout << "cur line_num = " << line_num << endl;
+
+    MYSQL_ROW row;
+    for (long i = 0; i < line_num; ++i) {
+        row = mysql_fetch_row(result);
+        int modID = atoi(row[1]);
+        int cmdID = atoi(row[2]);
+        unsigned long ip = atoi(row[3]);
+        int port = atoi(row[4]);
+
+        //组装map的key，有modID/cmdID组合
+        uint64_t key = ((uint64_t)modID << 32) + cmdID;
+        uint64_t value = ((uint64_t)ip << 32) + port;
+
+        printf("modID = %d, cmdID = %d, ip = %lu, port = %d\n", modID, cmdID,
+               ip, port);
+
+        //插入到RouterDataMap_A中
+        (*_data_pointer)[key].insert(value);
+    }
+    mysql_free_result(result);
 }
 
 }  // namespace qc
