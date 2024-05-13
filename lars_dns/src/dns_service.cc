@@ -1,7 +1,12 @@
 #include "lars_reactor.hpp"
+#include "dns_route.hpp"
 #include <mysql.h>
 
 using namespace qc;
+
+void busi(const char* data, int len, int msgid, net_connection *conn, void *args) {
+    printf("busi...\n");
+}
 
 int main(int argc, char **argv) {
 
@@ -14,9 +19,16 @@ int main(int argc, char **argv) {
 
     tcp_server *server = new tcp_server(&loop, ip.c_str(), port);
 
+    server->add_msg_router(1, busi);
+
     // 测试mysql接口
-    MYSQL dbconn;
-    mysql_init(&dbconn);
+    // MYSQL dbconn;
+    // mysql_init(&dbconn);
+
+    Route::GetInstance()->connect_db();
+    printf("connect mysql success!\n");
+    Route::GetInstance()->build_maps();
+    printf("build map success!\n");
 
     // 注册路由信息
     printf("lars dns service ...\n");

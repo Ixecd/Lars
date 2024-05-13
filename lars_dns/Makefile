@@ -9,7 +9,8 @@ LARS_REACTOR_H = $(LARS_REACTOR)/include
 LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llreactor
 
 MYSQL = $(BASE)/mysql-connector-c
-MYSQL_H = /usr/include/mysql
+MYSQL_H = $(BASE)/mysql-connector-c/include
+#MYSQL_H = /usr/include/mysql
 MYSQL_LIB = $(MYSQL)/lib/libmysqlclient.a
 
 

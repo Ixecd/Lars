@@ -47,6 +47,12 @@
     4.if !RouterDataMap_A.result() --> agent ip + port + modid/cmdid --> Backend thread loop1  ---> ClientMap
     5.Backend Thread pre 10s clean RouterDataMap_B ---> load RouteData --> RouterDataMap_B ---> swap();
 
+6. Route中关于map数据类型的定义
+    这里的Route并非reactor中的路由分发router,这里的Route是把modid/cmdid与需要管理的远程服务器的serverip/serverport的一条对应关系叫
+    一个Route.
+    我们使用Map来存储这些关系.key是modid/cmdid<uint64_t>的一个二进制偏移量处理,value是一个set<uint64_t>集合,因为一个modid/cmdid可能对应多个host主机的ip和port
+    
+
 
 
 
