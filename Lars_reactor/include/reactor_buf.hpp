@@ -11,15 +11,17 @@
 #ifndef __REACTOR_BUF_HPP__
 #define __REACTOR_BUF_HPP__
 
-#include "io_buf.hpp"
+#include <unistd.h>
+
 #include "buf_pool.hpp"
+#include "io_buf.hpp"
 #include "qc.hpp"
-#include "unistd.h"
 
 namespace qc {
 
 /**
  * @brief 提供给业务层,封装io_buf
+ * @details 反应堆的buf只提供length pop clear方便业务端操作
  */
 class reactor_buf {
 public:
@@ -30,6 +32,7 @@ public:
     void pop(int len);
     void clear();
 protected:
+    /// @brief 降低耦合
     io_buf *_buf;
 };
 
