@@ -24,32 +24,38 @@ int tcp_server::_curr_conns = 0;
 msg_router tcp_server::router;
 
 // 静态初始化互斥锁
-pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t tcp_server::_conns_mutex = PTHREAD_MUTEX_INITIALIZER;
 // 动态初始化互斥锁 -->
 // 先声明一个pthread_mutex_t类型的互斥锁,之后再pthread_mutex_init();
 
 // 添加一个conn
 void tcp_server::increase_conn(int connfd, tcp_conn *conn) {
-    pthread_mutex_lock(&_conns_mutex);
+    // pthread_mutex_lock(&_conns_mutex);
+    _conns_mutex.lock();
     conns[connfd] = conn;
     _curr_conns++;
-    pthread_mutex_unlock(&_conns_mutex);
+    // pthread_mutex_unlock(&_conns_mutex);
+    _conns_mutex.unlock();
 }
 
 // 删除一个conn
 void tcp_server::decrease_conn(int connfd) {
-    pthread_mutex_lock(&_conns_mutex);
+    // pthread_mutex_lock(&_conns_mutex);
+    _conns_mutex.lock();
     conns[connfd] = nullptr;
     --_curr_conns;
-    pthread_mutex_unlock(&_conns_mutex);
+    // pthread_mutex_unlock(&_conns_mutex);
+    _conns_mutex.unlock();
 }
 
 /// @brief 获取当前所有链接的数量
 /// @param[out] curr_conn 数量
 void tcp_server::get_conn_num(int *curr_conn) {
-    pthread_mutex_lock(&_conns_mutex);
+    // pthread_mutex_lock(&_conns_mutex);
+    _conns_mutex.lock();
     *curr_conn = _curr_conns;
-    pthread_mutex_unlock(&_conns_mutex);
+    // pthread_mutex_unlock(&_conns_mutex);
+    _conns_mutex.unlock();
 }
 
 // listen fd 客户端有新链接请求过来的回调函数
@@ -88,7 +94,8 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     }
 
     // 3 绑定端口
-    qc_assert(bind(_sockfd, (const struct sockaddr *)&server_addr, sizeof(server_addr)) >= 0);
+    qc_assert(bind(_sockfd, (const struct sockaddr *)&server_addr,
+                   sizeof(server_addr)) >= 0);
 
     // 4 监听ip端口
     qc_assert(listen(_sockfd, 500) != -1);
@@ -97,13 +104,14 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
     _loop = loop;
 
     // 6 ========== 链接管理 ===========
-    _max_conns = config_file::GetInstance()->GetNumber("reactor", "maxConn", 1024);
+    _max_conns =
+        config_file::GetInstance()->GetNumber("reactor", "maxConn", 1024);
     // 这里动态的创建链接信息数组, +3 是因为stdin, stdout, stderr已经被占用,fd
     // 一定是从3开始
     conns = new tcp_conn *[_max_conns + 3];
     qc_assert(conns);
     // printf("cour _max_conns = %d\n", _max_conns);
-    bzero(conns, sizeof(tcp_conn*) * (_max_conns + 3));
+    bzero(conns, sizeof(tcp_conn *) * (_max_conns + 3));
 
     // 7 创建线程池,从配置文件中获取,默认5个线程
     int threads =
@@ -166,7 +174,6 @@ void tcp_server::do_accept() {
                     break;
                 }
             }
-            
 
             // ======== 加入链接管理 ========
             // int cur_conns;
