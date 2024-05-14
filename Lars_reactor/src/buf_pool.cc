@@ -12,6 +12,7 @@
 #include "buf_pool.hpp"
 
 #include <stdlib.h>
+#include <algorithm>
 
 #include "qc.hpp"
 
@@ -94,24 +95,29 @@ buf_pool::buf_pool() : _total_mem(0) {
  * @return io_buf* umap中取出来一个
  */
 io_buf *buf_pool::alloc_buf(int N) {
-    int index;
-    if (N <= m4K) {
-        index = m4K;
-    } else if (N <= m16K) {
-        index = m16K;
-    } else if (N <= m64K) {
-        index = m64K;
-    } else if (N <= m256K) {
-        index = m256K;
-    } else if (N <= m1M) {
-        index = m1M;
-    } else if (N <= m4M) {
-        index = m4M;
-    } else if (N <= m8M) {
-        index = m8M;
-    } else {
-        return NULL;
-    }
+    int thresholds[] = {m4K, m16K, m64K, m256K, m1M, m4M, m8M};
+
+    auto it = std::upper_bound(std::begin(thresholds), std::end(thresholds), N);
+    if (it == std::end(thresholds)) return nullptr;
+
+    int index = *it;
+    // if (N <= m4K) {
+    //     index = m4K;
+    // } else if (N <= m16K) {
+    //     index = m16K;
+    // } else if (N <= m64K) {
+    //     index = m64K;
+    // } else if (N <= m256K) {
+    //     index = m256K;
+    // } else if (N <= m1M) {
+    //     index = m1M;
+    // } else if (N <= m4M) {
+    //     index = m4M;
+    // } else if (N <= m8M) {
+    //     index = m8M;
+    // } else {
+    //     return NULL;
+    // }
     _mutex.lock();
     // pthread_mutex_lock(&_mutex);
     if (_pool[index] == nullptr) {
