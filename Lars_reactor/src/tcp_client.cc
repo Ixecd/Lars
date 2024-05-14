@@ -153,6 +153,7 @@ void tcp_client::do_connect() {
             fprintf(stderr, "do_connect EINPROGRESS\n");
 
             //让event_loop去触发一个创建判断链接业务 用EPOLLOUT事件立刻触发
+            // 等待socket可写,就会触发EPOLLOUT事件
             _loop->add_io_event(_sockfd, connection_delay, EPOLLOUT, this);
         } else {
             fprintf(stderr, "connection error\n");
@@ -168,7 +169,7 @@ int tcp_client::send_message(const char *data, int msglen, int msgid) {
         return -1;
     }
     //是否需要添加写事件触发
-    //如果obuf中有数据，没必要添加，如果没有数据，添加完数据需要触发
+    //如果当前obuf中有数据，没必要添加，如果没有数据，添加完数据需要触发
     bool need_add_event = (_obuf.m_length == 0) ? true : false;
     if (msglen + MESSAGE_HEAD_LEN > this->_obuf.m_capacity - _obuf.m_length) {
         fprintf(stderr, "No more space to Write socket!\n");
