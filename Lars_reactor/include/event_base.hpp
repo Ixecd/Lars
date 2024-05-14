@@ -1,7 +1,7 @@
 /**
  * @file event_base.hpp
  * @author qc
- * @brief IO事件封装类
+ * @brief IO事件基本封装类
  * @version 0.1
  * @date 2024-04-27
  * 
@@ -9,8 +9,7 @@
  * 
  */
 
-#ifndef __EVENT_BASE_HPP__
-#define __EVENT_BASE_HPP__
+#pragma once
 
 #include <functional>
 
@@ -18,9 +17,16 @@ namespace qc {
 
 class event_loop;
 
-// event_loop *_loop, int fd, void *args
 using io_callback = std::function<void(event_loop*, int, void*)>;
 
+/**
+ * @details 一个IO事件其属性应该有 
+ *          mask --> 事件类型
+ *          rcb  --> 读回调函数
+ *          rags --> 读回调参数
+ *          wcb  --> 写回调函数
+ *          wags --> 写回调参数
+ */     
 class io_event {
 public:
     io_event():read_callback(nullptr), write_callback(nullptr), rcb_args(nullptr),
@@ -33,6 +39,3 @@ public:
 };
 
 }
-
-
-#endif
