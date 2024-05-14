@@ -25,6 +25,8 @@ void io_buf::clear() {
     m_length = m_head = 0;
 }
 
+/// @brief m_head之前都是处理好的,m_length是当前buf中有效的数据长度
+///        adjust() -> 将处理好的去除掉
 void io_buf::adjust() {
     if (m_head) {
         if (m_length) {
@@ -39,8 +41,7 @@ void io_buf::copy(const io_buf *other) {
     m_head = 0;
     m_length = other->m_length;
 }
-/// @brief 这里pop,将有效长度增长,head后移
-/// @param len 
+/// @brief m_head往后推,有效长度减小
 void io_buf::pop(int len) {
     m_length -= len;
     m_head += len;
