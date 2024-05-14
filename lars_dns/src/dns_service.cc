@@ -11,7 +11,7 @@
 #include "lars_reactor.hpp"
 #include "dns_route.hpp"
 #include "lars.pb.h"
-#include <mysql.h>
+#include "mysql.h"
 #include <iostream>
 
 using namespace qc;

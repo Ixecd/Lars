@@ -11,10 +11,9 @@ LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llreactor
 PROTO = $(BASE)/proto
 PROTO_H = $(BASE)/proto
 
-MYSQL = $(BASE)/mysql-connector-c
-MYSQL_H = $(BASE)/mysql-connector-c/include
-#MYSQL_H = /usr/include/mysql
-MYSQL_LIB = $(MYSQL)/lib/libmysqlclient.a
+MYSQL = /usr/include/mysql-connector-c
+MYSQL_H = /usr/include/mysql-connector-c/include
+MYSQL_LIB = /usr/include/mysql-connector-c/lib/libmysqlclient.a
 
 
 OTHER_LIB = -lpthread -ldl -lprotobuf
