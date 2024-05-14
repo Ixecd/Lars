@@ -1,17 +1,18 @@
 /**
  * @file reactor.cc
  * @author qc
- * @brief 提供给业务层的buf封装
+ * @brief 反应堆的buf
  * @version 0.1
  * @date 2024-04-26
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
-#include "reactor_buf.hpp"
-#include "qc.hpp"
-#include <sys/ioctl.h>
 #include <string.h>
+#include <sys/ioctl.h>
+
+#include "qc.hpp"
+#include "reactor_buf.hpp"
 
 namespace qc {
 
@@ -28,11 +29,11 @@ void reactor_buf::pop(int len) {
 
     _buf->pop(len);
 
-    //printf("cur _buf->length = %d\n", _buf->m_length);
+    // printf("cur _buf->length = %d\n", _buf->m_length);
     //如果此时_buf的可用长度为0
     if (_buf->m_length == 0) {
         //将_buf重新放回buf_pool中
-        buf_pool::instance()->revert(_buf);
+        buf_pool::GetInstance()->revert(_buf);
         _buf = nullptr;
     }
 }
@@ -40,7 +41,7 @@ void reactor_buf::pop(int len) {
 void reactor_buf::clear() {
     if (_buf != nullptr) {
         //将_buf重新放回buf_pool中
-        buf_pool::instance()->revert(_buf);
+        buf_pool::GetInstance()->revert(_buf);
         _buf = nullptr;
     }
 }
@@ -49,27 +50,25 @@ void reactor_buf::clear() {
 int input_buf::read_data(int fd) {
     int need_read;  //硬件有多少数据可以读
 
-    //一次性读出所有的数据
-    //需要给fd设置FIONREAD,
-    //得到read缓冲中有多少数据是可以读取的
-    if (ioctl(fd, FIONREAD, &need_read) == -1) {
-        fprintf(stderr, "ioctl FIONREAD\n");
-        return -1;
-    }
+    /// @details 常用命令：
+    //    FIONREAD:获取输入缓冲区中可读取的数据字节数。
+    //    FIONBIO:设置非阻塞 I /O 模式。
+    int rt = ioctl(fd, FIONREAD, &need_read);
+    qc_assert(rt != -1);
 
     if (_buf == NULL) {
         //如果io_buf为空,从内存池申请
-        _buf = buf_pool::instance()->alloc_buf(need_read);
+        _buf = buf_pool::GetInstance()->alloc_buf(need_read);
         qc_assert(_buf != nullptr);
     } else {
         //如果io_buf可用，判断是否够存
-        // 这里_buf->m_head == 0 表示所有的数据都已经处理完了.
-        // _buf->m_head != 表示有数据还没有处理,m_head指向没有处理的数据
-        // 读的时候m_head必须是0 意味着之前所有数据都被处理了
+        // 这里_buf->m_head == 0 表示之前所有的数据都已经处理完了.
+        // 不允许读的时候缓冲区还有数据被处理了但是没有pop
         qc_assert(_buf->m_head == 0);
-        if (_buf->m_capacity - _buf->m_length < (int)need_read) {
+        if (_buf->m_capacity - _buf->m_length < need_read) {
             //不够存,内存池申请,申请一块更大的
-            io_buf *new_buf = buf_pool::instance()->alloc_buf(need_read + _buf->m_length);
+            io_buf *new_buf =
+                buf_pool::GetInstance()->alloc_buf(need_read + _buf->m_length);
             if (new_buf == NULL) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;
@@ -77,7 +76,7 @@ int input_buf::read_data(int fd) {
             //将之前的_buf的数据考到新申请的buf中
             new_buf->copy(_buf);
             //将之前的_buf放回内存池中
-            buf_pool::instance()->revert(_buf);
+            buf_pool::GetInstance()->revert(_buf);
             //新申请的buf成为当前io_buf
             _buf = new_buf;
         }
@@ -96,9 +95,8 @@ int input_buf::read_data(int fd) {
     } while (already_read == -1 &&
              errno == EINTR);  // systemCall引起的中断 继续读取
     if (already_read > 0) {
-        if (need_read != 0) {
-            qc_assert(already_read == need_read);
-        }
+        if (need_read != 0) qc_assert(already_read == need_read);
+        // 保证读取到的和需要读的size一致
         _buf->m_length += already_read;
     }
 
@@ -113,34 +111,36 @@ const char *input_buf::data() const {
 //重置缓冲区
 void input_buf::adjust() {
     if (_buf != NULL) {
-        _buf->adjust();   
+        _buf->adjust();
     }
 }
 
 //将一段数据 写到一个reactor_buf中
 int output_buf::send_data(const char *data, int datalen) {
-    if (_buf == NULL) {
+    if (_buf == nullptr) {
         //如果io_buf为空,从内存池申请
-        _buf = buf_pool::instance()->alloc_buf(datalen);
-        if (_buf == NULL) {
+        _buf = buf_pool::GetInstance()->alloc_buf(datalen);
+        if (_buf == nullptr) {
             fprintf(stderr, "no idle buf for alloc\n");
             return -1;
         }
     } else {
         //如果io_buf可用，判断是否够存
-        //printf("cur _buf->m_head = %d\n", _buf->m_head);
+        // printf("cur _buf->m_head = %d\n", _buf->m_head);
+        // 发送数据的时候不允许有数据被处理了但是没有pop
         qc_assert(_buf->m_head == 0);
         if (_buf->m_capacity - _buf->m_length < datalen) {
             //不够存，冲内存池申请
-            io_buf *new_buf = buf_pool::instance()->alloc_buf(datalen + _buf->m_length);
-            if (new_buf == NULL) {
+            io_buf *new_buf =
+                buf_pool::GetInstance()->alloc_buf(datalen + _buf->m_length);
+            if (new_buf == nullptr) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;
             }
             //将之前的_buf的数据考到新申请的buf中
             new_buf->copy(_buf);
             //将之前的_buf放回内存池中
-            buf_pool::instance()->revert(_buf);
+            buf_pool::GetInstance()->revert(_buf);
             //新申请的buf成为当前io_buf
             _buf = new_buf;
         }
@@ -179,4 +179,4 @@ int output_buf::write2fd(int fd) {
 
     return already_write;
 }
-}
+}  // namespace qc
