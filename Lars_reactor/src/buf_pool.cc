@@ -17,102 +17,71 @@
 
 namespace qc {
 
-buf_pool *buf_pool::_instance = nullptr;
+// buf_pool *buf_pool::_instance = nullptr;
 
-pthread_once_t buf_pool::_once = PTHREAD_ONCE_INIT;
+// pthread_once_t buf_pool::_once = PTHREAD_ONCE_INIT;
 
-pthread_mutex_t buf_pool::_mutex = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t buf_pool::_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int Alloc_Memory(pool_t &_pool, uint size, long unsigned int number, uint64_t &_total_num) {
+    io_buf *prev;
+    _pool[size] = new io_buf(size);
+    qc_assert(_pool[size]);
+    prev = _pool[size];
+
+    for (size_t i = 0; i < number; ++i) {
+        prev->next = new io_buf(size);
+        qc_assert(prev->next);
+        prev = prev->next;
+    }
+
+    _total_num += (size/1024)*number;
+    return 1;
+}
 
 buf_pool::buf_pool() : _total_mem(0) {
-    io_buf *prev;
-
+    // 这里设计成懒汉式
+    // buf_pool *_instance = buf_pool::GetInstance();
+    
+    //io_buf *prev;
     // 开辟4KB buf内存池
-    _pool[m4K] = new io_buf(m4K);
-    qc_assert(_pool[m4K]);
+    // _pool[m4K] = new io_buf(m4K);
+    // qc_assert(_pool[m4K]);
 
-    prev = _pool[m4K];
-    // 4kB -> 5000个 20MB
-    for (int i = 0; i < 5000; ++i) {
-        prev->next = new io_buf(m4K);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 4 * 5000;
+    // prev = _pool[m4K];
+    // // 4kB -> 5000个 20MB
+    // for (int i = 0; i < 5000; ++i) {
+    //     prev->next = new io_buf(m4K);
+    //     qc_assert(prev->next);
+    //     prev = prev->next;
+    // }
+    // _total_mem += 4 * 5000;
+    // 开辟4KB buf内存池
+    int rt = Alloc_Memory(_pool, m4K, 5000, _total_mem);
+    qc_assert(rt == 1);
 
     // 开辟16KB buf 内存池
-    _pool[m16K] = new io_buf(m16K);
-    qc_assert(_pool[m16K]);
-
-    prev = _pool[m16K];
-    // 16KB -> 1000个 16MB
-    for (int i = 0; i < 1000; ++i) {
-        prev->next = new io_buf(m16K);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 16 * 1000;
+    rt = Alloc_Memory(_pool, m16K, 1000, _total_mem);
+    qc_assert(rt == 1);
 
     // 开辟64KB buf 内存池
-    _pool[m64K] = new io_buf(m64K);
-    qc_assert(_pool[m64K]);
-    prev = _pool[m64K];
-    // 64KB -> 500个 32MB
-    for (int i = 0; i < 500; ++i) {
-        prev->next = new io_buf(m64K);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 64 * 500;
+    rt = Alloc_Memory(_pool, m64K, 500, _total_mem);
+    qc_assert(rt == 1);
 
     // 开辟256KB buf 内存池
-    _pool[m256K] = new io_buf(m256K);
-    qc_assert(_pool[m256K]);
-    prev = _pool[m256K];
-    // 256KB -> 200个 50MB
-    for (int i = 0; i < 200; ++i) {
-        prev->next = new io_buf(m256K);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 256 * 200;
+    rt = Alloc_Memory(_pool, m256K, 200, _total_mem);
+    qc_assert(rt == 1);
 
     // 开辟1M buf 内存池
-    _pool[m1M] = new io_buf(m1M);
-    qc_assert(_pool[m1M]);
-    prev = _pool[m1M];
-    // 1M -> 50个 50MK
-    for (int i = 0; i < 50; ++i) {
-        prev->next = new io_buf(m1M);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 1024 * 50;
+    rt = Alloc_Memory(_pool, m1M, 50, _total_mem);
+    qc_assert(rt == 1);
 
     // 开辟4M buf 内存池
-    _pool[m4M] = new io_buf(m4M);
-    qc_assert(_pool[m4M]);
-
-    prev = _pool[m4M];
-    // 4M -> 20个 80MB
-    for (int i = 1; i < 20; i++) {
-        prev->next = new io_buf(m4M);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 4096 * 20;
+    rt = Alloc_Memory(_pool, m4M, 20, _total_mem);
 
     // 开辟8M buf 内存池
-    _pool[m8M] = new io_buf(m8M);
-    qc_assert(_pool[m8M]);
-
-    prev = _pool[m8M];
-    // 8M -> 10个 80MB
-    for (int i = 1; i < 10; i++) {
-        prev->next = new io_buf(m8M);
-        qc_assert(prev->next);
-        prev = prev->next;
-    }
-    _total_mem += 8192 * 10;
+    rt = Alloc_Memory(_pool, m8M, 10, _total_mem);
+    qc_assert(rt == 1);
 }
 
 /**
@@ -143,7 +112,8 @@ io_buf *buf_pool::alloc_buf(int N) {
     } else {
         return NULL;
     }
-    pthread_mutex_lock(&_mutex);
+    _mutex.lock();
+    // pthread_mutex_lock(&_mutex);
     if (_pool[index] == nullptr) {
         if (_total_mem + index / 1024 >= MAX_MEM_LIMIT) {
             fprintf(stderr, "already use too many memory!\n");
@@ -153,14 +123,16 @@ io_buf *buf_pool::alloc_buf(int N) {
         io_buf *new_buf = new io_buf(index);
         qc_assert(new_buf);
         _total_mem += index / 1024;
-        pthread_mutex_unlock(&_mutex);
+        // pthread_mutex_unlock(&_mutex);
+        _mutex.unlock();
         return new_buf;
     }
 
     // 从_pool中摘除该内存块
     io_buf *target = _pool[index];
     _pool[index] = target->next;
-    pthread_mutex_unlock(&_mutex);
+    _mutex.unlock();
+    // pthread_mutex_unlock(&_mutex);
 
     target->next = nullptr;
 
@@ -173,12 +145,13 @@ void buf_pool::revert(io_buf *buffer) {
 
     buffer->m_length = 0, buffer->m_head = 0;
 
-    pthread_mutex_lock(&_mutex);
+    _mutex.lock();
+    // pthread_mutex_lock(&_mutex);
     qc_assert(_pool.find(index) != _pool.end());
 
     buffer->next = _pool[index];
     _pool[index] = buffer;
-    pthread_mutex_unlock(&_mutex);
+    _mutex.unlock();
 }
 
 }  // namespace qc
