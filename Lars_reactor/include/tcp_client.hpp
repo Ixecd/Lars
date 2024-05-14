@@ -29,9 +29,8 @@ namespace qc {
  * @brief 封装Tcp连接客户端信息
  * @details 单纯为写客户端提供的接口
  */
-class tcp_client : public net_connection{
+class tcp_client : public net_connection {
 public:
-
     /// @brief 完成基本的socket初始化和connect操作
     tcp_client(event_loop *loop, const char *ip, uint16_t prot,
                const char *name);
@@ -53,11 +52,13 @@ public:
     ~tcp_client();
 
     // 业务处理回调函数,有了消息路由就不需要了
-    
-    // void set_msg_callback(msg_callback msg_cb) { this->_msg_callback = msg_cb; }
+
+    // void set_msg_callback(msg_callback msg_cb) { this->_msg_callback =
+    // msg_cb; }
     void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr) {
         _router.register_msg_router(msgid, cb, user_data);
     }
+
 public:
     // 处理消息的分发路由
     msg_router _router;
@@ -75,10 +76,10 @@ public:
     }
 
     conn_callback _conn_start_cb;
-    void * _conn_start_cb_args;
+    void *_conn_start_cb_args;
 
     conn_callback _conn_close_cb;
-    void * _conn_close_cb_args;
+    void *_conn_close_cb_args;
 
 public:
     /// @brief 获取当前通信描述符
