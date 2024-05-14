@@ -27,15 +27,15 @@ namespace qc {
 typedef void (*task_func)(event_loop *loop, void *args);
 // using task_func = std::function<void(event_loop *loop, void *args)>;
 
-typedef std::unordered_map<int, io_event> io_event_map;
+using io_event_map = std::unordered_map<int, io_event>;
 
-typedef std::unordered_map<int, io_event>::iterator io_event_map_it;
+using io_event_map_it = std::unordered_map<int, io_event>::iterator;
 
-typedef std::unordered_set<int> listen_fd_set;
+using listen_fd_set = std::unordered_set<int>;
 
 class event_loop {
 public:
-    /// @brief 构造函数,初始化epoll堆
+    /// @brief 构造函数,初始化epoll
     event_loop();
     /// @brief 阻塞循环处理事件
     void event_process();
