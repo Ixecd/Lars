@@ -7,6 +7,7 @@
 
 #include "event_loop.hpp"
 #include "message.hpp"
+#include "mutex.hpp"
 #include "tcp_conn.hpp"
 #include "thread_pool.hpp"
 
@@ -19,12 +20,6 @@ namespace qc {
  */
 class tcp_server {
 public:
-    /**
-     * @brief Construct a new tcp server object
-     * @details RAII
-     * @param ip
-     * @param port
-     */
     tcp_server(event_loop *loop, const char *ip, uint16_t port);
     /// @brief server tcp accept
     void do_accept();
@@ -37,21 +32,18 @@ private:
     socklen_t _addrlen;
 
     /// @brief 再当前tcp_server中添加event_loop
-    /// epoll事件机制,这里使用指针,解耦合
     event_loop *_loop;
-
-    /// @brief
-    /// 下面是对tcp_conn的封装,我们将tcp_server封装再tcp_conn中,之后调用tcp_conn方便管理
 
 public:
     // ======== 消息分发路由 ========
     void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr) {
         router.register_msg_router(msgid, cb, user_data);
     }
-
+    
     static msg_router router;
 
 public:
+    typedef Mutex MutexType;
     /// @brief 新增一个链接
     static void increase_conn(int connfd, tcp_conn *conn);
     /// @brief 减掉一个链接
@@ -90,7 +82,8 @@ private:
     static int _max_conns;
     static int _curr_conns;
     /// @brief 互斥锁
-    static pthread_mutex_t _conns_mutex;
+    static MutexType _conns_mutex;
+    // static pthread_mutex_t _conns_mutex;
 
 public:
     thread_pool *get_thread_pool() { return _thread_pool; }
