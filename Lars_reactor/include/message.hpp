@@ -15,7 +15,7 @@
 #include "tcp_conn.hpp"
 #include "net_connection.hpp"
 
-// DataLen  Id    Data        DataLen Id   Data
+//  Id  DataLen    Data      Id  DataLen    Data
 // | --head-- | |--body --| | --head-- | |--body--|
 
 namespace qc {
@@ -70,7 +70,6 @@ public:
         callback(data, msglen, msgid, client, user_data);
         //printf("=======\n");
     }
-
 
 private:
     /// @brief key -> msgID, value -> 回调函数
