@@ -56,17 +56,19 @@ void Route::connect_db() {
     mysql_options(&_db_conn, MYSQL_OPT_RECONNECT, &reconnect);
     cout << "after mysql_init" << endl;
 
-    qc_assert(mysql_real_connect(&_db_conn, "localhost", db_user.c_str(), db_passwd.c_str(), db_name.c_str(), db_port, nullptr, 0) != nullptr);
+    // qc_assert(mysql_real_connect(&_db_conn, db_host.c_str(), db_user.c_str(),
+    // db_passwd.c_str(), db_name.c_str(), db_port, nullptr, 0) != nullptr);
 
-    // MYSQL *connection = mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378", "lars_dns", 3306, nullptr, 0);
-    // if (connection == nullptr) {
-    //     cout << "connection error\n" << endl;
-    //     // 获取错误信息
-    //     fprintf(stderr, "连接到MySQL数据库失败: %s\n", mysql_error(&_db_conn));
-    //     exit(1);
-    // }
+    MYSQL *connection =
+        mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378",
+                           "lars_dns", 3306, nullptr, 0);
+    if (connection == nullptr) {
+        cout << "connection error\n" << endl;
+        // 获取错误信息
+        fprintf(stderr, "连接到MySQL数据库失败: %s\n", mysql_error(&_db_conn));
+        exit(1);
+    }
     cout << "end of connect_db()..." << endl;
-
 }
 
 void Route::build_maps() {
@@ -102,5 +104,20 @@ void Route::build_maps() {
     }
     mysql_free_result(result);
 }
+
+host_set Route::get_hosts(int modid, int cmdid) {
+    host_set hosts;
+    // 组装key
+    uint64_t key = ((uint64_t)modid << 32) + cmdid;
+
+    RWMutexType::ReadLock lock(mutex);
+    route_map_iterator it = _data_pointer->find(key);
+    if (it != _data_pointer->end()) hosts = it->second;
+    lock.~ReadScopedLockImpl();
+
+    return hosts;
+}
+
+
 
 }  // namespace qc

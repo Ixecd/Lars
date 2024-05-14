@@ -59,7 +59,27 @@
         "*.ipp": "cpp",
         "condition_variable": "cpp",
         "executor": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "csignal": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "buffer": "cpp",
+        "internet": "cpp",
+        "io_context": "cpp",
+        "netfwd": "cpp",
+        "optional": "cpp",
+        "socket": "cpp",
+        "timer": "cpp",
+        "fstream": "cpp",
+        "future": "cpp",
+        "iomanip": "cpp",
+        "sstream": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     },
     "cmake.sourceDirectory": "/home/qc/Lars/Lars_reactor"
 }

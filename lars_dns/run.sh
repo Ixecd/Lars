@@ -1,4 +1,6 @@
 make clean
 make 
-cd bin
-./lars_dns
+
+cd test
+make clean
+make 
