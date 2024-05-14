@@ -1,6 +1,6 @@
 /**
  * @file buf_pool.hpp
- * @author your name (you@domain.com)
+ * @author qc
  * @brief
  * @version 0.1
  * @date 2024-04-26
