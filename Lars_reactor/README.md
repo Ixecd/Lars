@@ -205,3 +205,14 @@ eventLoop/thread Tcp Server Model
     所谓序列化就是把复杂的结构体数据按照一定的规则编码成一个字节切片
 
     A.常用的数据交换格式 json、xml、protobuf(二进制数据格式、需要编码和解码)
+
+22. 关于read()系统调用
+    ssize_t read(int fd, void *buf, size_t count);
+        成功时，返回读取的字节数（可能比请求的字节数少）。
+        返回0表示已经到达文件末尾（EOF）。
+        出错时，返回-1，并设置errno以指示错误类型。
+    EAGAIN或EWOULDBLOCK：非阻塞模式下操作会阻塞。
+    EBADF：无效的文件描述符。
+    EFAULT：缓冲区buf指向无效内存区域。
+    EINTR：读取被信号中断。
+    EINVAL：无效参数，例如count为负数
