@@ -43,9 +43,11 @@ public:
     void build_maps();
     /// @brief 设置数据库
     void set_mysql(MYSQL dbconn) { _db_conn = dbconn; }
+
 public:
     /// @brief 获取Host信息
     host_set get_hosts(int modid, int cmdid);
+
 private:
     Route();
 

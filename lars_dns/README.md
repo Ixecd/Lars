@@ -52,6 +52,11 @@
     一个Route.
     我们使用Map来存储这些关系.key是modid/cmdid<uint64_t>的一个二进制偏移量处理,value是一个set<uint64_t>集合,因为一个modid/cmdid可能对应多个host主机的ip和port
     
+7. 关于cmdid 和 modid
+        cmdid (Command ID)
+    cmdid 通常用于标识某个服务接口的具体操作。例如，一个服务可能有多个接口，而每个接口又可能有多个操作，这时候就可以用cmdid来区分这些操作。cmdid 是一个整数值，每个操作都有一个唯一的cmdid。
+        modid (Module ID)
+    modid 通常用于标识某个具体的服务模块。例如，一个系统中可能有多个不同的服务模块，每个模块提供不同的功能。modid 是一个整数值，每个模块都有一个唯一的modid。
 
 
 
