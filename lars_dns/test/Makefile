@@ -33,7 +33,6 @@ OBJS += $(PROTO)/lars.pb.o
 
 # -o 将多个目标文件链接成一个可执行文件
 $(TARGET) : $(OBJS)
-	mkdir -p bin
 	$(CXX) -o $@  $(CFLAGS) $(OBJS) $(LIB) 
 
 # -c 只编译不链接

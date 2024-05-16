@@ -36,7 +36,7 @@ void on_connection(net_connection *conn, void *args) {
     // 发送Route请求信息
     lars::GetRouteRequest req;
     req.set_modid(1);
-    req.set_cmdid(2);
+    req.set_cmdid(1);
 
     std::string requestStirng;
     req.SerializeToString(&requestStirng);
