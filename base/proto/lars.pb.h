@@ -215,22 +215,22 @@ class HostInfo final :
     kIpFieldNumber = 1,
     kPortFieldNumber = 2,
   };
-  // int32 ip = 1;
+  // uint32 ip = 1;
   void clear_ip();
-  int32_t ip() const;
-  void set_ip(int32_t value);
+  uint32_t ip() const;
+  void set_ip(uint32_t value);
   private:
-  int32_t _internal_ip() const;
-  void _internal_set_ip(int32_t value);
+  uint32_t _internal_ip() const;
+  void _internal_set_ip(uint32_t value);
   public:
 
-  // int32 port = 2;
+  // uint32 port = 2;
   void clear_port();
-  int32_t port() const;
-  void set_port(int32_t value);
+  uint32_t port() const;
+  void set_port(uint32_t value);
   private:
-  int32_t _internal_port() const;
-  void _internal_set_port(int32_t value);
+  uint32_t _internal_port() const;
+  void _internal_set_port(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.HostInfo)
@@ -241,8 +241,8 @@ class HostInfo final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    int32_t ip_;
-    int32_t port_;
+    uint32_t ip_;
+    uint32_t port_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -597,42 +597,42 @@ class GetRouteResponse final :
 #endif  // __GNUC__
 // HostInfo
 
-// int32 ip = 1;
+// uint32 ip = 1;
 inline void HostInfo::clear_ip() {
-  _impl_.ip_ = 0;
+  _impl_.ip_ = 0u;
 }
-inline int32_t HostInfo::_internal_ip() const {
+inline uint32_t HostInfo::_internal_ip() const {
   return _impl_.ip_;
 }
-inline int32_t HostInfo::ip() const {
+inline uint32_t HostInfo::ip() const {
   // @@protoc_insertion_point(field_get:lars.HostInfo.ip)
   return _internal_ip();
 }
-inline void HostInfo::_internal_set_ip(int32_t value) {
+inline void HostInfo::_internal_set_ip(uint32_t value) {
   
   _impl_.ip_ = value;
 }
-inline void HostInfo::set_ip(int32_t value) {
+inline void HostInfo::set_ip(uint32_t value) {
   _internal_set_ip(value);
   // @@protoc_insertion_point(field_set:lars.HostInfo.ip)
 }
 
-// int32 port = 2;
+// uint32 port = 2;
 inline void HostInfo::clear_port() {
-  _impl_.port_ = 0;
+  _impl_.port_ = 0u;
 }
-inline int32_t HostInfo::_internal_port() const {
+inline uint32_t HostInfo::_internal_port() const {
   return _impl_.port_;
 }
-inline int32_t HostInfo::port() const {
+inline uint32_t HostInfo::port() const {
   // @@protoc_insertion_point(field_get:lars.HostInfo.port)
   return _internal_port();
 }
-inline void HostInfo::_internal_set_port(int32_t value) {
+inline void HostInfo::_internal_set_port(uint32_t value) {
   
   _impl_.port_ = value;
 }
-inline void HostInfo::set_port(int32_t value) {
+inline void HostInfo::set_port(uint32_t value) {
   _internal_set_port(value);
   // @@protoc_insertion_point(field_set:lars.HostInfo.port)
 }

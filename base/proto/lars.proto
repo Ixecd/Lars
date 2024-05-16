@@ -11,8 +11,8 @@ enum MessageId {
 
 /* 管理 */
 message HostInfo {
-    int32 ip = 1;
-    int32 port = 2;
+    uint32 ip = 1;
+    uint32 port = 2;
 }
 
 /* 请求lars-dns route信息的消息内容 */

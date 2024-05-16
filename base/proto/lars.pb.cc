@@ -23,8 +23,8 @@ namespace _pbi = _pb::internal;
 namespace lars {
 PROTOBUF_CONSTEXPR HostInfo::HostInfo(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.ip_)*/0
-  , /*decltype(_impl_.port_)*/0
+    /*decltype(_impl_.ip_)*/0u
+  , /*decltype(_impl_.port_)*/0u
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct HostInfoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR HostInfoDefaultTypeInternal()
@@ -110,7 +110,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_lars_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\nlars.proto\022\004lars\"$\n\010HostInfo\022\n\n\002ip\030\001 \001"
-  "(\005\022\014\n\004port\030\002 \001(\005\"/\n\017GetRouteRequest\022\r\n\005m"
+  "(\r\022\014\n\004port\030\002 \001(\r\"/\n\017GetRouteRequest\022\r\n\005m"
   "odid\030\001 \001(\005\022\r\n\005cmdid\030\002 \001(\005\"N\n\020GetRouteRes"
   "ponse\022\r\n\005modid\030\001 \001(\005\022\r\n\005cmdid\030\002 \001(\005\022\034\n\004h"
   "ost\030\003 \003(\0132\016.lars.HostInfo*K\n\tMessageId\022\r"
@@ -181,8 +181,8 @@ inline void HostInfo::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.ip_){0}
-    , decltype(_impl_.port_){0}
+      decltype(_impl_.ip_){0u}
+    , decltype(_impl_.port_){0u}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -222,7 +222,7 @@ const char* HostInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx)
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 ip = 1;
+      // uint32 ip = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           _impl_.ip_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -230,7 +230,7 @@ const char* HostInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx)
         } else
           goto handle_unusual;
         continue;
-      // int32 port = 2;
+      // uint32 port = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           _impl_.port_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -267,16 +267,16 @@ uint8_t* HostInfo::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 ip = 1;
+  // uint32 ip = 1;
   if (this->_internal_ip() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_ip(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_ip(), target);
   }
 
-  // int32 port = 2;
+  // uint32 port = 2;
   if (this->_internal_port() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_port(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_port(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -295,14 +295,14 @@ size_t HostInfo::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // int32 ip = 1;
+  // uint32 ip = 1;
   if (this->_internal_ip() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_ip());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_ip());
   }
 
-  // int32 port = 2;
+  // uint32 port = 2;
   if (this->_internal_port() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_port());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_port());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
