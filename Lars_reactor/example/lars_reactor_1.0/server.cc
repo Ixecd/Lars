@@ -49,6 +49,8 @@ int main() {
     // 配置路径
     config_file::setPath("./serv.conf");
 
+    config_file::GetInstance()->get_all_info(config_file::GetInstance());
+
     std::string ip =
         config_file::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
 
