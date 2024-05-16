@@ -38,6 +38,8 @@ public:
 
     ~config_file();
 
+    static void get_all_info(config_file* instance);
+
     // 获取字符串类型配置信息
     std::string GetString(const std::string& section, const std::string& key, const std::string& default_value = "");
     // 字符串集合配置信息
