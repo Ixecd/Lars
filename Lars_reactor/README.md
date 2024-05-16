@@ -216,3 +216,6 @@ eventLoop/thread Tcp Server Model
     EFAULT：缓冲区buf指向无效内存区域。
     EINTR：读取被信号中断。
     EINVAL：无效参数，例如count为负数
+
+23. 关于namespace 
+    注意和extern的使用,extern修饰的变量要为全局变量
