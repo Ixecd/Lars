@@ -210,4 +210,16 @@ bool config_file::setPath(const std::string& path) {
     return config->Load(path);
 }
 
+void config_file::get_all_info(config_file* instance) {
+    std::cout << "get_all_info begin" << std::endl;
+
+    std::cout << "instance->_map.size() = " << instance->_map.size() << std::endl;
+    for (auto it = instance->_map.begin(); it != instance->_map.end(); ++it) {
+        std::cout << '[' << it->first << ']' << std::endl;
+        for (auto itt = it->second->begin(); itt != it->second->end(); ++itt) {
+            std::cout << itt->first << "  " << itt->second << std::endl;
+        }
+    }
+    std::cout << "get_all_info end" << std::endl;
+}
 }
