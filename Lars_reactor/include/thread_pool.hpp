@@ -22,7 +22,7 @@ public:
     /// @brief 初始化线程池,创建threads个线程
     /// @details 用thread_pool来为每个thread所绑定的event_pool中去发送task任务
     thread_pool(size_t threads);
-    /// @brief 获取一个thread的消息队列
+    /// @brief 获取一个thread的消息队列,里面有_queue包含任务
     thread_queue<task_msg>* get_thread();
 
     // ==== 发送一个task给thread_pool里的全部thread ====
