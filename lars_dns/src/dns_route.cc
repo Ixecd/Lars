@@ -251,7 +251,7 @@ void *check_route_change(void *args) {
 
     while (true) {
         std::cout << "Backend_Thread run again..." << std::endl;
-        sleep(1);
+        sleep(wait_time);
         long current_time = time(nullptr);
 
         // 1.加载当前版本信息
