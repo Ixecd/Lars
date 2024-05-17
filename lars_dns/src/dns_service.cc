@@ -54,13 +54,13 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     printf("modid = %u , cmdid = %u\n", modid, cmdid);
 
     // 2.5 如果之前没有订阅过这个modid/cmdid 订阅
+    // 一个conn对应一个client_sub_list->存储了客户端对应订阅的modid和cmdid信息,也就是说订阅信息存储在客户端
     uint64_t mod = ((uint64_t)modid << 32) + cmdid;
     client_sub_list *sub_list = (client_sub_list *)conn->param;
-    if (sub_list == nullptr) printf("cur sub_list is nullptr\n");
-
+    if (sub_list == nullptr) std::cout << "cur client_sub_list is nullptr" << std::endl; 
+    
     if (sub_list->find(mod) == sub_list->end()) {
         sub_list->insert(mod);
-
         SubscribeList::GetInstance()->subscribe(mod, conn->get_fd());
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     // 设置线程分离
     pthread_detach(tid);
 
-    Route *r = Route::GetInstance();
+    Route::GetInstance();
 
     // 测试mysql接口
     // MYSQL dbconn;

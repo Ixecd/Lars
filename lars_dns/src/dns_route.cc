@@ -181,7 +181,7 @@ int Route::load_route_data() {
 
         (*_temp_pointer)[key].insert(value);
     }
-    printf("load data to temp succ! size is %ld\n", _temp_pointer->size());
+    // printf("load data to temp succ! size is %ld\n", _temp_pointer->size());
     // 释放内存
     mysql_free_result(result);
 
@@ -251,16 +251,15 @@ void *check_route_change(void *args) {
 
     while (true) {
         std::cout << "Backend_Thread run again..." << std::endl;
-        sleep(wait_time);
+        // sleep(wait_time);
+        sleep(1);
         long current_time = time(nullptr);
 
         // 1.加载当前版本信息
         int rt = Route::GetInstance()->load_version();
 
         rt = 1;
-
-        std::cout << "cur rt = " << rt << "rand() = " << rand() << endl;
-
+        
         // 版本号被修改了
         if (rt == 1) {
             // 意味着有modid/cmdid修改

@@ -22,8 +22,6 @@ SubscribeList::SubscribeList() {}
 void SubscribeList::subscribe(uint64_t mod, int fd) {
     mutex_book_list.lock();
     _book_list[mod].insert(fd);
-    _push_list[fd].insert(mod);
-
     mutex_book_list.unlock();
 }
 
@@ -36,17 +34,32 @@ void SubscribeList::unsubscribe(uint64_t mod, int fd) {
 
 void SubscribeList::make_publish_map(listen_fd_set &online_fds,
                                      publish_map &need_publish) {
+    // 注意:这里五个线程都要执行,一个拿到锁之后其他的必然拿不到,所以应该多做一次判断
     // 遍历_push_list 找到对应的online_fds,然后放到need_publish中
     mutex_push_list.lock();
 
+    // 这里不知道什么原因,不能在遍历的时候顺便删除_push_list
+    // 预处理将要删除的文件描述符先保存起来
+    std::vector<int> preseve;
     for (auto it = _push_list.begin(); it != _push_list.end(); ++it) {
         // 需要publish的订阅列表在online_fds中找到了
         if (online_fds.find(it->first) != online_fds.end()) {
+            preseve.push_back(it->first);
             need_publish[it->first] = _push_list[it->first];
             // _push_list是一次性的
+            // 注意:这里的it是以引用的方式传入的erase(it)成功之后it指向下一个元素
+            //std::cout << "before erase..." << std::endl;
             // _push_list.erase(it->first);
+            // std::advance(it, -1);
+
+            //std::cout << "after erase()..." << std::endl;
         }
     }
+
+    // 开始删除
+    for (int num : preseve) 
+        _push_list.erase(num);
+
     mutex_push_list.unlock();
 }
 
@@ -72,6 +85,8 @@ void push_change_task(event_loop *loop, void *args) {
     publish_map need_publish;
     // 2. 把当前epoll监听的所有文件描述符对应的订阅信息全部放到need_publish中
     subscribe->make_publish_map(online_fds, need_publish);
+
+    // std::cout << "cur need_publish.size() = " << need_publish.size() << std::endl;
 
     // 3. 依次从need_publish去除数据发送给对应客户端连接
     for (auto it = need_publish.begin(); it != need_publish.end(); ++it) {
@@ -136,7 +151,9 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
     mutex_push_list.unlock();
     mutex_book_list.unlock();
 
-    std::cout << "cur tickle = " << tickle << std::endl;
+    // std::cout << "cur tickle = " << tickle << std::endl;
+
+    // std::cout << "after publish the _push_list.size() = " << _push_list.size() << std::endl;
 
     // 最后通知server的各个线程去执行
     if (tickle) (server->get_thread_pool())->send_task(push_change_task, this);
