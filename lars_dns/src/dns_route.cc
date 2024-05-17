@@ -240,8 +240,6 @@ void Route::remove_changes(bool remove_all) {
 /// @brief 周期性的检查db中route的version信息,由Backend Thread业务调用
 void *check_route_change(void *args) {
 
-    srand(time(nullptr));
-
     // 每隔10s检查一次,由config文件配置
     int wait_time =
         config_file::GetInstance()->GetNumber("route", "wait_time", 8);
