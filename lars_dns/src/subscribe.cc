@@ -22,6 +22,8 @@ SubscribeList::SubscribeList() {}
 void SubscribeList::subscribe(uint64_t mod, int fd) {
     mutex_book_list.lock();
     _book_list[mod].insert(fd);
+    _push_list[fd].insert(mod);
+
     mutex_book_list.unlock();
 }
 
@@ -36,28 +38,29 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
                                      publish_map &need_publish) {
     // 遍历_push_list 找到对应的online_fds,然后放到need_publish中
     mutex_push_list.lock();
+
     for (auto it = _push_list.begin(); it != _push_list.end(); ++it) {
         // 需要publish的订阅列表在online_fds中找到了
         if (online_fds.find(it->first) != online_fds.end()) {
             need_publish[it->first] = _push_list[it->first];
             // _push_list是一次性的
-            _push_list.erase(it);
+            // _push_list.erase(it->first);
         }
     }
     mutex_push_list.unlock();
 }
 
 void push_change_task(event_loop *loop, void *args) {
-    std::cout << "run in push_change_task..." << std::endl;
-    if (loop == nullptr)
-        std::cout << "cur loop is nullptr" << std::endl;
-    else
-        std::cout << "cur loop is not nullptr" << std::endl;
+    // std::cout << "run in push_change_task..." << std::endl;
+    // if (loop == nullptr)
+    //     std::cout << "cur loop is nullptr" << std::endl;
+    // else
+    //     std::cout << "cur loop is not nullptr" << std::endl;
 
-    if (args == nullptr)
-        std::cout << "cur args is nullptr" << std::endl;
-    else
-        std::cout << "cur args is not nullptr" << std::endl;
+    // if (args == nullptr)
+    //     std::cout << "cur args is nullptr" << std::endl;
+    // else
+    //     std::cout << "cur args is not nullptr" << std::endl;
 
     SubscribeList *subscribe = (SubscribeList *)args;
 
