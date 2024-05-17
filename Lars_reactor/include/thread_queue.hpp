@@ -72,6 +72,7 @@ public:
     void set_callback(io_callback cb, void *args = nullptr) {
         if (_loop != nullptr) 
             _loop->add_io_event(_evfd, cb , EPOLLIN, args);
+        else printf("cur _loop is nullptr !\n");
     }
     /// @brief 获取当前消息队列的loop
     event_loop *get_loop() {
