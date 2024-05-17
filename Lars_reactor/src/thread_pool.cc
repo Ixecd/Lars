@@ -41,7 +41,7 @@ void deal_task_message(event_loop *loop, int fd, void *args) {
 void *thread_main(void *args) {
     thread_queue<task_msg> *queue = (thread_queue<task_msg> *)args;
 
-    // 每个线程都应该有一个event_loop来监控客户端连接的读写时间
+    // 每个线程都应该有一个event_loop来监控客户端连接的读写事件
     event_loop *loop = new event_loop();
     qc_assert(loop != nullptr);
 
