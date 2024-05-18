@@ -3,4 +3,4 @@ make
 
 cd test
 make clean
-make 
+make
