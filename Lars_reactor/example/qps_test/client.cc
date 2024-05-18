@@ -80,7 +80,6 @@ void* thread_main(void *args) {
 
     tcp_client client(&loop, "127.0.0.1", 7777, "qps client");
 
-    
 
     // 注册路由
     client.add_msg_router(1, client_busi, (void *)&qps);
