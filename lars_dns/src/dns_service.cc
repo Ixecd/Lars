@@ -95,6 +95,7 @@ int main(int argc, char **argv) {
 
     // 加载配置信息
     // 这里加载的路径是相对路径,由于到时候是在config_file.cc中执行Load所以这里要改成绝对路径
+    // 这里和操作系统有关系,如果当前.cc文件和.conf文件在同一个目录下,操作系统就可以正确识别,如果不在同一目录下,就不能正确识别
     config_file::setPath("/home/qc/Lars/lars_dns/conf/lars.conf");
     // 输出所有配置信息
     // config_file::GetInstance()->get_all_info(config_file::GetInstance());
