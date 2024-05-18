@@ -12,9 +12,11 @@
 #include "subscribe.hpp"
 
 /// @brief 声明一变量,保证程序执行过程中只有一个实例
+/// @details 如果不想使用extern 那就都包含在namespace qc中即可
 extern qc::tcp_server *server;
 
-using namespace qc;
+namespace qc {
+
 // tcp_server *server;
 
 SubscribeList::SubscribeList() {}
@@ -48,17 +50,16 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
             need_publish[it->first] = _push_list[it->first];
             // _push_list是一次性的
             // 注意:这里的it是以引用的方式传入的erase(it)成功之后it指向下一个元素
-            //std::cout << "before erase..." << std::endl;
+            // std::cout << "before erase..." << std::endl;
             // _push_list.erase(it->first);
             // std::advance(it, -1);
 
-            //std::cout << "after erase()..." << std::endl;
+            // std::cout << "after erase()..." << std::endl;
         }
     }
 
     // 开始删除
-    for (int num : preseve) 
-        _push_list.erase(num);
+    for (int num : preseve) _push_list.erase(num);
 
     mutex_push_list.unlock();
 }
@@ -86,7 +87,8 @@ void push_change_task(event_loop *loop, void *args) {
     // 2. 把当前epoll监听的所有文件描述符对应的订阅信息全部放到need_publish中
     subscribe->make_publish_map(online_fds, need_publish);
 
-    // std::cout << "cur need_publish.size() = " << need_publish.size() << std::endl;
+    // std::cout << "cur need_publish.size() = " << need_publish.size() <<
+    // std::endl;
 
     // 3. 依次从need_publish去除数据发送给对应客户端连接
     for (auto it = need_publish.begin(); it != need_publish.end(); ++it) {
@@ -153,10 +155,10 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
 
     // std::cout << "cur tickle = " << tickle << std::endl;
 
-    // std::cout << "after publish the _push_list.size() = " << _push_list.size() << std::endl;
+    // std::cout << "after publish the _push_list.size() = " <<
+    // _push_list.size() << std::endl;
 
     // 最后通知server的各个线程去执行
     if (tickle) (server->get_thread_pool())->send_task(push_change_task, this);
 }
-
-// namespace qc
+}  // namespace qc
