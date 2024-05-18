@@ -20,6 +20,7 @@
 
 using namespace qc;
 
+// server 不在 namespace 中
 tcp_server *server;
 
 using client_sub_list = std::unordered_set<uint64_t>;
