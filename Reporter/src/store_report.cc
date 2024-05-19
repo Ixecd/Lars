@@ -25,15 +25,26 @@ StoreReport::StoreReport() {
     // 2.2 设置超时重连
     char reconnect;
     mysql_options(&_db_conn, MYSQL_OPT_RECONNECT, &reconnect);
-
     // 3. 加载配置
-    std::string db_host = config_file::GetInstance()->GetString("mysql", "db_host", "127.0.0.1");
-    short db_port = config_file::GetInstance()->GetNumber("mysql", "db_port", 3306);
-    std::string db_user = config_file::GetInstance()->GetString("mysql", "db_user", "qc");
-    std::string db_passwd = config_file::GetInstance()->GetString("mysql", "db_passwd", "123456");
-    std::string db_name = config_file::GetInstance()->GetString("mysql", "db_name", "lars_dns");
+    std::string db_host =
+        config_file::GetInstance()->GetString("mysql", "db_host", "localhost");
+    unsigned short db_port =
+        config_file::GetInstance()->GetNumber("mysql", "db_port", 3306);
+    std::string db_user =
+        config_file::GetInstance()->GetString("mysql", "db_user", "qc");
+    std::string db_passwd =
+        config_file::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
+    std::string db_name =
+        config_file::GetInstance()->GetString("mysql", "db_name", "lars_dns");
 
     MYSQL *connection = mysql_real_connect(&_db_conn, db_host.c_str(), db_user.c_str(), db_passwd.c_str(), db_name.c_str(), db_port, nullptr, 0);
+
+    if (connection == nullptr) {
+        std::cout << "connection error\n";
+        // 获取错误信息
+        fprintf(stderr, "连接到MySQL数据库失败: %s\n",
+        mysql_error(&_db_conn)); exit(1);
+    }
 
     qc_assert(connection != nullptr);
 }
