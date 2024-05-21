@@ -207,7 +207,40 @@ eventLoop/thread Tcp Server Model
 
     A.常用的数据交换格式 json、xml、protobuf(二进制数据格式、需要编码和解码)
 
+22. 负载均衡
+    一个服务称为一个模块,一个模块由modid + cmdid来标识modid + cmdid 的组合表示一个远程服务,这个远程服务一般部署在多个节点上
 
+    Lars Balance以UDP的方式为业务提供:1.节点获取服务 2.节点调用结果上报服务
+
+    业务一 节点获取服务:
+        业务方每次要想远程服务发送消息时,先利用modid + cmdid去向LB Agent获取一个可用节点,之后向该节点发送消息,完成一次远程调用;
+        具体获取modid + cmdid下的哪一个节点由LB Agent决定
+    
+    业务二 节点调用结果上报服务:
+        首先通过业务一根据LB Agent获取节点,调用结果会汇报给LB Agent,以便LB Agent根据自己的LB算法来感知远程服务节点的状态是空闲还是
+        过载,进而控制节点获取时的节点调度.
+    
+    下面是示意图
+                                                           --------------<--------------     
+                                                           |        update route       |
+    business one ---> GetNode --->  Thread1    -------> LB Algo                        |
+                                UDP Server:8888                \                       |               获取route
+                                                                 MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
+    business two ---> GetNode --->  Thread2    -------> LB Algo                                        
+                                UDP Server:8889                  MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
+                                                               /                                        上报状态
+    business thr ---> GetNode --->  Thread3    -------> LB Algo 
+                                UDP Server:8890
+
+    Lars Load—Balance Agent 一共由五个线程组成 一个LB算法构成.
+
+    UDP Server服务,并运行LB算法,对业务提供节点获取和节点调用结果上报服务,为了增大系统吞吐量,使用三个thread独立运行LB算法
+        (modid + cmdid) % 3 = i的那些模块的服务与调度,由第i + 1个UDP Server线程负责
+
+    Dns Service Client:Dns Server的客户端线程,向dnsserver获取一个模块的节点集合(或称为获取路由);UDP Server会按需向此线程的MQ写入获取路由
+        请求,之后Dns Server 再向UDP Server发送路由信息更新.
+
+    Report Service Client: 是report的客户端线程,负责将每个模块下所有节点在一段时间内的调用结果、过载情况上报到report service中,便于观察、做警报;本身消费MQ数据
 
 
 
