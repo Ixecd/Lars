@@ -28,6 +28,8 @@ public:
     
     int send_message(const char *data, int msglen, int msgid) override;
 
+    int get_fd() override;
+
     //注册路由回调函数
     void add_msg_router(int msgid, msg_callback cb, void* user_data = nullptr);
 
