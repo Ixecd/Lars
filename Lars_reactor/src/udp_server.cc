@@ -24,6 +24,10 @@ void read_callback(event_loop *loop, int fd, void *args) {
     server->do_read();
 }
 
+int udp_server::get_fd() {
+    return _sockfd;
+}
+
 void udp_server::do_read() {
     while (1) {
         /// @brief 这里_client_addr 和 _client_addr_len 存储的是发送发的信息
