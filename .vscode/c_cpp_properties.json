@@ -9,7 +9,8 @@
                // "${workspaceFolder}/base/mysql-connector-c/include",
                 "/usr/include/mysql-connector-c/include",
                 "${workspaceFolder}/base/proto",
-                "${workspaceFolder}/Reporter/include"
+                "${workspaceFolder}/Reporter/include",
+                "${workspaceFolder}/lars_loadbalance_agent/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
