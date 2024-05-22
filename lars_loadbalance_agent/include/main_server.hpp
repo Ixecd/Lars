@@ -15,7 +15,6 @@
 
 namespace qc{
 
-
 // 启动UDP server,用来接收业务层(调用者/使用者)的消息
 void start_UDP_servers(void);
 
