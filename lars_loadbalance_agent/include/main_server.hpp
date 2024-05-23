@@ -13,16 +13,15 @@
 #include "lars_reactor.hpp"
 #include "lars.pb.h"
 
-namespace qc{
+namespace qc {
+    // 启动UDP server,用来接收业务层(调用者/使用者)的消息
+    void start_UDP_servers();
 
-// 启动UDP server,用来接收业务层(调用者/使用者)的消息
-void start_UDP_servers(void);
+    // 启动lars_reporter client 线程
+    void start_report_client();
 
-// 启动lars_reporter client 线程
-void start_report_client(void);
-
-// 启动lars_dns client线程
-void start_dns_client(void);
+    // 启动lars_dns client线程
+    void start_dns_client();
 }
 
 
