@@ -19,7 +19,7 @@
 
 namespace qc {
 
-void read_callback(event_loop *loop, int fd, void *args) {
+void read_server_callback(event_loop *loop, int fd, void *args) {
     udp_server *server = (udp_server *)args;
     server->do_read();
 }
@@ -96,7 +96,7 @@ udp_server::udp_server(event_loop *loop, const char *ip, uint16_t port) {
 
     printf("server on %s:%u is running...\n", ip, port);
 
-    _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
+    _loop->add_io_event(_sockfd, read_server_callback, EPOLLIN, this);
 }
 
 int udp_server::send_message(const char *data, int msglen, int msgid) {
