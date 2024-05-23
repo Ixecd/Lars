@@ -243,4 +243,6 @@ eventLoop/thread Tcp Server Model
     Report Service Client: 是report的客户端线程,负责将每个模块下所有节点在一段时间内的调用结果、过载情况上报到report service中,便于观察、做警报;本身消费MQ数据
 
 
-
+23. 关于重复定义
+    在lars_loadbalance_agent遇到了重复定义的问题,解决方法如下:
+        将全局变量定义在源文件中,不要放在名字空间中。在其他文件中使用extern包含即可。
