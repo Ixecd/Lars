@@ -4,26 +4,28 @@
  * @brief udp_client 封装
  * @version 0.1
  * @date 2024-05-07
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include "udp_client.hpp"
-#include <strings.h>
+
 #include <string.h>
+#include <strings.h>
 
 namespace qc {
 
-void read_callback(event_loop *loop, int fd, void *args) {
-    udp_client *client = (udp_client*)args;
+void read_client_callback(event_loop *loop, int fd, void *args) {
+    udp_client *client = (udp_client *)args;
     client->do_read();
 }
 
-
+int udp_client::get_fd() { return _sockfd; }
 
 udp_client::udp_client(event_loop *loop, const char *ip, uint16_t port) {
     // 1. socket
-    _sockfd = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_UDP);
+    _sockfd =
+        socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_UDP);
     qc_assert(_sockfd != -1);
 
     struct sockaddr_in serveraddr;
@@ -32,12 +34,13 @@ udp_client::udp_client(event_loop *loop, const char *ip, uint16_t port) {
     inet_aton(ip, &serveraddr.sin_addr);
     serveraddr.sin_port = htons(port);
     // 2. 链接
-    int rt = connect(_sockfd, (const struct sockaddr *)&serveraddr, sizeof(serveraddr));
+    int rt = connect(_sockfd, (const struct sockaddr *)&serveraddr,
+                     sizeof(serveraddr));
     qc_assert(rt != -1);
 
     // 3. 添加io事件
     _loop = loop;
-    _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
+    _loop->add_io_event(_sockfd, read_client_callback, EPOLLIN, this);
 }
 
 udp_client::~udp_client() {
@@ -56,8 +59,8 @@ int udp_client::send_message(const char *data, int msglen, int msgid) {
     memcpy(_write_buf, &head, MESSAGE_HEAD_LEN);
     memcpy(_write_buf + MESSAGE_HEAD_LEN, data, msglen);
 
-    int rt = sendto(_sockfd, _write_buf, msglen + MESSAGE_HEAD_LEN, 0,
-                    nullptr, 0);
+    int rt =
+        sendto(_sockfd, _write_buf, msglen + MESSAGE_HEAD_LEN, 0, nullptr, 0);
 
     qc_assert(rt != -1);
 
@@ -70,9 +73,8 @@ void udp_client::add_msg_router(int msgid, msg_callback cb, void *user_data) {
 
 void udp_client::do_read() {
     while (1) {
-        int pkg_len =
-            recvfrom(_sockfd, _read_buf, sizeof(_read_buf), 0,
-                     nullptr, nullptr);
+        int pkg_len = recvfrom(_sockfd, _read_buf, sizeof(_read_buf), 0,
+                               nullptr, nullptr);
         if (pkg_len == -1)
             if (errno == EAGAIN)
                 break;
@@ -103,4 +105,4 @@ void udp_client::do_read() {
     }
 }
 
-}
+}  // namespace qc
