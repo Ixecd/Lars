@@ -25,6 +25,8 @@ public:
 
     ~udp_client();
 
+    int get_fd() override;
+
     void add_msg_router(int msgid, msg_callback cb, void *user_data = nullptr);
 
     int send_message(const char *data, int msglen, int msgid) override;
