@@ -8,6 +8,16 @@ enum MessageId {
     ID_GetRouteRequest          = 1;    // 向DNS请求Route对应的关系的消息ID
     ID_GetRouteResponse         = 2;    // DNS回复的Route信息的消息ID
     ID_ReportStatusReques       = 3;    // 上报host调用状态信息请求信息ID
+    ID_GetHostRequest           = 4;    // API发送请求host信息给LB Agent模块消息ID
+    ID_GetHostReponse           = 5;    // Agent返回给API host信息的ID
+}
+
+/* Lars 系统返回Code */
+enum LarsRetCode {
+    RET_SUCC                    = 0;    // 成功
+    RET_OVERLOAD                = 1;    // 过载
+    RET_SYSTEM_ERR              = 2;    // 系统错误
+    RET_NOEXIST                 = 3;    // 资源不存在
 }
 
 /* 管理 */
@@ -45,4 +55,20 @@ message ReportStatusReq {
     int32 caller                        = 3;
     repeated HostCallResult results     = 4;
     uint32 ts                           = 5;
+}
+
+/* API请求agent获取host信息(UDP) */
+message GetHostRequest {
+    uint32 seq                          = 1;
+    int32 modid                         = 2;
+    int32 cmdid                         = 3;
+}
+
+/* Agent返回给API调用方host信息(UDP) */
+message GetHostReponse {
+    uint32 seq                          = 1;
+    int32 modid                         = 2;
+    int32 cmdid                         = 3;
+    int32 retcode                       = 4;
+    HostInfo host                       = 5;
 }
