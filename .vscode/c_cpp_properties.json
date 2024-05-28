@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Lars_reactor/include",
                 "${workspaceFolder}/lars_dns/include",
-               // "${workspaceFolder}/base/mysql-connector-c/include",
+                
                 "/usr/include/mysql-connector-c/include",
                 "${workspaceFolder}/base/proto",
                 "${workspaceFolder}/Reporter/include",
