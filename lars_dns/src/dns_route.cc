@@ -59,23 +59,23 @@ void Route::connect_db() {
     mysql_options(&_db_conn, MYSQL_OPT_RECONNECT, &reconnect);
     // cout << "after mysql_init" << endl;
 
-    MYSQL *connection = mysql_real_connect(
-        &_db_conn, db_host.c_str(), db_user.c_str(), db_passwd.c_str(),
-        db_name.c_str(), db_port, nullptr, 0);
+    // MYSQL *connection = mysql_real_connect(
+    //     &_db_conn, db_host.c_str(), db_user.c_str(), db_passwd.c_str(),
+    //     db_name.c_str(), db_port, nullptr, 0);
 
-    qc_assert(connection != nullptr);
+    // qc_assert(connection != nullptr);
 
-    // MYSQL *connection =
-    //     mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378",
-    //                        "lars_dns", 3306, nullptr, 0);
-    // if (connection == nullptr) {
-    //     cout << "connection error\n" << endl;
-    //     // 获取错误信息
-    //     fprintf(stderr, "连接到MySQL数据库失败: %s\n",
-    //     mysql_error(&_db_conn)); exit(1);
-    // }
+    MYSQL *connection =
+        mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378",
+                           "lars_dns", 3306, nullptr, 0);
+    if (connection == nullptr) {
+        cout << "connection error\n" << endl;
+        // 获取错误信息
+        fprintf(stderr, "连接到MySQL数据库失败: %s\n", mysql_error(&_db_conn));
+        exit(1);
+    }
 
-    // cout << "end of connect_db()..." << endl;
+    cout << "end of connect_db()..." << endl;
 }
 
 void Route::build_maps() {
@@ -99,14 +99,14 @@ void Route::build_maps() {
         unsigned long ip = atoi(row[3]);
         int port = atoi(row[4]);
 
-        //组装map的key，有modID/cmdID组合
+        // 组装map的key，有modID/cmdID组合
         uint64_t key = ((uint64_t)modID << 32) + cmdID;
         uint64_t value = ((uint64_t)ip << 32) + port;
 
         printf("modID = %d, cmdID = %d, ip = %lu, port = %d\n", modID, cmdID,
                ip, port);
 
-        //插入到RouterDataMap_A中
+        // 插入到RouterDataMap_A中
         (*_data_pointer)[key].insert(value);
     }
     mysql_free_result(result);
@@ -202,7 +202,8 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
     // 读取当前版本之前所有修改
     std::cout << "cur _version = " << _version << std::endl;
     snprintf(_sql, 1000,
-             "select modid, cmdid from RouteChange where version <= %ld;", _version + 100000);
+             "select modid, cmdid from RouteChange where version <= %ld;",
+             _version + 100000);
 
     int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
     qc_assert(rt == 0);
@@ -221,7 +222,6 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
         changes.push_back(key);
     }
     mysql_free_result(result);
-
 }
 
 void Route::remove_changes(bool remove_all) {
@@ -239,7 +239,6 @@ void Route::remove_changes(bool remove_all) {
 
 /// @brief 周期性的检查db中route的version信息,由Backend Thread业务调用
 void *check_route_change(void *args) {
-
     // 每隔10s检查一次,由config文件配置
     int wait_time =
         config_file::GetInstance()->GetNumber("route", "wait_time", 8);
@@ -259,7 +258,7 @@ void *check_route_change(void *args) {
         int rt = Route::GetInstance()->load_version();
 
         rt = 1;
-        
+
         // 版本号被修改了
         if (rt == 1) {
             // 意味着有modid/cmdid修改
@@ -276,7 +275,7 @@ void *check_route_change(void *args) {
             std::vector<uint64_t> changes;
             Route::GetInstance()->load_changes(changes);
 
-            for (auto num : changes) 
+            for (auto num : changes)
                 std::cout << "changes = " << num << std::endl;
 
             // 推送
