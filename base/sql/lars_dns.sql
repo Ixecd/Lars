@@ -18,3 +18,4 @@ create table `ServerCallStatus` (
     key `mlb_index` (`modid`, `cmdid`, `ip`, `port`, `caller`)
 ) engine=InnoDB default charset=utf8;
 
+
