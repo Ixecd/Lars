@@ -13,15 +13,10 @@
 
 using namespace qc;
 
-// 与report_client通信的thread_queue消息队列
+// 与report_client通信的thread_queue消息队列,agent负责上报请求消息
 thread_queue<lars::ReportStatusReq>* report_queue;
-// 与dns_client通信的thread_queue消息队列
+// 与dns_client通信的thread_queue消息队列,agent负责
 thread_queue<lars::GetRouteRequest>* dns_queue;
-// report_client线程需要携带thread_queue<lars::ReportStatusRequest>消息队列通道,agent负责上报请求消息
-//thread_queue<lars::ReportStatusReq>* report_queue = nullptr;
-// dns_client线程需要携带thread_queue<lars::GetRouteRequest>消息队列通道,agent负责
-// 将请求modid/cmdid 的route消息通过lars::GetRouteRequest发送给dns_client线程
-//thread_queue<lars::GetRouteRequest>* dns_queue = nullptr;
 
 int main() {
     // 1. 配置文件
