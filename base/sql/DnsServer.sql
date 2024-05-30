@@ -1,4 +1,4 @@
--- Active: 1713606375979@@127.0.0.1@3306@qc
+-- Active: 1717058667981@@127.0.0.1@3306
 drop database if exists lars_dns;
 create database lars_dns;
 use lars_dns;
