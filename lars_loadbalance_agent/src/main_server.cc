@@ -13,6 +13,8 @@
 #include "route_lb.hpp"
 
 #define ROUTE_NUM 3
+#define probe_num 10
+#define INIT_SUCC_CNT 180
 
 using namespace qc;
 
@@ -38,19 +40,16 @@ static void init_lb_agent() {
     // 配置环境
     config_file::GetInstance()->setPath(
         "/home/qc/Lars/lars_loadbalance_agent/conf/lars_lb_agent.conf");
-    lb_config.probe_nunm = config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
-    lb_config.init_succ_cnt = config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
+    //lb_config.probe_nunm = config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
+    //lb_config.init_succ_cnt = config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
 
     create_route_lb();
 }
 
 
 int main() {
-    init_lb_agent();
-
     // 1. 配置文件
-    config_file::GetInstance()->setPath(
-        "/home/qc/Lars/lars_loadbalance_agent/conf/lars_lb_agent.conf");
+    init_lb_agent();
     std::string reporter_ip =
         config_file::GetInstance()->GetString("reporter", "ip", "localhost");
     unsigned short reporter_port =

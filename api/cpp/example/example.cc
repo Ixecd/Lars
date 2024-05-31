@@ -8,18 +8,19 @@ void usage() {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 3) {
+    if (argc != 3) {
         usage();
         return 1;
     }
 
-    int modid = (int)argv[1];
-    int cmdid = (int)argv[2];
+    int modid = atoi(argv[1]);
+    int cmdid = atoi(argv[2]);
 
     std::string ip;
     int port;
 
     lars_client api;
+
     int rt = api.get_host(modid, cmdid, ip, port);
     if (rt == 0) {
         std::cout << "host is " << ip << " : " << port << std::endl;
@@ -27,3 +28,5 @@ int main(int argc, char **argv) {
     }
     return 0;
 }
+
+

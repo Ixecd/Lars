@@ -8,8 +8,9 @@
                 "${workspaceFolder}/lars_dns/include",
                 "/usr/include/mysql-connector-c/include",
                 "${workspaceFolder}/base/proto",
-                "${workspaceFolder}/Reporter/include",
-                "${workspaceFolder}/lars_loadbalance_agent/include"
+                "${workspaceFolder}/lars_reporter/include",
+                "${workspaceFolder}/lars_loadbalance_agent/include",
+                "${workspaceFolder}/api/cpp/lars_api"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

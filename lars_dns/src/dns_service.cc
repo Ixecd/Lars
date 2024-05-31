@@ -106,6 +106,7 @@ int main(int argc, char **argv) {
     short port = config_file::GetInstance()->GetNumber("reactor", "port", 9876);
 
     server = new tcp_server(&loop, ip.c_str(), port);
+    std::cout << "dns_server ip = " << ip.c_str() << " port = " << port << std::endl;
 
     // 创建好server之后直接注册Hook函数
     server->set_conn_start(create_subscribe);

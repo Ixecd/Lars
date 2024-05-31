@@ -18,9 +18,9 @@ PROTO_H = $(BASE)/proto
 
 OTHER_LIB = -lpthread -ldl -lprotobuf
 
-SRC = ./src
-INC = -I./include -I$(BASE_H) -I$(LARS_REACTOR_H) -I$(MYSQL_H) -I$(PROTO_H)
-LIB = $(MYSQL_LIB) -L$(LARS_REACTOR_LIB) $(OTHER_LIB)
+SRC = ./
+INC = -I./include -I$(BASE_H) -I$(LARS_REACTOR_H) -I$(PROTO_H)
+LIB = -L$(LARS_REACTOR_LIB) $(OTHER_LIB)
 
 # 注意:这里只是将相应的.cc后缀变为.o后缀,并没有实质进行编译,类似于字符串转换
 OBJS = $(addsuffix .o, $(basename $(wildcard $(SRC)/*.cc)))

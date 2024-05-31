@@ -23,7 +23,6 @@ static void get_host_from_list(lars::GetHostResponse &rsp, host_list &l) {
 
 // 从两个队列中获取一个host给上层
 int load_balance::choice_one_host(lars::GetHostResponse &rsp) {
-    int rt = lars::RET_SUCC;
     // 1. 判断空闲list是否为空
     if (_idle_list.empty()) {
         // 1.1 判断过载list 是否为空
@@ -45,20 +44,25 @@ int load_balance::choice_one_host(lars::GetHostResponse &rsp) {
         }
     } else {
         // 2. 空闲队列不为空
-        // 2.1判断过载队列是否为空
-        if (!_overload_list.empty()) {
-            // 给一次机会
+        // 判断过载列表是否为空
+        if (_overload_list.empty()) {
+            // 当前所有节点都正常
+            get_host_from_list(rsp, _idle_list);
+        } else {
+            // 有部分过载的节点
             if (_access_cnt >= PROBE_NUM) {
                 _access_cnt = 0;
-                // 从过载队列中取一个返回
                 get_host_from_list(rsp, _overload_list);
             } else {
-                _access_cnt++;
+                ++_access_cnt;
                 get_host_from_list(rsp, _idle_list);
             }
+            // 目前不给机会
+            get_host_from_list(rsp, _idle_list);
         }
+
     }
-    return rt;
+    return lars::RET_SUCC;
 }
 
 // 如果list中没有host信息,就需要从远程DNS Service发送GetRouteHost请求申请
@@ -73,6 +77,8 @@ int load_balance::pull() {
     status = PULLING;
 }
 
+/// @brief 向自己的idle_list中添加主机信息
+/// @param rsp 
 void load_balance::update(lars::GetRouteResponse &rsp) {
     qc_assert(rsp.host_size() != 0);
 
@@ -87,7 +93,7 @@ void load_balance::update(lars::GetRouteResponse &rsp) {
 
         remote_hosts.insert(key);
 
-        if (_host_map.find(key) != _host_map.end()) {
+        if (_host_map.find(key) == _host_map.end()) {
             // 新增
             host_info *hi = new host_info(HI.ip(), HI.port(), INIT_SUCC_CNT);
             qc_assert(hi != nullptr);

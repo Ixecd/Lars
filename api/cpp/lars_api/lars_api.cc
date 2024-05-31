@@ -18,7 +18,6 @@
 
 #include "lars.pb.h"
 
-#define UDP_SERVER_NUM 3
 
 namespace qc {
 
@@ -28,12 +27,11 @@ lars_client::lars_client() : _seqid(0) {
     struct sockaddr_in servaddr;
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-
-    // 为了方便测试,使用当前localhost
+    // UDP通信只需要ip和port
     inet_aton("127.0.0.1", &servaddr.sin_addr);
 
     // 2.创建3个UDPsocket
-    for (int i = 0; i < UDP_SERVER_NUM; ++i) {
+    for (int i = 0; i < 3; ++i) {
         _sockfd[i] = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP);
         qc_assert(_sockfd[i] != -1);
 
@@ -48,8 +46,8 @@ lars_client::lars_client() : _seqid(0) {
 }
 
 lars_client::~lars_client() {
-    std::cout << "~lars_client()..." << std::endl;
-    for (int i = 0; i < UDP_SERVER_NUM; ++i) close(_sockfd[i]);
+    std::cout << "lars_client::~lars_client()..." << std::endl;
+    for (int i = 0; i < 3; ++i) close(_sockfd[i]);
 }
 
 /// @brief 从lars系统中获取host信息,得到可用的host的ip和port
@@ -109,7 +107,7 @@ int lars_client::get_host(int modid, int cmdid, std::string &ip, int &port) {
             fprintf(stderr, "message format error: head.msglen = %d, message_len = %d, message_len - MESSAGE_HEAD_LEN = %d, head msgid = %d, ID_GetHostResponse = %d\n", head.msglen, message_len, message_len - MESSAGE_HEAD_LEN, head.msgid, lars::ID_GetHostResponse);
             return lars::RET_SYSTEM_ERR;
         }
-    } while (rsp.seq() < seq);
+    } while (rsp.seq() < seq); // ------------><------------
 
     if (rsp.seq() != seq || rsp.modid() != modid || rsp.cmdid() != cmdid) {
         fprintf(stderr, "message format error\n");

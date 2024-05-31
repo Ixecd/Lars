@@ -14,7 +14,7 @@ namespace qc {
 
 void new_dns_request(event_loop *loop, int fd, void *args) {
     // ------------------------------------
-    // ----------- Tcp_client -------------
+    // --------- DNS Tcp_client -----------
     tcp_client *client = (tcp_client *)args;
 
     // 1. 将请求从dns_queue中取出来
@@ -47,6 +47,7 @@ void deal_recv_route(const char *data, int msglen, int msgid, net_connection *co
     int index = (modid + cmdid) % 3;
 
     // 将该modid/cmdid交给一个route_lb
+    // 收到一个DNS请求,更新route_lb下的host信息
     r_lb[index]->update_host(modid, cmdid, rsp);
 }
 
@@ -83,4 +84,5 @@ void start_dns_client() {
 
     pthread_detach(tid);
 }
+
 }

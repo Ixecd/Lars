@@ -41,9 +41,13 @@ static void get_host_cb(const char *data, uint32_t msglen, int msgid, net_connec
 
 // 来接收业务
 void *agent_server_main(void *args) {
-    int *index = (int *)args;
-    // std::cout << "index = " << *index << std::endl;
-    unsigned short port = *index + 8888;
+    long index = (long) args;
+    // int index = (int)args;
+
+    std::cout << "----- agent_server_main -----" << std::endl;
+
+    std::cout << "index = " << index << std::endl;
+    short port = index + 8888;
     event_loop loop;
 
     udp_server server(&loop, "0.0.0.0", port);
@@ -61,9 +65,11 @@ void *agent_server_main(void *args) {
 
 void start_UDP_servers(void) {
     // 创建三个线程
+    long index = 0;
     for (int i = 0; i < 3; ++i) {
         pthread_t tid;
-        int rt = pthread_create(&tid, nullptr, agent_server_main, (int *)&i);
+        index = i;
+        int rt = pthread_create(&tid, nullptr, agent_server_main, (void *)index);
         qc_assert(rt != -1);
         pthread_detach(tid);
     }

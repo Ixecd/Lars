@@ -52,7 +52,9 @@ void *report_client_thread(void *args) {
     unsigned short port =
         config_file::GetInstance()->GetNumber("reporter", "port", 0);
 
-    udp_client client(&loop, ip.c_str(), port);
+    // udp_client client(&loop, ip.c_str(), port);
+    // 只有处理业务的一方才是UDP, reporter和dns都是tcp传输
+    tcp_client client(&loop, ip.c_str(), port, "reporter client");
 
     // 将thread_queue消息回调事件绑定到loop中
     report_queue->set_loop(&loop);

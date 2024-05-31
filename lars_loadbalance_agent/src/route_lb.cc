@@ -4,6 +4,7 @@
 
 namespace qc {
 
+// id 从 1开始
 route_lb::route_lb(int id) : _id(id) {}
 
 // agent 获取一个host主机,将返回的主机结果放到rsp中
