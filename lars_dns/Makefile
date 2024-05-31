@@ -1,4 +1,4 @@
-TARGET = lars_dns
+TARGET = ./bin/lars_dns
 CXX = g++
 CFLAGS = -g -O2 -Wall -Wno-deprecated
 
