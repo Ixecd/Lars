@@ -45,4 +45,11 @@
     load_balance:针对一组modid/cmdid的负载均衡模块
     route_lb:和udp_server数量保持一致,每个route_lb负责管理多个load_balance
 
+4. 关于protobuf
+    一般对于Cpp而言,在接收数据包的时候使用ParseFromArray
+    本质上 ParseFromArray 和 ParseFromString 的处理结果是一致的.
+    ParseFromString多用于Python,而ParseFromArray多用于C++
+
+    在message中的reapted属性,如果要一个一个获取,其类型为const.
+
     

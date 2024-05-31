@@ -10,6 +10,9 @@
  */
 
 #include "main_server.hpp"
+#include "route_lb.hpp"
+
+#define ROUTE_NUM 3
 
 using namespace qc;
 
@@ -17,8 +20,34 @@ using namespace qc;
 thread_queue<lars::ReportStatusReq>* report_queue;
 // 与dns_client通信的thread_queue消息队列,agent负责
 thread_queue<lars::GetRouteRequest>* dns_queue;
+// 每个Agent UDP server的负载均衡路由 route_lb
+// 一个route_lb管理多个load_balance
+route_lb *r_lb[3];
+
+/// @brief 默认route_loadbalance的编号从1开始
+static void create_route_lb() {
+    int id = 0;
+    for (int i = 0; i < ROUTE_NUM; ++i) {
+        id = i + 1;
+        r_lb[i] = new route_lb(id);
+        qc_assert(r_lb[i] != nullptr);
+    }
+}
+
+static void init_lb_agent() {
+    // 配置环境
+    config_file::GetInstance()->setPath(
+        "/home/qc/Lars/lars_loadbalance_agent/conf/lars_lb_agent.conf");
+    lb_config.probe_nunm = config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
+    lb_config.init_succ_cnt = config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
+
+    create_route_lb();
+}
+
 
 int main() {
+    init_lb_agent();
+
     // 1. 配置文件
     config_file::GetInstance()->setPath(
         "/home/qc/Lars/lars_loadbalance_agent/conf/lars_lb_agent.conf");

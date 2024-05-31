@@ -1,16 +1,21 @@
 #include "lars_reactor.hpp"
 #include "main_server.hpp"
+#include "route_lb.hpp"
 #include <pthread.h>
 
 // 与report_client通信的thread_queue消息队列
 extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
 // 与dns_client通信的thread_queue消息队列
 extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+// route_loadbalance
+extern qc::route_lb *r_lb[3];
 
 namespace qc {
 
 void new_dns_request(event_loop *loop, int fd, void *args) {
-    udp_client *client = (udp_client *)args;
+    // ------------------------------------
+    // ----------- Tcp_client -------------
+    tcp_client *client = (tcp_client *)args;
 
     // 1. 将请求从dns_queue中取出来
     std::queue<lars::GetRouteRequest> msgs;
@@ -30,6 +35,21 @@ void new_dns_request(event_loop *loop, int fd, void *args) {
     }
 }
 
+// 处理dns service返回的路由信息
+void deal_recv_route(const char *data, int msglen, int msgid, net_connection *conn, void *args) {
+    lars::GetRouteResponse rsp;
+
+    rsp.ParseFromArray(data, msglen);
+    // rsp.ParseFromString(data);
+
+    int modid = rsp.modid();
+    int cmdid = rsp.cmdid();
+    int index = (modid + cmdid) % 3;
+
+    // 将该modid/cmdid交给一个route_lb
+    r_lb[index]->update_host(modid, cmdid, rsp);
+}
+
 void *dns_client_thread(void *args) {
     std::cout << "cur dns_client_thread start..." << std::endl;
 
@@ -42,11 +62,15 @@ void *dns_client_thread(void *args) {
         config_file::GetInstance()->GetNumber("dnsserver", "port", 7890);
 
     // 创建dns_client
-    udp_client client(&loop, ip.c_str(), port);
+    // dns 客户端是使用tcp传输
+    tcp_client client(&loop, ip.c_str(), port, "dns_client");
 
     // 将thread_queue消息回调事件,绑定到loop上
     dns_queue->set_loop(&loop);
     dns_queue->set_callback(new_dns_request, &client);
+
+    // 设置route信息
+    client.add_msg_router(lars::ID_GetRouteResponse, deal_recv_route);
 
     loop.event_process();
 }

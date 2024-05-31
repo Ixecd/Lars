@@ -35,13 +35,13 @@ public:
     bool empty() const { return _idle_list.empty() && _overload_list.empty(); }
 
     // 从当前的双队列中获取host信息
-    int choice_one_host(lars::GetHostReponse &rep);
+    int choice_one_host(lars::GetHostResponse &rsp);
 
     // 如果list中没有host信息,需要从远程的DNS Server中发送GetHostRequest消息获取host信息
     int pull(); 
 
     // 根据dns_server返回的结果更新_host_map;
-    void update(lars::GetHostReponse &req);
+    void update(lars::GetRouteResponse &req);
 
     enum STATUS {
         PULLING,

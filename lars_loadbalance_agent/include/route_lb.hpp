@@ -40,7 +40,7 @@ public:
     /// @brief agent获取一个host主机,将返回的主机结果存放在rsp
     int get_host(int modid, int cmdid, lars::GetHostResponse &rsp);
     /// @brief 根据DNS_Service返回的结果更新自己的route_lb_map
-    int update_host(int modid, int cmdid, lars::GetHostResponse &rsp);
+    int update_host(int modid, int cmdid, lars::GetRouteResponse &rsp);
 
 private:
     /// @brief 当前route_lb下的管理的loadbalance
