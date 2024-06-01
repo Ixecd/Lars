@@ -41,6 +41,8 @@ public:
     int get_host(int modid, int cmdid, lars::GetHostResponse &rsp);
     /// @brief 根据DNS_Service返回的结果更新自己的route_lb_map
     int update_host(int modid, int cmdid, lars::GetRouteResponse &rsp);
+    /// @brief 由route_lb上报某主机的获取结果 
+    void report_host(lars::ReportRequest req);
 
 private:
     /// @brief 当前route_lb下的管理的loadbalance
