@@ -9,6 +9,9 @@ route_lb::route_lb(int id) : _id(id) {}
 
 // agent 获取一个host主机,将返回的主机结果放到rsp中
 int route_lb::get_host(int modid, int cmdid, lars::GetHostResponse &rsp) {
+    // 下面这个才是范围锁
+    // MutexType::Lock lock1(_mutex);
+    
     int rt = lars::RET_SUCC;
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
 
@@ -36,6 +39,7 @@ int route_lb::get_host(int modid, int cmdid, lars::GetHostResponse &rsp) {
         rsp.set_retcode(lars::RET_NOEXIST);
         rt = lars::RET_NOEXIST;
     }
+    _mutex.unlock();
     return rt;
 }
 
@@ -57,7 +61,31 @@ int route_lb::update_host(int modid, int cmdid, lars::GetRouteResponse &rsp) {
             lb->update(rsp);
         }
     }
+    _mutex.unlock();
+
     return 0;
+}
+
+// 由当前route上报host的调用结果
+/// @brief 所谓上报其实就是向对应的哈希表更新数据
+void route_lb::report_host(lars::ReportRequest req) {
+    int modid = req.modid();
+    int cmdid = req.cmdid();
+    int retcode = req.retcode();
+    int ip = req.host().ip();
+    int port = req.host().port();
+
+    uint64_t key = ((uint64_t)modid << 32) + cmdid;
+    
+    _mutex.lock();
+    if (_route_lb_map.find(key) != _route_lb_map.end()) {
+        load_balance *lb = _route_lb_map[key];
+        
+        lb->report(ip, port, retcode);
+        // 上报信息给远程reporter服务器
+        lb->commit();
+    } 
+    _mutex.unlock();
 }
 
 }  // namespace qc
