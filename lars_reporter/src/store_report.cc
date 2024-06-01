@@ -61,10 +61,6 @@ void StoreReport::store(lars::ReportStatusReq &req) {
         char sql[1024];
         // snprintf(sql, 1024, "insert into ServerCallStatus(modid, cmdid, ip, port, caller, succ_cnt, err_cnt, ts, overload) values (%d %d %u %u %u %u %u %u %d) on duplicate key update succ_cnt = %u, err_cnt = %u, ts = %u, overload = %d", req.modid(), req.cmdid(), result.ip(), result.port(), req.caller(), result.succ(), result.err(), req.ts(), overload, result.succ(), result.err(), req.ts(), overload);
 
-        "INSERT INTO ServerCallStatus(modid, cmdid, ip, port, caller, "
-        "succ_cnt, err_cnt, ts, overload) VALUES (%d, %d, %u, %u, %u, %u, %u, "
-        "%u, %d) ON DUPLICATE KEY UPDATE succ_cnt = %u, err_cnt = %u, ts = %u, "
-        "overload = %d";
         snprintf(sql, 1024,
                  "INSERT INTO ServerCallStatus(modid, cmdid, ip, port, caller, "
                  "succ_cnt, err_cnt, ts, overload) VALUES (%d, %d, %u, %u, %u, "
