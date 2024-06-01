@@ -9,7 +9,8 @@ enum MessageId {
     ID_GetRouteResponse         = 2;    // DNS回复的Route信息的消息ID
     ID_ReportStatusReques       = 3;    // 上报host调用状态信息请求信息ID
     ID_GetHostRequest           = 4;    // API发送请求host信息给LB Agent模块消息ID
-    ID_GetHostResponse           = 5;    // Agent返回给API host信息的ID
+    ID_GetHostResponse          = 5;    // Agent返回给API host信息的ID
+    ID_ReportRequest            = 6;    // API report get_host的调用结果给agent的消息ID
 }
 
 /* Lars 系统返回Code */
@@ -71,4 +72,13 @@ message GetHostResponse {
     int32 cmdid                         = 3;
     int32 retcode                       = 4;
     HostInfo host                       = 5;
+}
+
+/* API上报调用结果给Agent(UDP) */
+/* API层与agent的请求互通协议 */
+message ReportRequest {
+    int32 modid = 1;
+    int32 cmdid = 2;
+    HostInfo host = 3;
+    int32 retcode =4;
 }
