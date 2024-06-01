@@ -18,6 +18,7 @@
 
 #include "lars.pb.h"
 
+#define DEFAULT_BUFFER_SIZE 4 * 1024
 
 namespace qc {
 
@@ -124,6 +125,50 @@ int lars_client::get_host(int modid, int cmdid, std::string &ip, int &port) {
         port = host.port();
     }
     return rsp.retcode();
+}
+
+/**
+ * @brief API 客户端将host主机信息发送给UDP server
+ * @details 所谓report其实就是向服务端发送请求,由服务端控制,具体实现还是由route_lb控制由load_balance模块自己实现.
+ */
+void lars_client::report(int modid, int cmdid, std::string &ip, int port, int retcode) {
+    // 1.封装消息
+    lars::ReportRequest report;
+    report.set_modid(modid);
+    report.set_cmdid(cmdid);
+    report.set_retcode(retcode);
+
+    // 1.1 封装host信息
+    /// @brief 由于无法直接修改message中的message信息,所以proto3提供了mutable_message()返回指针来修改message
+    lars::HostInfo* hi = report.mutable_host();
+
+    // 1.2 转换类型(ip)
+    struct in_addr inaddr; // in.h
+
+    /// @details 将一个点分十进制表示的 IPv4 地址（如 "192.168.1.1"）转换成一个二进制的网络字节序（big-endian）的整数形式。 
+    inet_aton(ip.c_str(), &inaddr);
+    
+    hi->set_ip(inaddr.s_addr);
+    hi->set_port(port);
+
+    // 2.发送消息
+    char write_buf[DEFAULT_BUFFER_SIZE];
+
+    // 消息头
+    msg_head head;
+    head.msglen = report.ByteSizeLong();
+    head.msgid = lars::ID_ReportRequest;
+
+    // 先写头,再写体
+    memcpy(write_buf, &head, MESSAGE_HEAD_LEN);
+    // 发送是序列化,接受是反序列化
+    report.SerializeToArray(write_buf + MESSAGE_HEAD_LEN, head.msglen);
+
+    // 根据哈希结果向对应的UDP Service发送请求
+    int index = (modid + cmdid) % 3;
+    // UDP 注意:发送的是所有的信息,包括头和体
+    int rt = sendto(_sockfd[index], write_buf, report.ByteSizeLong() + MESSAGE_HEAD_LEN, 0, nullptr, 0);
+    qc_assert(rt != -1);
 }
 
 }  // namespace qc

@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
     if (rt == 0) {
         std::cout << "host is " << ip << " : " << port << std::endl;
         // TODO 上报调用结果
+        // 下面就是配置report业务的参数信息
+        api.report(modid, cmdid, ip, port, rt);
     }
     return 0;
 }
