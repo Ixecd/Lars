@@ -1,3 +1,14 @@
+/**
+ * @file agent_udp_server.cc
+ * @author qc
+ * @brief 针对API发送的report的ID_ReportRequest进行处理
+ * @version 0.3
+ * @date 2024-06-01
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include "lars_reactor.hpp"
 #include "main_server.hpp"
 #include "route_lb.hpp"
@@ -39,6 +50,16 @@ static void get_host_cb(const char *data, uint32_t msglen, int msgid, net_connec
     std::cout << "send to api message.size() = " << responseString.size() << std::endl;
 }
 
+static void report_cb(const char *data, uint32_t msglen, int msgid, net_connection *conn, void *user_data) {
+    // 接收请求
+    lars::ReportRequest req;
+    
+    req.ParseFromArray(data, msglen);
+
+    route_lb *ptr_route_lb = (route_lb *)user_data;
+    ptr_route_lb->report_host(req);
+}
+
 // 来接收业务
 void *agent_server_main(void *args) {
     long index = (long) args;
@@ -52,8 +73,11 @@ void *agent_server_main(void *args) {
 
     udp_server server(&loop, "0.0.0.0", port);
 
-    // 注册路由
-    server.add_msg_router(lars::ID_GetHostRequest, get_host_cb, r_lb[port-8888]);
+    // 注册路由,处理HOST REQUEST请求
+    server.add_msg_router(lars::ID_GetHostRequest, get_host_cb, r_lb[port - 8888]);
+
+    // 注册路由,处理ReportRequest请求
+    server.add_msg_router(lars::ID_ReportRequest, report_cb, r_lb[port - 8888]);
 
 
     std::cout << "agent UDP server: port " << port << " is started...\n";
