@@ -4,9 +4,9 @@
  * @brief 主机信息封装
  * @version 0.1
  * @date 2024-05-24
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -20,10 +20,15 @@ public:
     host_info(uint32_t ip, uint32_t port, uint32_t init_vsucc)
         : ip(ip), port(port), vsucc(init_vsucc) {}
 
+    void set_overload();
+
+    void set_idle();
+
 public:
     uint32_t ip;    // host被代理主机ip
     uint32_t port;  // host被代理主机port
-    uint32_t vsucc;  // 虚拟成功次数(API反馈),用于过载(overload)和空闲(idle)状态的判定
+    uint32_t
+        vsucc;  // 虚拟成功次数(API反馈),用于过载(overload)和空闲(idle)状态的判定
     uint32_t verr = 0;   // 虚拟失败次数(API反馈)
     uint32_t rsucc = 0;  // 真实成功次数,给Reporter上报用户观察
     uint32_t rerr = 0;   // 真实失败次数,给Reporter上报用户观察
@@ -32,4 +37,4 @@ public:
 
     bool overload;  // 是否过载
 };
-}
+}  // namespace qc
