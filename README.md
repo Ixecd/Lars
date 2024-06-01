@@ -246,3 +246,11 @@ eventLoop/thread Tcp Server Model
 23. 关于重复定义
     在lars_loadbalance_agent遇到了重复定义的问题,解决方法如下:
         将全局变量定义在源文件中,不要放在名字空间中。在其他文件中使用extern包含即可。
+
+24. 关于git 
+    如果出现无法git push
+        git remote -v
+        如果对应的.git传输协议为https
+        git remote set-url origin https://yourusername@yourrepositoryurl.git
+
+
