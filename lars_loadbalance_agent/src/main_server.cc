@@ -10,11 +10,10 @@
  */
 
 #include "main_server.hpp"
+
 #include "route_lb.hpp"
 
 #define ROUTE_NUM 3
-#define probe_num 10
-#define INIT_SUCC_CNT 180
 
 using namespace qc;
 
@@ -24,7 +23,7 @@ thread_queue<lars::ReportStatusReq>* report_queue;
 thread_queue<lars::GetRouteRequest>* dns_queue;
 // 每个Agent UDP server的负载均衡路由 route_lb
 // 一个route_lb管理多个load_balance
-route_lb *r_lb[3];
+route_lb* r_lb[3];
 
 /// @brief 默认route_loadbalance的编号从1开始
 static void create_route_lb() {
@@ -40,12 +39,46 @@ static void init_lb_agent() {
     // 配置环境
     config_file::GetInstance()->setPath(
         "/home/qc/Lars/lars_loadbalance_agent/conf/lars_lb_agent.conf");
-    //lb_config.probe_nunm = config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
-    //lb_config.init_succ_cnt = config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
 
+    lb_config.probe_num =
+        config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
+
+    lb_config.init_succ_cnt = 
+        config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
+
+    lb_config.err_rate =
+        config_file::GetInstance()->GetFloat("loadbalance", "err_rate", 0.1);
+
+    lb_config.succ_rate =
+        config_file::GetInstance()->GetFloat("loadbalance", "succ_rate", 0.9);
+
+    lb_config.contin_err_limits = config_file::GetInstance()->GetNumber(
+        "loadbalance", "contin_err_limits", 10);
+
+    lb_config.contin_succ_limits = config_file::GetInstance()->GetNumber(
+        "loadbalance", "contin_succ_limits", 10);
+
+    // 初始化3个route_lb模块
     create_route_lb();
-}
 
+    // 加载本地ip
+    /// @details 之后在上报的时候,发送消息需要一个caller参数,这个caller参数我们暂时默认为当前agent的ip为caller
+    char my_host_name[1024];
+    if (gethostname(my_host_name, 1024) == 0) {
+        struct hostent *hd = gethostbyname(my_host_name);
+        if (hd) {
+            struct sockaddr_in myaddr;
+            myaddr.sin_addr = *(struct in_addr*)hd->h_addr;
+            lb_config.local_ip = ntohl(myaddr.sin_addr.s_addr);
+        }
+    }
+
+    if (!lb_config.local_ip) {
+        struct in_addr inaddr;
+        inet_aton("127.0.0.1", &inaddr);
+        lb_config.local_ip = ntohl(inaddr.s_addr);
+    }
+}
 
 int main() {
     // 1. 配置文件
