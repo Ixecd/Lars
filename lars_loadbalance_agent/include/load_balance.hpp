@@ -43,6 +43,10 @@ public:
     // 根据dns_server返回的结果更新_host_map;
     void update(lars::GetRouteResponse &req);
 
+    void report(int ip, int port, int retcode);
+
+    void commit();
+
     enum STATUS {
         PULLING,
         NEW
