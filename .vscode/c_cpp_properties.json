@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Lars_reactor/include",
+                "${workspaceFolder}/lars_reactor/include",
                 "${workspaceFolder}/lars_dns/include",
                 "/usr/include/mysql-connector-c/include",
                 "${workspaceFolder}/base/proto",
