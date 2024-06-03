@@ -29,7 +29,7 @@ using host_list_it = host_list::iterator;
 /// @brief 针对一组的modid/cmdid的负载均衡
 class load_balance {
 public:
-    load_balance(int modid, int cmdid) : _modid(modid), _cmdid(cmdid) {}
+    load_balance(int modid, int cmdid) : _modid(modid), _cmdid(cmdid), status(PULLING), last_update_time(0) {}
 
     // 判断是否已经没有host在当前的LB中
     bool empty() const { return _idle_list.empty() && _overload_list.empty(); }
@@ -42,6 +42,9 @@ public:
 
     // 根据dns_server返回的结果更新_host_map;
     void update(lars::GetRouteResponse &req);
+
+    // 获取当前lb下所有host的信息
+    void get_all_hosts(std::vector<host_info*> &vec);
 
     void report(int ip, int port, int retcode);
 
@@ -63,6 +66,12 @@ private:
 
     host_list _idle_list;
     host_list _overload_list;
+
+public:
+    /// @details 给load_balance设置最后的update时间参数,以及最后一次从dns service拉取下来的更新host_map的时间,然后再route_lb每次执行get_host的时候,对每个host节点做最后的超市检查,如果超时,就从dns Service重新拉取
+    
+    long last_update_time;
+
 };
 
 }  // namespace qc

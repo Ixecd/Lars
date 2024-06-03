@@ -11,6 +11,9 @@ enum MessageId {
     ID_GetHostRequest           = 4;    // API发送请求host信息给LB Agent模块消息ID
     ID_GetHostResponse          = 5;    // Agent返回给API host信息的ID
     ID_ReportRequest            = 6;    // API report get_host的调用结果给agent的消息ID
+
+    ID_API_GetRouteRequest      = 7;    // API 请求agent某个modid/cmdid的全部hosts信息的route 消息ID
+    ID_API_GetRouteResponse     = 8;    // API report get_host的调用结果给agent的消息ID
 }
 
 /* Lars 系统返回Code */

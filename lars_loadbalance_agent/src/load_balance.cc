@@ -8,7 +8,8 @@
 extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
 // 与report_client通信的消息队列
 extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
-
+// load_balance配置文件
+extern struct load_balance_config lb_config;
 namespace qc {
 
 static void get_host_from_list(lars::GetHostResponse &rsp, host_list &l) {
@@ -22,6 +23,13 @@ static void get_host_from_list(lars::GetHostResponse &rsp, host_list &l) {
     // 添加到队列尾部
     l.pop_front();
     l.push_back(host);
+}
+
+/// @brief 获取当前lb下所有的host信息
+void load_balance::get_all_hosts(std::vector<host_info *> &vec) {
+    for (host_map_it it = _host_map.begin(); it != _host_map.end(); ++it) {
+        vec.emplace_back(it->second);
+    }
 }
 
 // 从两个队列中获取一个host给上层
@@ -83,6 +91,7 @@ int load_balance::pull() {
 /// @param rsp
 void load_balance::update(lars::GetRouteResponse &rsp) {
     qc_assert(rsp.host_size() != 0);
+    long current_time = time(nullptr);
 
     std::set<uint64_t> remote_hosts;
     std::set<uint64_t> need_delete;
@@ -121,10 +130,20 @@ void load_balance::update(lars::GetRouteResponse &rsp) {
             _idle_list.remove(hi);
         delete hi;
     }
+    // 更新完毕,重新设置状态
+    /// @details load_balance
+    /// 每次调用一次update就更新一次last_update_time,并标记为NEW表示
+    ///          当前modid/cmdid,表示当前节点并不是PULLING状态,可以更新
+    last_update_time = current_time;
+    status = NEW;
 }
 
 /// @brief 上报当前host主机调用情况给远端repoter service
+/// @version 2 添加过期窗口和过载超时
 void load_balance::report(int ip, int port, int retcode) {
+    // 定义当前时间
+    long current_time = time(nullptr);
+
     uint64_t key = ((uint64_t)ip << 32) + port;
 
     if (_host_map.find(key) == _host_map.end()) {
@@ -206,7 +225,49 @@ void load_balance::report(int ip, int port, int retcode) {
             return;
         }
     }
+
     // TODO 窗口检查和超时机制
+    if (hi->overload == false) {
+        if (current_time - hi->idle_ts >= lb_config.idle_timeout) {
+            // 时间窗口到达,需要对idle系欸但清理负载均衡数据
+            if (hi->check_window() == true) {
+                // 设置当前节点状态为overload
+                struct in_addr saddr;
+                saddr.s_addr = htonl(hi->ip);
+
+                printf(
+                    "[%d, %d] host %s : %d change overload, succ %u, err %u\n",
+                    _modid, _cmdid, inet_ntoa(saddr), hi->port, hi->vsucc,
+                    hi->verr);
+
+                hi->set_overload();
+
+                _idle_list.remove(hi);
+                _overload_list.push_back(hi);
+            } else {
+                // 重置窗口,回复负载默认信息
+                hi->set_idle();
+            }
+        }
+    } else {
+        // 节点为overload状态
+        // 那么处于overload状态的节点状态时间是否已经超时
+        if (current_time - hi->overload_ts >= lb_config.overload_timeout) {
+            // 输出一下信息
+            struct in_addr saddr;
+            saddr.s_addr = htonl(hi->ip);
+
+            printf("[%d, %d] host %s : %d reset idle, succ %u, err %u\n",
+                   _modid, _cmdid, inet_ntoa(saddr), hi->port, hi->vsucc,
+                   hi->verr);
+
+            hi->set_idle();
+
+            // 更改列表
+            _overload_list.remove(hi);
+            _idle_list.push_back(hi);
+        }
+    }
 }
 
 // 上报结果

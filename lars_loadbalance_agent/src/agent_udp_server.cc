@@ -50,6 +50,31 @@ static void get_host_cb(const char *data, uint32_t msglen, int msgid, net_connec
     std::cout << "send to api message.size() = " << responseString.size() << std::endl;
 }
 
+/// @brief 由agent服务端才处理api层的get_route请求 
+static void get_route_cb(const char *data, uint32_t msglen, int msgid, net_connection *conn, void *user_data) {
+    std::cout << "agent server(UDP) get_route_cb running..." << std::endl;
+    // 1. 解析来自API的数据包
+    lars::GetRouteRequest req;
+    req.ParseFromArray(data, msglen);
+    int modid = req.modid();
+    int cmdid = req.cmdid();
+
+    // 设置回执信息
+    lars::GetRouteResponse rsp;
+    rsp.set_modid(modid);
+    rsp.set_cmdid(cmdid);
+
+    route_lb *ptr_route_lb = (route_lb *)user_data;
+
+    // 调用route_lb 的获取host方法,得到rsp返回结果
+    ptr_route_lb->get_route(modid, cmdid, rsp);
+
+    // 得到结果之后返回给API层
+    std::string responseString;
+    rsp.SerializeToString(&responseString);
+    conn->send_message(responseString.c_str(), responseString.size(), lars::ID_API_GetRouteRequest);
+}
+
 static void report_cb(const char *data, uint32_t msglen, int msgid, net_connection *conn, void *user_data) {
     // 接收请求
     lars::ReportRequest req;
@@ -79,6 +104,9 @@ void *agent_server_main(void *args) {
     // 注册路由,处理ReportRequest请求
     server.add_msg_router(lars::ID_ReportRequest, report_cb, r_lb[port - 8888]);
 
+    // 注册路由,支持API层的getRoute
+    server.add_msg_router(lars::ID_API_GetRouteRequest, get_route_cb, r_lb[port - 8888]);
+
 
     std::cout << "agent UDP server: port " << port << " is started...\n";
 
@@ -87,7 +115,7 @@ void *agent_server_main(void *args) {
     return nullptr;
 }
 
-void start_UDP_servers(void) {
+void start_UDP_servers() {
     // 创建三个线程
     long index = 0;
     for (int i = 0; i < 3; ++i) {

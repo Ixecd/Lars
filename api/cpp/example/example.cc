@@ -20,8 +20,18 @@ int main(int argc, char **argv) {
     int port;
 
     lars_client api;
+    
+    route_set route;
+    int rt = api.get_route(modid, cmdid, route);
+    if (rt == 0) {
+        std::cout << "get route succ!" << std::endl;
+        // 直接把信息输出出来
+        for (route_set_it it = route.begin(); it != route.end(); ++it) {
+            std::cout << "host ip = " << (*it).first << ", port = " << (*it).first << std::endl;
+        }
+    }
 
-    int rt = api.get_host(modid, cmdid, ip, port);
+    rt = api.get_host(modid, cmdid, ip, port);
     if (rt == 0) {
         std::cout << "host is " << ip << " : " << port << std::endl;
         // TODO 上报调用结果

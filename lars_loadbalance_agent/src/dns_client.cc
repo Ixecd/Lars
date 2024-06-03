@@ -1,3 +1,13 @@
+/**
+ * @file dns_client.cc
+ * @author qc
+ * @brief 定期拉取最新路由信息
+ * @version 0.1
+ * @date 2024-06-03
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "lars_reactor.hpp"
 #include "main_server.hpp"
 #include "route_lb.hpp"
@@ -51,6 +61,15 @@ void deal_recv_route(const char *data, int msglen, int msgid, net_connection *co
     r_lb[index]->update_host(modid, cmdid, rsp);
 }
 
+/// @details agent首次连接到dns service时,将全部的load_balance都设置为NEW状态.如果dns service重新启动,或者断开连接重连,都会将之前的拉去中或没拉取的load_balance状态都设置为NEW状态,只有NEW状态的load_balance才能定期自动拉取
+
+/// @brief hook
+static void conn_init(net_connection *conn, void *args) {
+    for (int i = 0; i < 3; ++i) {
+        r_lb[i]->reset_lb_status();
+    }
+}
+
 void *dns_client_thread(void *args) {
     std::cout << "cur dns_client_thread start..." << std::endl;
 
@@ -72,6 +91,9 @@ void *dns_client_thread(void *args) {
 
     // 设置route信息
     client.add_msg_router(lars::ID_GetRouteResponse, deal_recv_route);
+
+    // 设置连接成功/连接断开重连成功之后,通过conn_init来清理之前的任务
+    client.set_conn_start(conn_init);
 
     loop.event_process();
 }

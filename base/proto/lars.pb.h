@@ -100,12 +100,14 @@ enum MessageId : int {
   ID_GetHostRequest = 4,
   ID_GetHostResponse = 5,
   ID_ReportRequest = 6,
+  ID_API_GetRouteRequest = 7,
+  ID_API_GetRouteResponse = 8,
   MessageId_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MessageId_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool MessageId_IsValid(int value);
 constexpr MessageId MessageId_MIN = ID_UNKNOW;
-constexpr MessageId MessageId_MAX = ID_ReportRequest;
+constexpr MessageId MessageId_MAX = ID_API_GetRouteResponse;
 constexpr int MessageId_ARRAYSIZE = MessageId_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageId_descriptor();

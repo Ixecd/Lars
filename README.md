@@ -253,4 +253,10 @@ eventLoop/thread Tcp Server Model
         如果对应的.git传输协议为https
         git remote set-url origin https://yourusername@yourrepositoryurl.git
 
+25. 关于ip和port
+    提取ip : struct in_addr inaddr -> inaddr.s_addr = host.ip()
+            std::string ip = inet_ntoa(inaddr); -> net to ascii
+            or
+            int ip = inet_aton(inaddr); -> ascii to net
+
 

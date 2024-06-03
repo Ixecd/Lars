@@ -24,6 +24,8 @@ public:
 
     void set_idle();
 
+    bool check_window() { return true; }
+
 public:
     uint32_t ip;    // host被代理主机ip
     uint32_t port;  // host被代理主机port
@@ -34,6 +36,9 @@ public:
     uint32_t rerr = 0;   // 真实失败次数,给Reporter上报用户观察
     uint32_t contin_succ = 0;  // 连接成功次数
     uint32_t contin_err = 0;   // 连接失败次数
+    // ------ 用来判断超时,如果超时就改变状态 ------ 
+    long idle_ts = 0;       // 开始空闲的时间点
+    long overload_ts = 0;   // 开始过载的时间点
 
     bool overload;  // 是否过载
 };

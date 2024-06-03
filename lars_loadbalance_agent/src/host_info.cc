@@ -13,6 +13,8 @@
 
 #include "main_server.hpp"
 
+extern struct load_balance_config lb_config;
+
 namespace qc {
 
 void host_info::set_overload() {

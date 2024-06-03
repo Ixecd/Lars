@@ -257,17 +257,19 @@ const char descriptor_table_protodef_lars_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "code\030\004 \001(\005\022\034\n\004host\030\005 \001(\0132\016.lars.HostInfo"
   "\"\\\n\rReportRequest\022\r\n\005modid\030\001 \001(\005\022\r\n\005cmdi"
   "d\030\002 \001(\005\022\034\n\004host\030\003 \001(\0132\016.lars.HostInfo\022\017\n"
-  "\007retcode\030\004 \001(\005*\253\001\n\tMessageId\022\r\n\tID_UNKNO"
+  "\007retcode\030\004 \001(\005*\344\001\n\tMessageId\022\r\n\tID_UNKNO"
   "W\020\000\022\026\n\022ID_GetRouteRequest\020\001\022\027\n\023ID_GetRou"
   "teResponse\020\002\022\031\n\025ID_ReportStatusReques\020\003\022"
   "\025\n\021ID_GetHostRequest\020\004\022\026\n\022ID_GetHostResp"
-  "onse\020\005\022\024\n\020ID_ReportRequest\020\006*R\n\013LarsRetC"
-  "ode\022\014\n\010RET_SUCC\020\000\022\020\n\014RET_OVERLOAD\020\001\022\022\n\016R"
-  "ET_SYSTEM_ERR\020\002\022\017\n\013RET_NOEXIST\020\003b\006proto3"
+  "onse\020\005\022\024\n\020ID_ReportRequest\020\006\022\032\n\026ID_API_G"
+  "etRouteRequest\020\007\022\033\n\027ID_API_GetRouteRespo"
+  "nse\020\010*R\n\013LarsRetCode\022\014\n\010RET_SUCC\020\000\022\020\n\014RE"
+  "T_OVERLOAD\020\001\022\022\n\016RET_SYSTEM_ERR\020\002\022\017\n\013RET_"
+  "NOEXIST\020\003b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_lars_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_lars_2eproto = {
-  false, false, 920, descriptor_table_protodef_lars_2eproto, "lars.proto", 
+  false, false, 977, descriptor_table_protodef_lars_2eproto, "lars.proto", 
   &descriptor_table_lars_2eproto_once, nullptr, 0, 8,
   schemas, file_default_instances, TableStruct_lars_2eproto::offsets,
   file_level_metadata_lars_2eproto, file_level_enum_descriptors_lars_2eproto, file_level_service_descriptors_lars_2eproto,
@@ -292,6 +294,8 @@ bool MessageId_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
+    case 8:
       return true;
     default:
       return false;

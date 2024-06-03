@@ -2,7 +2,7 @@
  * @file main_server.hpp
  * @author qc
  * @brief 主服务端头文件
- * @version 0.1
+ * @version 2
  * @date 2024-05-21
  * 
  * @copyright Copyright (c) 2024
@@ -31,9 +31,18 @@ struct load_balance_config {
     int contin_succ_limits;
     // 当前agent本地ip地址(上报 填充caller字段)
     uint32_t local_ip;
+
+
+    // ------- 过期窗口和过载超时 -------
+    float window_err_rate;
+
+    int idle_timeout;
+
+    int overload_timeout;
+
+    // ------- 定期更新本地路由 -------
+    long update_timeout;
 };
-// 在头文件中声明一个变量,之后都用这个
-struct load_balance_config lb_config;
 
 namespace qc {
 

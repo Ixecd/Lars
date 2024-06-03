@@ -2,7 +2,7 @@
  * @file main_server.cc
  * @author qc
  * @brief 主服务器实现
- * @version 0.1
+ * @version 0.2
  * @date 2024-05-21
  *
  * @copyright Copyright (c) 2024
@@ -24,6 +24,8 @@ thread_queue<lars::GetRouteRequest>* dns_queue;
 // 每个Agent UDP server的负载均衡路由 route_lb
 // 一个route_lb管理多个load_balance
 route_lb* r_lb[3];
+// 在源文件中声明一个变量,之后都用这个
+struct load_balance_config lb_config;
 
 /// @brief 默认route_loadbalance的编号从1开始
 static void create_route_lb() {
@@ -57,6 +59,17 @@ static void init_lb_agent() {
 
     lb_config.contin_succ_limits = config_file::GetInstance()->GetNumber(
         "loadbalance", "contin_succ_limits", 10);
+
+    // -------- 过期窗口和过载队列 ---------
+    // 要在load_balance进行report()的时候,触发判定
+    lb_config.window_err_rate = config_file::GetInstance()->GetFloat("loadbalance", "window_err_rate", 0.6);
+
+    lb_config.idle_timeout = config_file::GetInstance()->GetNumber("loadbalance", "idle_timeout", 10);
+
+    lb_config.overload_timeout = config_file::GetInstance()->GetNumber("loadbalance", "overload_timeout", 10);
+
+    // -------- 定期更新路由信息 --------
+    lb_config.update_timeout = config_file::GetInstance()->GetNumber("loadbalance", "update_timeout", 15);
 
     // 初始化3个route_lb模块
     create_route_lb();

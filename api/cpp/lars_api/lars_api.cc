@@ -171,4 +171,77 @@ void lars_client::report(int modid, int cmdid, std::string &ip, int port, int re
     qc_assert(rt != -1);
 }
 
+/// @brief lars系统获取某个modid/cmdid全部的hosts(route)信息 
+/// @param[out] route 传出参数将get到的route信息放到route_set中
+int lars_client::get_route(int modid, int cmdid, route_set &route) {
+    // 1.封装请求信息
+    lars::GetRouteRequest req;
+    req.set_modid(modid);
+    req.set_cmdid(cmdid);
+
+    // 2.buffer -> send
+    char write_buf[DEFAULT_BUFFER_SIZE], read_buf[80 * 1024];
+    // 消息头
+    msg_head head;
+    head.msglen = req.ByteSizeLong();
+    // 这里不用默认的,使用API层的GetRouteRequest
+    head.msgid = lars::ID_API_GetRouteRequest;
+
+    // 2.1 先写头
+    memcpy(write_buf, &head, MESSAGE_HEAD_LEN);
+    // 2.2 写body
+    req.SerializeToArray(write_buf + MESSAGE_HEAD_LEN, head.msglen);
+
+    // 之后就可以发送通过简单hash实现
+    int index = (modid + cmdid) % 3;
+    int rt = sendto(_sockfd[index], write_buf, req.ByteSizeLong() + MESSAGE_HEAD_LEN, 0, nullptr, 0);
+
+    if (rt == -1) {
+        perror("sendto");
+        return lars::RET_SYSTEM_ERR;
+    }
+
+    // 3.发送完之后就recv
+    lars::GetRouteResponse rsp;
+    int msg_len = recvfrom(_sockfd[index], read_buf, sizeof(read_buf), 0, nullptr, nullptr);
+    if (msg_len == -1) {
+        perror("recvfrom");
+        return lars::RET_SYSTEM_ERR;
+    }
+    
+    // 4.解包
+    // 消息头,这里用同一个msg_head
+    memcpy(&head, read_buf, MESSAGE_HEAD_LEN);
+    // 4.1 判断是否合法
+    if (head.msgid != lars::ID_API_GetRouteResponse) {
+        fprintf(stderr, "message ID error!\n");
+        return lars::RET_SYSTEM_ERR;
+    }
+
+    // 消息体
+    rt = rsp.ParseFromArray(read_buf + MESSAGE_HEAD_LEN, head.msglen);
+    qc_assert(head.msglen == msg_len - MESSAGE_HEAD_LEN);
+
+    if (!rt) {
+        fprintf(stderr, "message format error: head.msglen = %d, message_len = %d, message_len - MESSAGE_HEAD_LEN = %d, head msgid = %d, ID_GetHostResponse = %d\n", head.msglen, msg_len, msg_len - MESSAGE_HEAD_LEN, head.msgid, lars::ID_GetHostResponse);
+    }
+
+    if (rsp.modid() != modid || rsp.cmdid() != cmdid) {
+        fprintf(stderr, "message format error!\n");
+        return lars::RET_SYSTEM_ERR;
+    }
+
+    // 所有消息都正确开始处理消息
+    // 便利所有host信息
+    for (int i = 0; i < rsp.host_size(); ++i) {
+        const lars::HostInfo &host = rsp.host(i);
+        struct in_addr inaddr;
+        inaddr.s_addr = host.ip();
+        std::string ip = inet_ntoa(inaddr);
+        int port = host.port();
+        route.push_back(ip_port(ip, port));
+    }
+    return lars::RET_SUCC;
+}
+
 }  // namespace qc
