@@ -244,4 +244,22 @@ int lars_client::get_route(int modid, int cmdid, route_set &route) {
     return lars::RET_SUCC;
 }
 
+/// @brief lars系统初始化modid/cmdid使用(首次拉取) 
+int lars_client::reg_init(int modid, int cmdid) {
+    route_set route;
+
+    int retry_cnt = 0;
+
+    while (route.empty() && retry_cnt < 3) {
+        get_route(modid, cmdid, route);
+
+        if (route.empty()) usleep(50000);
+        else break;
+        ++retry_cnt;
+    }
+
+    if (route.empty()) return lars::RET_SYSTEM_ERR;
+    return lars::RET_SUCC;
+}
+
 }  // namespace qc

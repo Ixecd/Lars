@@ -30,6 +30,9 @@ public:
 
     int get_route(int modid, int cmdid, route_set &route);
 
+    /// @brief 由于get_host/get_route的时候,首次拉取一定是不成功的,因为首次拉取,agentserver并没有对当前的modid/cmdid的route信息做本地缓存。来注册初始化一次
+    int reg_init(int modid, int cmdid);
+
 private:
     /// @brief 3个udp socket fd对应agent 3个upd server
     int _sockfd[3];

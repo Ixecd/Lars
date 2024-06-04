@@ -5,7 +5,7 @@ CFLAGS = -g -O2 -Wall -Wno-deprecated
 BASE = ../../../base
 BASE_H = $(BASE)/include
 
-LARS_REACTOR = ../../../Lars_reactor
+LARS_REACTOR = ../../../lars_reactor
 LARS_REACTOR_H = $(LARS_REACTOR)/include
 LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llreactor
 
@@ -19,7 +19,7 @@ PROTO_H = $(BASE)/proto
 OTHER_LIB = -lpthread -ldl -lprotobuf
 
 SRC = ./
-INC = -I./include -I$(BASE_H) -I$(LARS_REACTOR_H) -I$(PROTO_H)
+INC = -I./ -I$(BASE_H) -I$(LARS_REACTOR_H) -I$(PROTO_H)
 LIB = -L$(LARS_REACTOR_LIB) $(OTHER_LIB)
 
 # 注意:这里只是将相应的.cc后缀变为.o后缀,并没有实质进行编译,类似于字符串转换
