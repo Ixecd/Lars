@@ -85,6 +85,7 @@ int load_balance::pull() {
     dns_queue->send(route_req);
 
     status = PULLING;
+    return lars::RET_SUCC;
 }
 
 /// @brief 向自己的idle_list中添加主机信息
