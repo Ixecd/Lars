@@ -10,6 +10,14 @@ all:
 
 .PHONY: clean
 
+# 删除所有list下对应的src文件中的.o文件
+rmo:
+	@list='$(SUBDIRS)'; for subdir in $$list; do \
+		if [ -d $$subdir/src ]; then \
+			echo "Removing .o files in $$subdir/src";\
+			rm -f $$subdir/src/*.o;\
+		fi \
+	done
 clean:
 	@echo Making clean
 	@list='$(SUBDIRS)'; for subdir in $$list; do \
