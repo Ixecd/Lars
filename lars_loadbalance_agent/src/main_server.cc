@@ -45,8 +45,8 @@ static void init_lb_agent() {
     lb_config.probe_num =
         config_file::GetInstance()->GetNumber("loadbalance", "probe_num", 10);
 
-    lb_config.init_succ_cnt = 
-        config_file::GetInstance()->GetNumber("loadbalance", "init_succ_cnt", 180);
+    lb_config.init_succ_cnt = config_file::GetInstance()->GetNumber(
+        "loadbalance", "init_succ_cnt", 180);
 
     lb_config.err_rate =
         config_file::GetInstance()->GetFloat("loadbalance", "err_rate", 0.1);
@@ -62,23 +62,28 @@ static void init_lb_agent() {
 
     // -------- 过期窗口和过载队列 ---------
     // 要在load_balance进行report()的时候,触发判定
-    lb_config.window_err_rate = config_file::GetInstance()->GetFloat("loadbalance", "window_err_rate", 0.6);
+    lb_config.window_err_rate = config_file::GetInstance()->GetFloat(
+        "loadbalance", "window_err_rate", 0.6);
 
-    lb_config.idle_timeout = config_file::GetInstance()->GetNumber("loadbalance", "idle_timeout", 10);
+    lb_config.idle_timeout = config_file::GetInstance()->GetNumber(
+        "loadbalance", "idle_timeout", 10);
 
-    lb_config.overload_timeout = config_file::GetInstance()->GetNumber("loadbalance", "overload_timeout", 10);
+    lb_config.overload_timeout = config_file::GetInstance()->GetNumber(
+        "loadbalance", "overload_timeout", 10);
 
     // -------- 定期更新路由信息 --------
-    lb_config.update_timeout = config_file::GetInstance()->GetNumber("loadbalance", "update_timeout", 15);
+    lb_config.update_timeout = config_file::GetInstance()->GetNumber(
+        "loadbalance", "update_timeout", 15);
 
     // 初始化3个route_lb模块
     create_route_lb();
 
     // 加载本地ip
-    /// @details 之后在上报的时候,发送消息需要一个caller参数,这个caller参数我们暂时默认为当前agent的ip为caller
+    /// @details
+    /// 之后在上报的时候,发送消息需要一个caller参数,这个caller参数我们暂时默认为当前agent的ip为caller
     char my_host_name[1024];
     if (gethostname(my_host_name, 1024) == 0) {
-        struct hostent *hd = gethostbyname(my_host_name);
+        struct hostent* hd = gethostbyname(my_host_name);
         if (hd) {
             struct sockaddr_in myaddr;
             myaddr.sin_addr = *(struct in_addr*)hd->h_addr;
