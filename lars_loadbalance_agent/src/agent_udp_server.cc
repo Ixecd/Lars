@@ -105,6 +105,7 @@ void *agent_server_main(void *args) {
     server.add_msg_router(lars::ID_ReportRequest, report_cb, r_lb[port - 8888]);
 
     // 注册路由,支持API层的getRoute
+    /// @details 段错误出现在这里
     server.add_msg_router(lars::ID_API_GetRouteRequest, get_route_cb, r_lb[port - 8888]);
 
 
