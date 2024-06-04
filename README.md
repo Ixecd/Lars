@@ -259,4 +259,7 @@ eventLoop/thread Tcp Server Model
             or
             int ip = inet_aton(inaddr); -> ascii to net
 
+26. 关于函数的返回值
+    只要不是void类型的函数,切记都要加上返回值,否则会SIGSEVG
+
 
