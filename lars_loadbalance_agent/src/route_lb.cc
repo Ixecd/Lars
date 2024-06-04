@@ -44,7 +44,6 @@ int route_lb::get_host(int modid, int cmdid, lars::GetHostResponse &rsp) {
         rsp.set_retcode(lars::RET_NOEXIST);
         rt = lars::RET_NOEXIST;
     }
-
     return rt;
 }
 
@@ -52,7 +51,6 @@ int route_lb::update_host(int modid, int cmdid, lars::GetRouteResponse &rsp) {
     // 更新自己的_route_lb_map
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
 
-    
     MutexType::Lock lock(_mutex);
     // 在route_map中找到对应的key
     if (_route_lb_map.find(key) != _route_lb_map.end()) {
@@ -104,10 +102,12 @@ void route_lb::reset_lb_status() {
 // API层GetRoute 具体实现
 // agent获取某个modid/cmdid的全部主机,放到rsp传出参数中
 int route_lb::get_route(int modid, int cmdid, lars::GetRouteResponse &rsp) {
+    std::cout << "route_lb::get_route() start..." << std::endl;
     int rt = lars::RET_SUCC;
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
     // 范围锁
     MutexType::Lock lock(_mutex);
+    std::cout << "get lock" << std::endl;
     if (_route_lb_map.find(key) == _route_lb_map.end()) {
         // 当前route_lb_map中没有对应key,那就创建一个
         load_balance *lb = new load_balance(modid, cmdid);
@@ -119,7 +119,6 @@ int route_lb::get_route(int modid, int cmdid, lars::GetRouteResponse &rsp) {
         
         // 新建好之后从dns service服务拉取具体的modid/cmdid信息
         lb->pull();
-
         rt = lars::RET_SUCC;
     } else {
         // 本来这个lb就在map中,直接取出来用
