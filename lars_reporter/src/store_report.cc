@@ -63,7 +63,7 @@ void StoreReport::store(lars::ReportStatusReq &req) {
 
         snprintf(sql, 1024,
                  "INSERT INTO ServerCallStatus(modid, cmdid, ip, port, caller, "
-                 "succ_cnt, err_cnt, ts, overload) VALUES (%d, %d, %u, %u, %u, "
+                 "succ_cnt, err_cnt, ts, overload) VALUES (%d, %d, %d, %u, %u, "
                  "%u, %u, "
                  "%u, %d) ON DUPLICATE KEY UPDATE succ_cnt = %u, err_cnt = %u, "
                  "ts = %u, "
@@ -76,9 +76,11 @@ void StoreReport::store(lars::ReportStatusReq &req) {
         mysql_ping(&_db_conn);
 
         int rt = mysql_real_query(&_db_conn, sql, strlen(sql));
+        if (rt) 
+            printf("%s\n", mysql_error(&_db_conn));
+        
         qc_assert(rt == 0);
     }
 }
-
 
 }
