@@ -59,8 +59,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     uint64_t mod = ((uint64_t)modid << 32) + cmdid;
     client_sub_list *sub_list = (client_sub_list *)conn->param;
     if (sub_list == nullptr) std::cout << "cur client_sub_list is nullptr" << std::endl; 
-    
-    if (sub_list->find(mod) == sub_list->end()) {
+    else if (sub_list->find(mod) == sub_list->end()) {
         sub_list->insert(mod);
         SubscribeList::GetInstance()->subscribe(mod, conn->get_fd());
     }
@@ -123,7 +122,8 @@ int main(int argc, char **argv) {
 
     // 设置线程分离
     pthread_detach(tid);
-
+    
+    // 懒汉式
     Route::GetInstance();
 
     // 测试mysql接口

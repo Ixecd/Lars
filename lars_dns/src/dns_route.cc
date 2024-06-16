@@ -75,13 +75,14 @@ void Route::connect_db() {
         exit(1);
     }
 
-    cout << "end of connect_db()..." << endl;
+    cout << "数据库链接成功" << endl;
 }
 
 void Route::build_maps() {
     snprintf(_sql, 1000, "SELECT * FROM RouteData;");
     /// @brief success return 0
-    qc_assert(mysql_real_query(&_db_conn, _sql, strlen(_sql)) == 0);
+    int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
+    qc_assert(rt == 0);
 
     /// @brief 将得到的结果存起来
     MYSQL_RES *result = mysql_store_result(&_db_conn);
@@ -203,7 +204,7 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
     std::cout << "cur _version = " << _version << std::endl;
     snprintf(_sql, 1000,
              "select modid, cmdid from RouteChange where version <= %ld;",
-             _version + 100000);
+             _version);
 
     int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
     qc_assert(rt == 0);
@@ -283,8 +284,8 @@ void *check_route_change(void *args) {
                 SubscribeList::GetInstance()->publish(changes);
 
             // 删除当前版本之前的修改记录
-            // if (changes.size() != 0)
-            //     Route::GetInstance()->remove_changes(false);
+            if (changes.size() != 0)
+                 Route::GetInstance()->remove_changes(false);
         } else {
             // 版本号没有被修改
             if (current_time - last_load_time >= wait_time) {
