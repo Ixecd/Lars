@@ -38,7 +38,7 @@ public:
 
         qc_assert(_evfd != -1);
     }
-
+    
     ~thread_queue() {
         close(_evfd);
     }
