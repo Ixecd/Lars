@@ -31,6 +31,15 @@ public:
     /// @brief 将已经处理过的数据，清空,将未处理的数据提前至数据首地址
     void adjust();
 
+	/// @brief 下面是一种更高效的内存管理方式
+	//union {
+	//	io_buf *next;
+	//	int m_capacity;
+	//	int m_length;
+	//	int m_head;
+	//	char *m_data;
+	//};
+
     /// @brief 如果有多个buffer,采用链表链接起来
     io_buf *next;
     /// @brief buffer容量大小
