@@ -22,8 +22,8 @@ namespace qc {
 
 /**
  * @brief tcp_conn class
- * @details 一个tcp_conn 对应两个独立的buff,可以有多个epoll实例,这里面是一个指针,指向管理这个tcp连接的epoll实例
- * 
+ * @details 一个tcp_conn 对应两个独立的buff,一个tcp_conn类相当于一个tcp_server类,对其又专门进行了一次封装。
+ * 			使用event_loop* 是为了降低耦合
  */
 class tcp_conn : public net_connection{
 public:
