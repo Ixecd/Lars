@@ -37,12 +37,15 @@ void event_loop::event_process() {
                 //读事件，读回调函数
                 void *args = ev->rcb_args;
                 ev->read_callback(this, _fired_evs[i].data.fd, args);
-            } else if (_fired_evs[i].events & EPOLLOUT) {
+            } 
+            if (_fired_evs[i].events & EPOLLOUT) {
                 //写事件，掉写回调函数
                 void *args = ev->wcb_args;
                 ev->write_callback(this, _fired_evs[i].data.fd, args);
-            } else if (_fired_evs[i].events & (EPOLLHUP | EPOLLERR)) {
+            }  
+            if (_fired_evs[i].events & (EPOLLHUP | EPOLLERR)) {
                 //水平触发未处理，可能会出现HUP事件，正常处理读写，没有则清空
+                //HUP也有可能是由于对端关闭导致的
                 if (ev->read_callback != nullptr) {
                     void *args = ev->rcb_args;
                     ev->read_callback(this, _fired_evs[i].data.fd, args);
