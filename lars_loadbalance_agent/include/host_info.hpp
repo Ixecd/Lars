@@ -24,7 +24,7 @@ public:
 
     void set_idle();
 
-    bool check_window() { return true; }
+    bool check_window();
 
 public:
     uint32_t ip;    // host被代理主机ip
