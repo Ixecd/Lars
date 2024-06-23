@@ -42,6 +42,7 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
 
     // 这里不知道什么原因,不能在遍历的时候顺便删除_push_list
     // 预处理将要删除的文件描述符先保存起来
+    // 这里是因为_push_list的类型为unordered_map,在哈希表中使用erase会导致后面的元素的迭代器失效
     std::vector<int> preseve;
     for (auto it = _push_list.begin(); it != _push_list.end(); ++it) {
         // 需要publish的订阅列表在online_fds中找到了
