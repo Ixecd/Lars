@@ -39,4 +39,11 @@ void host_info::set_idle() {
     overload        = false;
 }
 
+// 时间窗口
+bool host_info::check_window() {
+	if (rsucc + rerr == 0) return false;
+    if ((rerr * 1.0) / (rsucc + rerr) >= lb_config.window_err_rate) return false;
+    return true;
+}
+
 }  // namespace qc
