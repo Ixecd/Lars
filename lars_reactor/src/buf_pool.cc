@@ -30,8 +30,8 @@ int Alloc_Memory(pool_t &_pool, uint size, long unsigned int number, uint64_t &_
     qc_assert(_pool[size]);
     prev = _pool[size];
 
-    // 更正:之前分配的大小会多一块,这里number应该减一
-    for (size_t i = 0; i < number - 1; ++i) {
+    // 更正:之前分配的大小会多一块,这里应该从0开始
+    for (size_t i = 1; i < number; ++i) {
         prev->next = new io_buf(size);
         qc_assert(prev->next);
         prev = prev->next;
