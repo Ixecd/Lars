@@ -95,12 +95,15 @@ void tcp_conn::do_read() {
         if (head.msglen > MESSAGE_LENGTH_LIMIT || head.msglen < 0) {
             fprintf(stderr, "data format error, need close, msglen = %d\n",
                     head.msglen);
+          	// 如果信息属性不符合预定的设定,就直接关闭当前链接
             this->clean_conn();
             break;
         }
         if (ibuf.length() < MESSAGE_HEAD_LEN + head.msglen) {
             //缓存buf中剩余的数据，小于实际上应该接受的数据
-            //说明是一个不完整的包，应该抛弃
+            //说明是一个不完整的包，不应该抛弃,而是将数据继续缓存在buf中，由于通信方式是TCP,所以要等待下一次read将缺少的数据再读取到缓冲区中
+          	//等待下一次读事件发生,这个时候就不会发生这种情况
+          	//如果使用UDP，就有可能导致数据包的丢失，就需要在这里额外添加一些机制保证数据的正确性
             break;
         }
 
