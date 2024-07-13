@@ -12,7 +12,7 @@
 #pragma once
 #include <netdb.h>
 #include <lars_reactor/lars_reactor.hpp>
-#include "../../../base/proto/lars.pb.h"
+#include <proto/lars.pb.h>
 
 struct load_balance_config {
 

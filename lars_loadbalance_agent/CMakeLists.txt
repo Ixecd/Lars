@@ -20,7 +20,7 @@ set(PROTOBUF_SRC_INC ${CMAKE_CURRENT_LIST_DIR}/base/proto)
 # 添加头文件搜索路径
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../lars_reactor/include)
-include_directories(${CMAKE_SOURCE_DIR}/../base/proto)
+include_directories(${CMAKE_SOURCE_DIR}/../base)
 include_directories(/usr/include/mysql-connector-c/include)
 
 # 添加静态库目录
@@ -40,7 +40,7 @@ else ()
 endif ()
 
 # 将 src 目录中的源文件添加到工程中
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cc" ${PROTOBUF_SRC_INC}/*.cc ${PROTOBUF_SRC_INC}/*.h)
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cc")
 
 # 创建可执行文件
 add_executable(lars_loadbalance_agent ${SOURCES})

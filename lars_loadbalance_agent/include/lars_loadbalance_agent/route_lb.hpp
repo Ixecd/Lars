@@ -16,7 +16,7 @@
 
 #include <unordered_map>
 
-#include "../../../base/proto/lars.pb.h"
+#include <proto/lars.pb.h>
 #include "load_balance.hpp"
 #include <lars_reactor/mutex.hpp>
 

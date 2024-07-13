@@ -1,7 +1,7 @@
 // #include "route_lb.hpp"
 #include <lars_loadbalance_agent/route_lb.hpp>
 
-#include "lars.pb.h"
+#include <proto/lars.pb.h>
 
 
 // load_balance_config
