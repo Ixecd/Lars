@@ -8,9 +8,12 @@
  * @copyright Copyright (c) 2024
  * 
  */
-#include "lars_reactor.hpp"
-#include "main_server.hpp"
-#include "route_lb.hpp"
+#include <lars_loadbalance_agent/main_server.hpp>
+#include <lars_loadbalance_agent/route_lb.hpp>
+#include <lars_reactor/lars_reactor.hpp>
+// #include "lars_reactor.hpp"
+// #include "main_server.hpp"
+// #include "route_lb.hpp"
 #include <pthread.h>
 
 // 与report_client通信的thread_queue消息队列

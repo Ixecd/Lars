@@ -9,9 +9,11 @@
  *
  */
 
-#include "event_loop.hpp"
+// #include "event_loop.hpp"
 
-#include "qc.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 

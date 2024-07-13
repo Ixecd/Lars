@@ -9,8 +9,8 @@
  * @copyright Copyright (c) 2024
  * 
  */
-
-#include "config_file.hpp"
+#include <lars_reactor/config_file.hpp>
+// #include "config_file.hpp"
 
 #include <strings.h>
 
@@ -19,7 +19,8 @@
 #include <map>
 #include <sstream>
 
-#include "qc.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 

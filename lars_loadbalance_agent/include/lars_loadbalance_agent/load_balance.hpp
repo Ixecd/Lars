@@ -14,7 +14,7 @@
 #include <unordered_map>
 
 #include "host_info.hpp"
-#include "lars.pb.h"
+#include "../../../base/proto/lars.pb.h"
 
 namespace qc {
 

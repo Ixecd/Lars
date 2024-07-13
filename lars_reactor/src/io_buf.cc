@@ -10,8 +10,11 @@
  */
 
 #include <string.h>
-#include "io_buf.hpp"
-#include "qc.hpp"
+// #include "io_buf.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/io_buf.hpp>
+#include <lars_reactor/qc.hpp>
+
 namespace qc {
 
 io_buf::io_buf(int capacity)

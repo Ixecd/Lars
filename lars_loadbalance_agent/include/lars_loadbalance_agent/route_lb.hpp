@@ -16,9 +16,9 @@
 
 #include <unordered_map>
 
-#include "lars.pb.h"
+#include "../../../base/proto/lars.pb.h"
 #include "load_balance.hpp"
-#include "mutex.hpp"
+#include <lars_reactor/mutex.hpp>
 
 namespace qc {
 

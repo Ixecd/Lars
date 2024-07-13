@@ -9,7 +9,8 @@
  *
  */
 
-#include "tcp_conn.hpp"
+// #include "tcp_conn.hpp"
+#include <lars_reactor/tcp_conn.hpp>
 
 #include <fcntl.h>
 #include <netinet/in.h>   // for IPPROTO_TCP
@@ -19,9 +20,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "message.hpp"
-#include "tcp_server.hpp"
-#include "net_connection.hpp"
+#include <lars_reactor/message.hpp>
+#include <lars_reactor/tcp_server.hpp>
+#include <lars_reactor/net_connection.hpp>
+
+// #include "message.hpp"
+// #include "tcp_server.hpp"
+// #include "net_connection.hpp"
 
 namespace qc {
 

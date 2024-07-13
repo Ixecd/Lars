@@ -9,12 +9,14 @@
  *
  */
 
-#include "buf_pool.hpp"
+#include <lars_reactor/buf_pool.hpp>
+// #include "buf_pool.hpp"
 
 #include <stdlib.h>
 #include <algorithm>
 
-#include "qc.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 

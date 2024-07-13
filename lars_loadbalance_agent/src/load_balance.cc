@@ -1,6 +1,9 @@
-#include "load_balance.hpp"
+// #include "load_balance.hpp"
 
-#include "main_server.hpp"
+// #include "main_server.hpp"
+#include <lars_loadbalance_agent/load_balance.hpp>
+#include <lars_loadbalance_agent/main_server.hpp>
+
 #define PROBE_NUM 10
 #define INIT_SUCC_CNT 128
 

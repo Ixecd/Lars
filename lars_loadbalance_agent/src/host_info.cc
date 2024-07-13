@@ -9,9 +9,12 @@
  *
  */
 
-#include "host_info.hpp"
+// #include "host_info.hpp"
 
-#include "main_server.hpp"
+// #include "main_server.hpp"
+
+#include <lars_loadbalance_agent/host_info.hpp>
+#include <lars_loadbalance_agent/main_server.hpp>
 
 extern struct load_balance_config lb_config;
 

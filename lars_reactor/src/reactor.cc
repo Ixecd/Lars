@@ -11,8 +11,10 @@
 #include <string.h>
 #include <sys/ioctl.h>
 
-#include "qc.hpp"
-#include "reactor_buf.hpp"
+// #include "qc.hpp"
+// #include "reactor_buf.hpp"
+#include <lars_reactor/reactor_buf.hpp>
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 

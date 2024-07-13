@@ -11,8 +11,8 @@
 
 #pragma once
 #include <netdb.h>
-#include "lars_reactor.hpp"
-#include "lars.pb.h"
+#include <lars_reactor/lars_reactor.hpp>
+#include "../../../base/proto/lars.pb.h"
 
 struct load_balance_config {
 

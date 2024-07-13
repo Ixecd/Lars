@@ -12,8 +12,8 @@
 #pragma once
 
 #include <pthread.h>
-#include <task_msg.hpp>
-#include <thread_queue.hpp>
+#include "task_msg.hpp"
+#include "thread_queue.hpp"
 #include <vector>
 namespace qc {
 

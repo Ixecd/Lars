@@ -1,6 +1,9 @@
 #include <pthread.h>
-#include "lars_reactor.hpp"
-#include "main_server.hpp"
+#include <lars_reactor/lars_reactor.hpp>
+#include <lars_loadbalance_agent/main_server.hpp>
+
+// #include "lars_reactor.hpp"
+// #include "main_server.hpp"
 
 // 与report_client通信的thread_queue消息队列
 // thread_queue<lars::ReportStatusReq> *report_queue;

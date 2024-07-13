@@ -1,23 +1,33 @@
-cmake_minimum_required(VERSION 3.5)
-project(Lars_reactor)
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 
-# 设置C++标准
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Debug)
+#file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/*.cc include/*.hpp)
+#add_library(lars_reactor STATIC ${srcs})
+#target_include_directories(lars_reactor PUBLIC include)
 
-# 添加源文件目录
-file(GLOB SOURCES "src/*.cc")
+cmake_minimum_required(VERSION 3.28)
 
-# 添加头文件目录
-include_directories(include)
+# 设置项目名称
+project(lars_reactor)
 
-# 生成动态库
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+# 设置 C++ 标准
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 
-set(INSTALL_LIB_DIR lib)
-# 设置目标文件夹
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib
-)
+# 添加头文件搜索路径
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# 将 src 目录中的源文件添加到工程中
+#file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cc")
+file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/*.cc include/*.hpp)
+
+# 创建静态库
+add_library(lars_reactor STATIC ${srcs})
+
+# 安装头文件和库文件
+
+install(TARGETS lars_reactor DESTINATION lib)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/lars_reactor DESTINATION include)
 

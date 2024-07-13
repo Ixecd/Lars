@@ -9,13 +9,15 @@
  *
  */
 
-#include "udp_server.hpp"
+// #include "udp_server.hpp"
+#include <lars_reactor/udp_server.hpp>
 
 #include <signal.h>
 #include <string.h>
 #include <strings.h>
 
-#include "qc.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 
