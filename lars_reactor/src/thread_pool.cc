@@ -104,7 +104,7 @@ thread_pool::thread_pool(size_t threads) {
 thread_queue<task_msg>* thread_pool::get_thread() {
 	// 这里修改为_index轮询发送消息
     if (_index == _thread_cnt) _index = 0;
-    else _idnex++;
+    else _index++;
     return _queues[_index];
 }
 
