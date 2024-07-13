@@ -1,3 +1,0 @@
-/home/qc/Lars/base/build/CMakeFiles/base.dir
-/home/qc/Lars/base/build/CMakeFiles/edit_cache.dir
-/home/qc/Lars/base/build/CMakeFiles/rebuild_cache.dir
