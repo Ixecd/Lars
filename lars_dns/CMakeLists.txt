@@ -46,7 +46,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cc")
 add_executable(lars_dns ${SOURCES})
 
 
-# 链接静态库
+# 链接静态库,如果调用的是第三方库,就可以不用添加头文件搜索路径,因为下面有PUBLIC,当CMake找到这个库的时候就会自动在Config.cmake中添加target_include_directories.
 target_link_libraries(lars_dns PUBLIC Threads::Threads)
 target_link_libraries(lars_dns PUBLIC mysqlclient)
 target_link_libraries(lars_dns PUBLIC base)
