@@ -1,9 +1,9 @@
 #include <string>
 
-#include "lars.pb.h"
-#include "lars_reactor.hpp"
-#include "store_report.hpp"
-#include "store_threads.hpp"
+#include <proto/lars.pb.h>
+#include <lars_reactor/lars_reactor.hpp>
+#include <lars_reporter/store_report.hpp>
+#include <lars_reporter/store_threads.hpp>
 using namespace qc;
 
 tcp_server *server;

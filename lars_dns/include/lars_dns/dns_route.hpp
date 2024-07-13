@@ -12,13 +12,13 @@
 #pragma once
 #include <pthread.h>
 
-#include <mutex.hpp>
+#include <lars_reactor/mutex.hpp>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "mysql.h"
-#include "qc.hpp"
-#include "singleton.hpp"
+#include <lars_reactor/qc.hpp>
+#include <lars_reactor/singleton.hpp>
 
 namespace qc {
 

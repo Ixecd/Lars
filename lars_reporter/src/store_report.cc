@@ -9,8 +9,8 @@
  * 
  */
 
-#include "store_report.hpp"
-#include "lars_reactor.hpp"
+#include <lars_reporter/store_report.hpp>
+#include <lars_reactor/lars_reactor.hpp>
 
 namespace qc {
 

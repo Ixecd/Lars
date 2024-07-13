@@ -17,10 +17,10 @@
 #include <vector>
 
 #include "dns_route.hpp"
-#include "lars.pb.h"
-#include "lars_reactor.hpp"
-#include "mutex.hpp"
-#include "singleton.hpp"
+#include <proto/lars.pb.h>
+#include <lars_reactor/lars_reactor.hpp>
+#include <lars_reactor/mutex.hpp>
+#include <lars_reactor/singleton.hpp>
 
 namespace qc {
 

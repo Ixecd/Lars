@@ -8,9 +8,9 @@
  * @copyright Copyright (c) 2024
  * 
  */
-#include "lars.pb.h"
-#include "lars_reactor.hpp"
-#include "store_report.hpp"
+#include <proto/lars.pb.h>
+#include <lars_reactor/lars_reactor.hpp>
+#include <lars_reporter/store_report.hpp>
 
 namespace qc {
 

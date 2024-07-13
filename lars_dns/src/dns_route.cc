@@ -9,7 +9,7 @@
  *
  */
 
-#include "dns_route.hpp"
+#include <lars_dns/dns_route.hpp>
 
 #include <string.h>
 #include <time.h>
@@ -17,10 +17,12 @@
 
 #include <iostream>
 
-#include "lars_reactor.hpp"
+// #include "lars_reactor.hpp"
+#include <lars_reactor/lars_reactor.hpp>
 #include "mysql.h"
-#include "qc.hpp"
-#include "subscribe.hpp"
+// #include "qc.hpp"
+#include <lars_reactor/qc.hpp>
+#include <lars_dns/subscribe.hpp>
 
 using namespace std;
 

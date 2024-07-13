@@ -12,11 +12,11 @@
 
 #include <iostream>
 
-#include "dns_route.hpp"
-#include "lars.pb.h"
-#include "lars_reactor.hpp"
+#include <lars_dns/dns_route.hpp>
+#include <lars_dns/subscribe.hpp>
+#include <proto/lars.pb.h>
+#include <lars_reactor/lars_reactor.hpp>
 #include "mysql.h"
-#include "subscribe.hpp"
 
 using namespace qc;
 

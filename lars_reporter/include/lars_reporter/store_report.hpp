@@ -12,7 +12,7 @@
 #pragma once
 
 #include "mysql.h"
-#include "lars.pb.h"
+#include <proto/lars.pb.h>
 
 
 namespace qc {

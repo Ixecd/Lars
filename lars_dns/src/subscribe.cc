@@ -9,7 +9,7 @@
  *
  */
 
-#include "subscribe.hpp"
+#include <lars_dns/subscribe.hpp>
 
 /// @brief 声明一变量,保证程序执行过程中只有一个实例
 /// @details 如果不想使用extern 那就都包含在namespace qc中即可
