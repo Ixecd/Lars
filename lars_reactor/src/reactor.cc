@@ -32,7 +32,7 @@ void reactor_buf::pop(int len) {
     _buf->pop(len);
 
     // printf("cur _buf->length = %d\n", _buf->m_length);
-    //如果此时_buf的可用长度为0
+    //如果此时_buf的长度为0,也就是没有数据在_buf中,就将该内存返回给内存池
     if (_buf->m_length == 0) {
         //将_buf重新放回buf_pool中
         buf_pool::GetInstance()->revert(_buf);
@@ -64,9 +64,21 @@ int input_buf::read_data(int fd) {
         qc_assert(_buf != nullptr);
     } else {
         //如果io_buf可用，判断是否够存
-        // 这里_buf->m_head == 0 表示之前所有的数据都已经处理完了.
+        // 这里_buf->m_head == 0 表示之前所有的数据都已经处理完了,这里要保证收到的数据的正确性.
         // 不允许读的时候缓冲区还有数据被处理了但是没有pop
         qc_assert(_buf->m_head == 0);
+        // 下面这里每次向内存池要的都是一块内存,io_buf中有next指针,设计可以更复杂一点
+        // 目前提供一些思路,后面再实现
+        // 参考侯捷内存管理，对每一个reactor设计一个指针数组,每个下面挂载之前定好的内存值,如果内存不够用,向内存池
+        // 申请新的内存,之后将这个内存挂载到对应的链表下,之后read的时候去遍历这个指针数组,找到对应的内存块,读取数据
+        
+        // bool flags = false;
+        // if (_buf->m_capacity - _buf->m_length < need_read && _buf->m_capacity > need_read) {
+        //	  // 优先使用小内存
+        //     io_buf *nxt_buf = buf_pool::GetInstance()->alloc_buf(need_read);
+        //     _buf->next = nxt_buf;
+        //     flags = true;
+        // }
         if (_buf->m_capacity - _buf->m_length < need_read) {
             //不够存,内存池申请,申请一块更大的
             io_buf *new_buf =
@@ -92,7 +104,7 @@ int input_buf::read_data(int fd) {
             //可能是read阻塞读数据的模式，对方未写数据
             already_read = read(fd, _buf->m_data + _buf->m_length, m4K);
         } else {
-            already_read = read(fd, _buf->m_data + _buf->m_length, need_read);
+            already_read = read(fd, _buf->m_data + _buf->m_length, m4K);
         }
     } while (already_read == -1 &&
              errno == EINTR);  // systemCall引起的中断 继续读取

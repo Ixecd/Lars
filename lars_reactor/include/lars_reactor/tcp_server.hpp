@@ -15,7 +15,8 @@ namespace qc {
 /**
  * @brief tcp_server类
  * @details
- * 当前提供创建连接服务,以及释放对象连接服务,这里一个tcp_server类对应一个sockfd,也就是一个连接
+ * 当前提供创建连接服务,以及释放对象连接服务,这里一个tcp_server类对应一个sockfd,这里的sockfd是专门用来监听的,并不是作为通信描述符存在
+ * 对于一个tcp_server而言,ip作为字符串,port作为unsigned short来和tcp_client通信。
  * @version 0.2
  */
 class tcp_server {
@@ -77,7 +78,7 @@ public:
     static void *conn_close_cb_args;
 
 private:
-#define MAX_CONNS 2
+	#define MAX_CONNS 2
     /// @brief 默认最大连接数量为2
     static int _max_conns;
     static int _curr_conns;

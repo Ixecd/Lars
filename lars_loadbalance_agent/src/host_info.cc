@@ -42,4 +42,11 @@ void host_info::set_idle() {
     overload        = false;
 }
 
+// 时间窗口, 返回true表示需要改变状态
+bool host_info::check_window() {
+    if (rsucc + rerr == 0) return false;
+    if ((rerr * 1.0) / (rsucc + rerr) >= lb_config.window_err_rate) return true;
+    return false;
+}
+
 }  // namespace qc

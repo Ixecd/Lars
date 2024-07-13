@@ -19,6 +19,8 @@
 #include "io_buf.hpp"
 #include "singleton.hpp"
 
+// 在工业中常见的内存管理中的指针为嵌入式指针，将内存耗损降到最低
+
 // 总内存池最大限制 单位Kb 5GB
 #define MAX_MEM_LIMIT (5U * 1024 * 1024)
 

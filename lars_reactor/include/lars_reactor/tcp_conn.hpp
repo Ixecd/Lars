@@ -22,9 +22,13 @@ namespace qc {
 
 /**
  * @brief tcp_conn class
- * @details 一个tcp_conn 对应两个独立的buff,可以有多个epoll实例,这里面是一个指针,指向管理这个tcp连接的epoll实例
- * 
- */
+ * @details 一个tcp_conn 对应两个独立的buff,一个tcp_conn类相当于一个tcp_server类,对其又专门进行了一次封装,专门用来
+ * 			和客户端进行通信。
+ *			使用event_loop* 是为了降低耦合。
+ *			关于tcp_conn中的event_loop*从哪里来,服务器框架集成了线程池之后,一个tcp_server会生成多个线程,
+ *			每个线程都有自己的消息队列,所以每个线程都有自己独有的一个event_loop,这里的event_loop*就是对应线程的
+ *			event_loop*.
+ */	
 class tcp_conn : public net_connection{
 public:
     /// @brief 初始化tcp_conn
@@ -43,7 +47,7 @@ public:
 private:    
     /// @brief 当前连接的fd
     int _connfd;
-    /// @brief 该连接所属的event_poll
+    /// @brief 该连接所属的event_poll,对应线程的
     event_loop *_loop; 
     /// @brief 输入buff
     input_buf ibuf;

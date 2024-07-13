@@ -102,8 +102,9 @@ thread_pool::thread_pool(size_t threads) {
 }
 
 thread_queue<task_msg>* thread_pool::get_thread() {
-    // 这里_index一直是0??一直返回第一个任务队列.
+	// 这里修改为_index轮询发送消息
     if (_index == _thread_cnt) _index = 0;
+    else _idnex++;
     return _queues[_index];
 }
 
