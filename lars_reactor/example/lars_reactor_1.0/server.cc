@@ -1,10 +1,10 @@
 #include <string.h>
 #include <strings.h>
 
-#include "config_file.hpp"
-#include "net_connection.hpp"
-#include "qc.hpp"
-#include "tcp_server.hpp"
+#include <lars_reactor/config_file.hpp>
+#include <lars_reactor/net_connection.hpp>
+#include <lars_reactor/qc.hpp>
+#include <lars_reactor/tcp_server.hpp>
 
 using namespace qc;
 
@@ -47,14 +47,14 @@ void on_client_lost(net_connection *conn, void *user_data) {
 int main() {
     event_loop loop;
     // 配置路径
-    config_file::setPath("./serv.conf");
+    config_file_instance::GetInstance()->setPath("/home/qc/Lars/lars_reactor/example/lars_reactor_1.0/serv.conf");
 
-    config_file::GetInstance()->get_all_info(config_file::GetInstance());
+    // config_file_instance::GetInstance()->get_all_info(config_file_instance::GetInstance());
 
     std::string ip =
-        config_file::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
+        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
 
-    int port = config_file::GetInstance()->GetNumber("reactor", "port", 9876);
+    int port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 9876);
 
     printf("server ip = %s, port = %d\n", ip.c_str(), port);
 

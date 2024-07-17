@@ -1,9 +1,9 @@
 #include <string.h>
 #include <strings.h>
 
-#include "net_connection.hpp"
-#include "qc.hpp"
-#include "tcp_client.hpp"
+#include <lars_reactor/net_connection.hpp>
+#include <lars_reactor/qc.hpp>
+#include <lars_reactor/tcp_client.hpp>
 
 using namespace qc;
 
