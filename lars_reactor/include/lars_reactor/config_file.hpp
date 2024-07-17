@@ -20,7 +20,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "singleton.hpp"
+#include <lars_reactor/singleton.hpp>
 
 namespace qc {
 
@@ -32,9 +32,9 @@ typedef std::map<std::string, std::map<std::string, std::string> *> STR_MAP;
 /// @brief 迭代器
 typedef STR_MAP::iterator STR_MAP_ITER;
 
-class config_file : public Singleton<config_file> {
-friend class Singleton<config_file>;
+class config_file {
 public:
+friend Singleton<config_file>;
 
     ~config_file();
 
@@ -70,4 +70,7 @@ private:
     // static config_file *config;
     STR_MAP _map;
 };
+
+using config_file_instance = Singleton<config_file>;
+
 }

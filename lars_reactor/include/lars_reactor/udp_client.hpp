@@ -13,9 +13,9 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include "net_connection.hpp"
-#include "message.hpp"
-#include "event_loop.hpp"
+#include <lars_reactor/net_connection.hpp>
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/message.hpp>
 
 namespace qc {
 

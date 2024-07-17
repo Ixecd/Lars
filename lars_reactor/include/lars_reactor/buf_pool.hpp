@@ -15,9 +15,9 @@
 #include <thread>
 #include <unordered_map>
 
-#include "mutex.hpp"
-#include "io_buf.hpp"
-#include "singleton.hpp"
+#include <lars_reactor/mutex.hpp>
+#include <lars_reactor/io_buf.hpp>
+#include <lars_reactor/singleton.hpp>
 
 // 在工业中常见的内存管理中的指针为嵌入式指针，将内存耗损降到最低
 
@@ -42,22 +42,10 @@ enum MEM_CAP {
 /**
  * @brief 单例模式
  */
-class buf_pool : public Singleton<buf_pool> {
-friend Singleton<buf_pool>;
+class buf_pool {
 public:
-
-    // // 初始化单例对象
-    // static void init() {
-    //     _instance = new buf_pool();
-    // }
-    // // 获取单例方法
-    // static buf_pool *instance() {
-    //     // 保证init在整个进程中只被执行一次
-    //     pthread_once(&_once, init);
-    //     return _instance;
-    // }
+friend Singleton<buf_pool>;
     typedef Mutex MutexType;
-
     /// @brief 开辟一个io_buf
     /// @param size
     /// @return 
@@ -86,6 +74,8 @@ private:
     // static pthread_mutex_t _mutex;
     MutexType _mutex;
 };
+
+using buf_pool_instance = Singleton<buf_pool>;
 
 }  // namespace qc
 

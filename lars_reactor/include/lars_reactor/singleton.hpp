@@ -8,8 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef __SINGLENTON_HPP__
-#define __SINGLENTON_HPP__
+#pragma once
 #include <memory>
 
 namespace qc {
@@ -28,12 +27,6 @@ public:
         static T v;
         return &v;
     }
-private:
-    /// @brief 构造函数私有化
-    // Singleton<T>() {}
-    // Singleton<T>(const Singleton<T>&);
-    // const Singleton<T>& operator=(const Singleton<T>&);
-
 };
 
 template <class T, class X = void, int N = 0>
@@ -46,5 +39,3 @@ public:
 };
 
 }  // namespace qc
-
-#endif

@@ -18,10 +18,11 @@
 
 #include <functional>
 
-#include "event_loop.hpp"
-#include "io_buf.hpp"
-#include "message.hpp"
-#include "net_connection.hpp"
+
+#include <lars_reactor/io_buf.hpp>
+#include <lars_reactor/message.hpp>
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/net_connection.hpp>
 
 namespace qc {
 
@@ -72,7 +73,7 @@ public:
 
     void set_conn_close(conn_callback cb, void *args = nullptr) {
         _conn_close_cb = cb;
-        _conn_start_cb_args = args;
+        _conn_close_cb_args = args;
     }
 
     conn_callback _conn_start_cb;

@@ -8,14 +8,13 @@
  * @copyright Copyright (c) 2024
  * 
  */
-#ifndef __REACTOR_BUF_HPP__
-#define __REACTOR_BUF_HPP__
+#pragma once
 
 #include <unistd.h>
 
-#include "buf_pool.hpp"
-#include "io_buf.hpp"
-#include "qc.hpp"
+#include <lars_reactor/buf_pool.hpp>
+#include <lars_reactor/io_buf.hpp>
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 
@@ -59,6 +58,3 @@ public:
     int write2fd(int fd);
 };
 }
-
-
-#endif

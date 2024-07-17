@@ -5,11 +5,11 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
-#include "event_loop.hpp"
-#include "message.hpp"
-#include "mutex.hpp"
-#include "tcp_conn.hpp"
-#include "thread_pool.hpp"
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/message.hpp>
+#include <lars_reactor/mutex.hpp>
+#include <lars_reactor/tcp_conn.hpp>
+#include <lars_reactor/thread_pool.hpp>
 
 namespace qc {
 /**

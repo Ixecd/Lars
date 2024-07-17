@@ -12,10 +12,10 @@
 #ifndef __TCP_CONN_HPP__
 #define __TCP_CONN_HPP__
 
-#include "qc.hpp"
-#include "event_loop.hpp"
-#include "reactor_buf.hpp"
-#include "net_connection.hpp"
+#include <lars_reactor/qc.hpp>
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/reactor_buf.hpp>
+#include <lars_reactor/net_connection.hpp>
 
 
 namespace qc {

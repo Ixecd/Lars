@@ -16,8 +16,8 @@
 #include <unordered_set>
 #include <functional>
 #include <vector>
-#include "event_base.hpp"
-#include "task_msg.hpp"
+#include <lars_reactor/event_base.hpp>
+#include <lars_reactor/task_msg.hpp>
 
 #define MAXEVENTS 128
 

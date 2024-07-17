@@ -14,10 +14,10 @@
 #include <queue>
 #include <functional>
 #include <sys/eventfd.h>
-#include "event_loop.hpp"
-#include "task_msg.hpp"
-#include "mutex.hpp"
-#include "qc.hpp"
+#include <lars_reactor/event_loop.hpp>
+#include <lars_reactor/task_msg.hpp>
+#include <lars_reactor/mutex.hpp>
+#include <lars_reactor/qc.hpp>
 
 namespace qc {
 
@@ -45,21 +45,21 @@ public:
     /// @brief 向任务队列中添加一个任务
     void send(const T& task) {
         /// @brief 消息事件的占位传输内容
-        ull idle_num = 1;
+        unsigned long long idle_num = 1;
         /// @brief 范围锁
         MutexType::Lock lock(_mutex); 
         _queue.push(task);
 
-        int ret = write(_evfd, &idle_num, sizeof(ull));
+        int ret = write(_evfd, &idle_num, sizeof(unsigned long long));
         qc_assert (ret != -1);
 
     }
     /// @brief 获取当前队列中已有的任务
     void recv(std::queue<T>& new_queue) {
-        ull idle_num = 1;
+        unsigned long long idle_num = 1;
 
         MutexType::Lock lock(_mutex);
-        int ret = read(_evfd, &idle_num, sizeof(ull));
+        int ret = read(_evfd, &idle_num, sizeof(unsigned long long));
         qc_assert(ret != -1);
         // 将任务队列中的所有任务放到new_queue中,_queue置空
         std::swap(new_queue, _queue);

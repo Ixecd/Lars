@@ -14,7 +14,7 @@
 #include <functional>
 #include <list>
 
-#include "event_loop.hpp"
+#include <lars_reactor/event_loop.hpp>
 
 namespace qc {
 

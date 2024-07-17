@@ -20,7 +20,7 @@
 #include <functional>
 #include <mutex>
 
-#include "noncopyable.hpp"
+#include <lars_reactor/noncopyable.hpp>
 
 namespace qc {
 
