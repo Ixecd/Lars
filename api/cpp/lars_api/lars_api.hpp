@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "lars_reactor.hpp"
+#include <lars_reactor/lars_reactor.hpp>
 #include <string>
 
 namespace qc {
