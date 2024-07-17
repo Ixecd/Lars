@@ -33,7 +33,7 @@ void get_report_status(const char *data, uint len, int msgid,
 
 void create_reportdb_threads() {
     // 创建线程实现Reporter,这里默认两个线程
-    threads = config_file::GetInstance()->GetNumber("reporter", "db_thread_cnt", 2);
+    threads = config_file_instance::GetInstance()->GetNumber("reporter", "db_thread_cnt", 2);
 
     // 开辟线程池的消息队列
     reportQueues = new thread_queue<lars::ReportStatusReq> *[threads];
@@ -63,12 +63,12 @@ int main() {
     event_loop loop;
 
     // 配置文件
-    config_file::GetInstance()->setPath(
+    config_file_instance::GetInstance()->setPath(
         "/home/qc/Lars/lars_reporter/config/lars_reporter.conf");
 
     std::string ip =
-        config_file::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
-    short port = config_file::GetInstance()->GetNumber("reactor", "port", 7777);
+        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
+    short port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 7777);
 
     server = new tcp_server(&loop, ip.c_str(), port);
     qc_assert(server != nullptr);

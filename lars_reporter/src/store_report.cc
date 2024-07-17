@@ -27,15 +27,15 @@ StoreReport::StoreReport() {
     mysql_options(&_db_conn, MYSQL_OPT_RECONNECT, &reconnect);
     // 3. 加载配置
     std::string db_host =
-        config_file::GetInstance()->GetString("mysql", "db_host", "localhost");
+        config_file_instance::GetInstance()->GetString("mysql", "db_host", "localhost");
     unsigned short db_port =
-        config_file::GetInstance()->GetNumber("mysql", "db_port", 3306);
+        config_file_instance::GetInstance()->GetNumber("mysql", "db_port", 3306);
     std::string db_user =
-        config_file::GetInstance()->GetString("mysql", "db_user", "qc");
+        config_file_instance::GetInstance()->GetString("mysql", "db_user", "qc");
     std::string db_passwd =
-        config_file::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
+        config_file_instance::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
     std::string db_name =
-        config_file::GetInstance()->GetString("mysql", "db_name", "lars_dns");
+        config_file_instance::GetInstance()->GetString("mysql", "db_name", "lars_dns");
 
     MYSQL *connection = mysql_real_connect(&_db_conn, db_host.c_str(), db_user.c_str(), db_passwd.c_str(), db_name.c_str(), db_port, nullptr, 0);
 
