@@ -1,6 +1,3 @@
-// #include "load_balance.hpp"
-
-// #include "main_server.hpp"
 #include <lars_loadbalance_agent/load_balance.hpp>
 #include <lars_loadbalance_agent/main_server.hpp>
 

@@ -1,10 +1,6 @@
-// #include "route_lb.hpp"
 #include <lars_loadbalance_agent/route_lb.hpp>
-
 #include <proto/lars.pb.h>
 
-
-// load_balance_config
 extern struct load_balance_config lb_config;
 
 namespace qc {

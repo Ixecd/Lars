@@ -9,10 +9,6 @@
  *
  */
 
-// #include "host_info.hpp"
-
-// #include "main_server.hpp"
-
 #include <lars_loadbalance_agent/host_info.hpp>
 #include <lars_loadbalance_agent/main_server.hpp>
 

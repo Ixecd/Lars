@@ -2,9 +2,6 @@
 #include <lars_reactor/lars_reactor.hpp>
 #include <lars_loadbalance_agent/main_server.hpp>
 
-// #include "lars_reactor.hpp"
-// #include "main_server.hpp"
-
 // 与report_client通信的thread_queue消息队列
 // thread_queue<lars::ReportStatusReq> *report_queue;
 // 与dns_client通信的thread_queue消息队列
@@ -50,10 +47,10 @@ void *report_client_thread(void *args) {
 
     // 通过配置文件得到配置信息
     std::string ip =
-        config_file::GetInstance()->GetString("reporter", "ip", "localhost");
+        config_file_instance::GetInstance()->GetString("reporter", "ip", "localhost");
 
     unsigned short port =
-        config_file::GetInstance()->GetNumber("reporter", "port", 0);
+        config_file_instance::GetInstance()->GetNumber("reporter", "port", 0);
 
     // udp_client client(&loop, ip.c_str(), port);
     // 只有处理业务的一方才是UDP, reporter和dns都是tcp传输
