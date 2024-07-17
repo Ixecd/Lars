@@ -17,10 +17,8 @@
 
 #include <iostream>
 
-// #include "lars_reactor.hpp"
 #include <lars_reactor/lars_reactor.hpp>
 #include "mysql.h"
-// #include "qc.hpp"
 #include <lars_reactor/qc.hpp>
 #include <lars_dns/subscribe.hpp>
 
@@ -43,15 +41,15 @@ Route::Route() {
 void Route::connect_db() {
     // --- mysql 配置 ---
     std::string db_host =
-        config_file::GetInstance()->GetString("mysql", "db_host", "localhost");
+        config_file_instance::GetInstance()->GetString("mysql", "db_host", "localhost");
     short db_port =
-        config_file::GetInstance()->GetNumber("mysql", "db_port", 3306);
+        config_file_instance::GetInstance()->GetNumber("mysql", "db_port", 3306);
     std::string db_user =
-        config_file::GetInstance()->GetString("mysql", "db_user", "qc");
+        config_file_instance::GetInstance()->GetString("mysql", "db_user", "qc");
     std::string db_passwd =
-        config_file::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
+        config_file_instance::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
     std::string db_name =
-        config_file::GetInstance()->GetString("mysql", "db_name", "lars_dns");
+        config_file_instance::GetInstance()->GetString("mysql", "db_name", "lars_dns");
     /// @brief 开始链接
     mysql_init(&_db_conn);
     /// @brief mysql超时30ms自动断开
@@ -244,7 +242,7 @@ void Route::remove_changes(bool remove_all) {
 void *check_route_change(void *args) {
     // 每隔10s检查一次,由config文件配置
     int wait_time =
-        config_file::GetInstance()->GetNumber("route", "wait_time", 8);
+        config_file_instance::GetInstance()->GetNumber("route", "wait_time", 8);
     // printf("wait_time = %d\n", wait_time);
     long last_load_time = time(nullptr);
 

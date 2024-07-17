@@ -101,8 +101,8 @@ int main(int argc, char **argv) {
     // config_file::GetInstance()->get_all_info(config_file::GetInstance());
 
     std::string ip =
-        config_file::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
-    short port = config_file::GetInstance()->GetNumber("reactor", "port", 9876);
+        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
+    short port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 9876);
 
     server = new tcp_server(&loop, ip.c_str(), port);
     std::cout << "dns_server ip = " << ip.c_str() << " port = " << port << std::endl;
