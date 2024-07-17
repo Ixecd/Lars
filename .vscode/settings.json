@@ -79,7 +79,12 @@
         "iomanip": "cpp",
         "sstream": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "*.json": "cpp",
+        "barrier": "cpp",
+        "dynamic_bitset": "cpp",
+        "*.def": "cpp",
+        "*.proto": "cpp"
     },
     "cmake.sourceDirectory": "/home/qc/Lars/Lars_reactor"
 }
