@@ -13,7 +13,7 @@
 #include <list>
 #include <unordered_map>
 
-#include "host_info.hpp"
+#include <lars_loadbalance_agent/host_info.hpp>
 #include <proto/lars.pb.h>
 
 namespace qc {

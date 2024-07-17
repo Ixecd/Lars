@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "main_server.hpp"
+#include <lars_loadbalance_agent/main_server.hpp>
 
 namespace qc {
 /// @brief host_info中除了必要的ip +

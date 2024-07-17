@@ -17,7 +17,7 @@
 #include <unordered_map>
 
 #include <proto/lars.pb.h>
-#include "load_balance.hpp"
+#include <lars_loadbalance_agent/load_balance.hpp>
 #include <lars_reactor/mutex.hpp>
 
 namespace qc {
