@@ -10,8 +10,6 @@
  */
 
 #include <string.h>
-// #include "io_buf.hpp"
-// #include "qc.hpp"
 #include <lars_reactor/io_buf.hpp>
 #include <lars_reactor/qc.hpp>
 

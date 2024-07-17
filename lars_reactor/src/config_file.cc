@@ -207,7 +207,7 @@ std::string config_file::trim(const std::string& s) {
 /// @brief 设置配置文件的路径,路径设置好之后就应该直接载入
 bool config_file::setPath(const std::string& path) {
     qc_assert(config == nullptr);
-    config = config_file::GetInstance();
+    config = config_file_instance::GetInstance();
     return config->Load(path);
 }
 

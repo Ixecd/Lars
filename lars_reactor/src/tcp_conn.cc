@@ -8,8 +8,6 @@
  * @copyright Copyright (c) 2024
  *
  */
-
-// #include "tcp_conn.hpp"
 #include <lars_reactor/tcp_conn.hpp>
 
 #include <fcntl.h>
@@ -24,9 +22,6 @@
 #include <lars_reactor/tcp_server.hpp>
 #include <lars_reactor/net_connection.hpp>
 
-// #include "message.hpp"
-// #include "tcp_server.hpp"
-// #include "net_connection.hpp"
 
 namespace qc {
 

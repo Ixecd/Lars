@@ -10,9 +10,6 @@
  */
 #include <string.h>
 #include <sys/ioctl.h>
-
-// #include "qc.hpp"
-// #include "reactor_buf.hpp"
 #include <lars_reactor/reactor_buf.hpp>
 #include <lars_reactor/qc.hpp>
 
@@ -34,16 +31,16 @@ void reactor_buf::pop(int len) {
     // printf("cur _buf->length = %d\n", _buf->m_length);
     //如果此时_buf的长度为0,也就是没有数据在_buf中,就将该内存返回给内存池
     if (_buf->m_length == 0) {
-        //将_buf重新放回buf_pool中
-        buf_pool::GetInstance()->revert(_buf);
+        //将_buf重新放回buf_pool_instance中
+        buf_pool_instance::GetInstance()->revert(_buf);
         _buf = nullptr;
     }
 }
 
 void reactor_buf::clear() {
     if (_buf != nullptr) {
-        //将_buf重新放回buf_pool中
-        buf_pool::GetInstance()->revert(_buf);
+        //将_buf重新放回buf_pool_instance中
+        buf_pool_instance::GetInstance()->revert(_buf);
         _buf = nullptr;
     }
 }
@@ -60,7 +57,7 @@ int input_buf::read_data(int fd) {
 
     if (_buf == NULL) {
         //如果io_buf为空,从内存池申请
-        _buf = buf_pool::GetInstance()->alloc_buf(need_read);
+        _buf = buf_pool_instance::GetInstance()->alloc_buf(need_read);
         qc_assert(_buf != nullptr);
     } else {
         //如果io_buf可用，判断是否够存
@@ -75,14 +72,14 @@ int input_buf::read_data(int fd) {
         // bool flags = false;
         // if (_buf->m_capacity - _buf->m_length < need_read && _buf->m_capacity > need_read) {
         //	  // 优先使用小内存
-        //     io_buf *nxt_buf = buf_pool::GetInstance()->alloc_buf(need_read);
+        //     io_buf *nxt_buf = buf_pool_instance::GetInstance()->alloc_buf(need_read);
         //     _buf->next = nxt_buf;
         //     flags = true;
         // }
         if (_buf->m_capacity - _buf->m_length < need_read) {
             //不够存,内存池申请,申请一块更大的
             io_buf *new_buf =
-                buf_pool::GetInstance()->alloc_buf(need_read + _buf->m_length);
+                buf_pool_instance::GetInstance()->alloc_buf(need_read + _buf->m_length);
             if (new_buf == NULL) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;
@@ -90,7 +87,7 @@ int input_buf::read_data(int fd) {
             //将之前的_buf的数据考到新申请的buf中
             new_buf->copy(_buf);
             //将之前的_buf放回内存池中
-            buf_pool::GetInstance()->revert(_buf);
+            buf_pool_instance::GetInstance()->revert(_buf);
             //新申请的buf成为当前io_buf
             _buf = new_buf;
         }
@@ -133,7 +130,7 @@ void input_buf::adjust() {
 int output_buf::send_data(const char *data, int datalen) {
     if (_buf == nullptr) {
         //如果io_buf为空,从内存池申请
-        _buf = buf_pool::GetInstance()->alloc_buf(datalen);
+        _buf = buf_pool_instance::GetInstance()->alloc_buf(datalen);
         if (_buf == nullptr) {
             fprintf(stderr, "no idle buf for alloc\n");
             return -1;
@@ -146,7 +143,7 @@ int output_buf::send_data(const char *data, int datalen) {
         if (_buf->m_capacity - _buf->m_length < datalen) {
             //不够存，冲内存池申请
             io_buf *new_buf =
-                buf_pool::GetInstance()->alloc_buf(datalen + _buf->m_length);
+                buf_pool_instance::GetInstance()->alloc_buf(datalen + _buf->m_length);
             if (new_buf == nullptr) {
                 fprintf(stderr, "no ilde buf for alloc\n");
                 return -1;
@@ -154,7 +151,7 @@ int output_buf::send_data(const char *data, int datalen) {
             //将之前的_buf的数据考到新申请的buf中
             new_buf->copy(_buf);
             //将之前的_buf放回内存池中
-            buf_pool::GetInstance()->revert(_buf);
+            buf_pool_instance::GetInstance()->revert(_buf);
             //新申请的buf成为当前io_buf
             _buf = new_buf;
         }

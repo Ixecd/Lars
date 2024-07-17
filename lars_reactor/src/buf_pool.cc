@@ -8,23 +8,13 @@
  * @copyright Copyright (c) 2024
  *
  */
-
-#include <lars_reactor/buf_pool.hpp>
-// #include "buf_pool.hpp"
-
 #include <stdlib.h>
 #include <algorithm>
-
-// #include "qc.hpp"
+#include <lars_reactor/buf_pool.hpp>
+#include <lars_reactor/mutex.hpp>
 #include <lars_reactor/qc.hpp>
 
 namespace qc {
-
-// buf_pool *buf_pool::_instance = nullptr;
-
-// pthread_once_t buf_pool::_once = PTHREAD_ONCE_INIT;
-
-// pthread_mutex_t buf_pool::_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int Alloc_Memory(pool_t &_pool, uint size, long unsigned int number, uint64_t &_total_num) {
     io_buf *prev;

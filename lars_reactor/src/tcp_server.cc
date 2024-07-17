@@ -1,4 +1,3 @@
-// #include "tcp_server.hpp"
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
@@ -11,11 +10,6 @@
 #include <lars_reactor/tcp_server.hpp>
 #include <lars_reactor/config_file.hpp>
 #include <lars_reactor/reactor_buf.hpp>
-
-// #include "config_file.hpp"
-// #include "qc.hpp"
-// #include "reactor_buf.hpp"
-// #include "tcp_conn.hpp"
 
 namespace qc {
 
@@ -112,7 +106,7 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
 
     // 6 ========== 链接管理 ===========
     _max_conns =
-        config_file::GetInstance()->GetNumber("reactor", "maxConn", 1024);
+        config_file_instance::GetInstance()->GetNumber("reactor", "maxConn", 1024);
     // 这里动态的创建链接信息数组, +3 是因为stdin, stdout, stderr已经被占用,fd
     // 一定是从3开始
     conns = new tcp_conn *[_max_conns + 3];
@@ -122,7 +116,7 @@ tcp_server::tcp_server(event_loop *loop, const char *ip, uint16_t port) {
 
     // 7 创建线程池,从配置文件中获取,默认5个线程
     int threads =
-        config_file::GetInstance()->GetNumber("reactor", "threadNum", 5);
+        config_file_instance::GetInstance()->GetNumber("reactor", "threadNum", 5);
     _thread_pool = new thread_pool(threads);
     qc_assert(_thread_pool != nullptr);
 
