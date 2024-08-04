@@ -76,7 +76,7 @@
 
 **Reactor 模型服务器框架**
 1. 关于EPOLL的事件驱动模型
-- 首先,epoll底层`是RbTree` + `双向队列`
+- 首先,epoll底层是`RbTree` + `双向队列`
 - 其次,与其说epoll监听的是Event,不如说监听的是`文件描述符fd的Event`,重点应该放在fd上
 - Epoll可以`同时监听很多EPOLLIN/EPOLLOUT事件`,指的是`多个文件描述的事件`,每个文件描述符,在同一时刻只能有一个EPOLLIN事件/一个EPOLLOUT事件/俩都有一个,这里的意思是指对于每一个文件描述符而言EPOLLIN和EPOLLOUT事件最多都只有一个
 
@@ -85,7 +85,7 @@
 - EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区,如果这个缓冲区能写数据,就会触发EPOLLOUT,一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
 
 *详解LT和ET*
-- LT(level-trigger) : 水平触发,看的是这个缓冲区,如果之前触发过一次,但是下一次epoll_wait发现对应文件描述符中还有数据,就会立即再次触发一次这个事件
+- LT(level-trigger) : 水平触发,看的是这个缓冲区,如果之前触发过一次,但是下一次epoll_wait发现对应文件描述符中的缓冲区还有数据,就会立即再次触发一次这个事件
 - ET(edge-trigger) : 边沿触发,看的是文件描述符的状态,如果之间触发过一次,但是缓冲区中还有数据,也就是文件描述符的状态没有发生变化,并不会再次触发,适合一次性处理完缓冲区中所有数据的场景
 
 *关于EINPROGRESS*
