@@ -44,7 +44,7 @@ else ()
 endif ()
 
 # 将 src 目录中的源文件添加到工程中
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.cc" "${CMAKE_SOURCE_DIR}/../lars_api/*.cc")
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.cc")
 # "${CMAKE_SOURCE_DIR}/../lars_api/*.cc"
 
 # 创建可执行文件
@@ -53,12 +53,7 @@ add_executable(qps ${SOURCES})
 
 # 链接静态库
 target_link_libraries(qps PUBLIC Threads::Threads)
-target_link_libraries(qps PUBLIC mysqlclient)
-target_link_libraries(qps PUBLIC base)
-target_link_libraries(qps PUBLIC protobuf)
-# 不能且没有必要
-# target_link_libraries(qps PUBLIC larsclient)
-target_link_libraries(qps PUBLIC lars_reactor)
-target_link_libraries(qps PUBLIC co_async)
+# It Work !!
+target_link_libraries(qps PUBLIC lars_client base protobuf)
 
 
