@@ -1,3 +1,0 @@
-/home/qc/Lars/lars_reporter/build/CMakeFiles/lars_reporter.dir
-/home/qc/Lars/lars_reporter/build/CMakeFiles/edit_cache.dir
-/home/qc/Lars/lars_reporter/build/CMakeFiles/rebuild_cache.dir
