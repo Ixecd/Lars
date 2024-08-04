@@ -84,7 +84,8 @@
         "barrier": "cpp",
         "dynamic_bitset": "cpp",
         "*.def": "cpp",
-        "*.proto": "cpp"
+        "*.proto": "cpp",
+        "coroutine": "cpp"
     },
-    "cmake.sourceDirectory": "/home/qc/Lars/Lars_reactor"
+    "cmake.sourceDirectory": "/home/qc/Lars/"
 }
