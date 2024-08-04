@@ -55,3 +55,5 @@ target_link_libraries(lars_loadbalance_agent PUBLIC base)
 target_link_libraries(lars_loadbalance_agent PUBLIC protobuf)
 target_link_libraries(lars_loadbalance_agent PUBLIC lars_reactor)
 
+target_include_directories(lars_loadbalance_agent PUBLIC include)
+
