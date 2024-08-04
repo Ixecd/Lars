@@ -4,7 +4,7 @@
 
 #file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/*.cc include/*.hpp)
 #add_library(lars_reactor STATIC ${srcs})
-#target_include_directories(lars_reactor PUBLIC include)
+
 
 cmake_minimum_required(VERSION 3.28)
 
@@ -27,6 +27,7 @@ file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/*.cc include/*.hpp)
 add_library(lars_reactor STATIC ${srcs})
 
 # 安装头文件和库文件
-install(TARGETS lars_reactor DESTINATION lib)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/lars_reactor DESTINATION include)
+#install(TARGETS lars_reactor DESTINATION lib)
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/lars_reactor DESTINATION include)
+target_include_directories(lars_reactor PUBLIC include)
 
