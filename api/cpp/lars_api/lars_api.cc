@@ -16,7 +16,7 @@
 #include <string.h>
 #include <sys/socket.h>
 
-#include <proto/lars.pb.h>
+#include "proto/lars.pb.h"
 
 #define DEFAULT_BUFFER_SIZE 4 * 1024
 
