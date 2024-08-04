@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "lars_api.hpp"
+#include <lars_api.hpp>
 // 只有在lars_api的目录下生成target并且设置target_include_directories下面才能用
 // #include <lars_api/lars_api.hpp>
 
