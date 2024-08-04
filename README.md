@@ -1,29 +1,200 @@
 # Lars C++负载均衡远程调度服务系统
---- Reactor 模型服务器框架 ---
-eventLoop/thread Tcp Server Model
+**整体框架**
+- 一个服务称为一个模块,一个模块由modid + cmdid来标识,一个模块表示一个远程服务,这个远程服务一般部署在多个节点上
+- Lars Balance以UDP的方式为业务提供
+    1. 节点获取服务
+    2. 节点调用结果上报服务
+- 业务一 节点获取服务:
+    1. 利用modid + cmdid去向LB Agent获取一个可用节点
+    2. 向该节点发送消息,完成一次远程调用
+    3. 具体获取modid + cmdid下的哪一个节点由LB Agent决定
+- 业务二 节点调用结果上报服务:
+        首先通过业务一根据LB Agent获取节点,调用结果会汇报给LB Agent,以便LB Agent根据自己的LB算法来感知远程服务节点的状态是空闲还是
+        过载,进而控制节点获取时的节点调度.
+    
+- 整体框架示意图
+```
+                                                           --------------<--------------     
+                                                           |        update route       |
+    business one ---> GetNode --->  Thread1    -------> LB Algo                        |
+                                UDP Server:8888                \                       |               获取route
+                                                                 MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
+    business two ---> GetNode --->  Thread2    -------> LB Algo                                        
+                                UDP Server:8889                  MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
+                                                               /                                        上报状态
+    business thr ---> GetNode --->  Thread3    -------> LB Algo 
+                                UDP Server:8890
+```
+- Lars Load—Balance Agent 一共由五个线程组成 一个LB算法构成.
 
-1. 关于#include <netinet/in.h> 
-    其通常在Unix-Like系统中使用,包含了struct sockaddr_in、AF_INET、PORT_ANY、IPPROTO_TCP、inet_addr()、htonl()、htons()、ntohl()、ntohs()
-    类似的头文件还有:
-        #include <sys/socket.h> -> soket相关
-        #include <arpa/inet.h>  -> inet_addr()、inet_ntoa()
-        #include <netdb.h> -> DNS
-        #include <netinet/tcp.h> -> TCP
-        #include <netinet/ip.h> -> IP
+- UDP Server服务,并运行LB算法,对业务提供节点获取和节点调用结果上报服务,为了增大系统吞吐量,使用三个thread独立运行LB算法
+        (modid + cmdid) % 3 = i的那些模块的服务与调度,由第i + 1个UDP Server线程负责
 
-2. 关于函数参数中使用const char* 还是 string的讨论
-    如果函数需要与 C 语言进行交互、对性能要求较高、或者是对字符串的操作比较简单和局限，那么选择 const char* 更合适。而如果你更关注安全性、
-    方便性和代码的可读性，或者需要进行复杂的字符串操作，那么选择 std::string 更为合适。std::string中自带相关成员函数,能方便得出size()等,
-    但string在底层是动态对内存分配,会产生额外开销
+- Dns Service Client:Dns Server的客户端线程,向dnsserver获取一个模块的节点集合(或称为获取路由);UDP Server会按需向此线程的MQ写入获取路由
+        请求,之后Dns Server 再向UDP Server发送路由信息更新.
 
-3. 关于SIGNAL
+- Report Service Client: 是report的客户端线程,负责将每个模块下所有节点在一段时间内的调用结果、过载情况上报到report service中,便于观察、做警报;本身消费MQ数据
+
+**负载均衡**
+```
+                                        选取队头,并重新放入队尾
+      ----------------<----------------- -----> 节点1 节点2 节点3 ... 空闲队列   
+      |             return            Y |
+      | gethost                         |
+    API --> modID/cmdID --> 未超过probe -
+      |                                 |
+      |             return            N |
+      ----------------<----------------- -----> 节点4 节点5 节点6 ... 过载队列
+                                        给过载节点一个机会,选取队头,并重新放到队尾
+```
+1. 基础
+- 每个模块modid/cmdid下由若干节点,节点的集合称为此模块的路由,对于每个节点都有两种状态:
+    1 idle : 节点可用,可作为API请求的节点使用
+    2 overload : 节点暂时不可用
+- 在请求节点时,有几个关键属性
+- API汇报节点调用的结果
+    1. 虚拟成功次数 vsucc
+    2. 虚拟失败次数 verr
+    3. 连接成功次数 contin_succ
+    4. 连接失败次数 contin_err
+- 这四个字段,在节点状态改变的时候会导致 idle <---> overload 之间的切换
+- 这里每个节点就是一个Host主机信息,就是我们需要被管理的主机信息.
+- API相当于Agent模块的客户端,也就是业务端调用的请求主机接口.API发送GetHost,发送给API的server端,AgentServer使用UDPserver处理的API网络请求,将其发送给负载均衡算法
+- 当API对某模块发起节点获取时
+    1. Load Balance从空闲队列中拿出队列的头节点,作为返回节点,之后将其又重新放到队列的尾部
+    2. 关于probe机制: 如果此模块过载队列非空,则每次经过probe_num次节点获取后(默认10),给过载队列中的节点一个机会,让API试探性调用一下
+    3. 如果空闲队列为空,也会给机会经过probe_num次获取后,返回过载错误
+
+- 所谓调度就是:从空闲队列轮流选择节点,同时利用probe机制,给过载队列中的节点一个机会.
+
+3. host_info与Load Balance初始化
+- host_info:表示一个host主机信息
+- load_balance:针对一组modid/cmdid的负载均衡模块
+- route_lb:和udp_server数量保持一致,每个route_lb负责管理多个load_balance
+
+4. AGENT-UDP-SERVICE -> port 8888 8889 8890
+
+**Reactor 模型服务器框架**
+1. 关于EPOLL的事件驱动模型
+- 首先,epoll底层`是RbTree` + `双向队列`
+- 其次,与其说epoll监听的是Event,不如说监听的是`文件描述符fd的Event`,重点应该放在fd上
+- Epoll可以`同时监听很多EPOLLIN/EPOLLOUT事件`,指的是`多个文件描述的事件`,每个文件描述符,在同一时刻只能有一个EPOLLIN事件/一个EPOLLOUT事件/俩都有一个,这里的意思是指对于每一个文件描述符而言EPOLLIN和EPOLLOUT事件最多都只有一个
+
+*详解EPOLLIN和EPOLLOUT*
+- EPOLLIN:读事件,当生成一个socket之后,其对应一个缓冲区,如果有其他方向这个socket发送数据,数据会存储到这个缓冲区中,如果缓冲区中有事件就会触发EPOLLIN
+- EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区,如果这个缓冲区能写数据,就会触发EPOLLOUT,一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
+
+*详解LT和ET*
+- LT(level-trigger) : 水平触发,看的是这个缓冲区,如果之前触发过一次,但是下一次epoll_wait发现对应文件描述符中还有数据,就会立即再次触发一次这个事件
+- ET(edge-trigger) : 边沿触发,看的是文件描述符的状态,如果之间触发过一次,但是缓冲区中还有数据,也就是文件描述符的状态没有发生变化,并不会再次触发,适合一次性处理完缓冲区中所有数据的场景
+
+*关于EINPROGRESS*
+- 当客户端socket没有设置为非阻塞的情况下,connect()可能会出现EINPROGRESS状态
+- 因为太快了,创建文件描述符的背后还要创建缓冲区等一系列数据结构
+- 这时候给这个文件描述符添加EPOLLOUT事件,若触发(表明缓冲区建好了),则证明链接成功
+- 为了万无一失,在这个写事件对应的回调函数中,使用getsockopt来获取ERROR,再判断一次时候建立成功
+
+**DNS Service**
+- cmdid:通常指"Command ID",即命令标识符.在 DNS 服务中,cmdid 用于标识执行的特定命令或操作(添加、删除、修改 DNS 记录等)
+- modid:通常指"Module ID",即模块标识符.在 DNS 系统中,modid 可能用于标识特定的模块或组件,这个模块或组件可能是 DNS 服务器的一个部分,或者是与 DNS 相关的其他系统（如监控系统等）中的一个模块
+1. DNS Service框架示意图
+```
+    Agent                   MQ --> thread Loop
+         \     Main        /                  \                          data_pointer
+    Agent --> Accept() -->  MQ --> thread Loop --> 读锁(RdLock) ------------------------------>  RouterDataMap(A)
+         /                 \                  /        |                                                ^
+    Agent                   MQ --> thread Loop         |                                                |
+                                ^                      |First                                           |
+                                |send                  |get                                             |
+                                |route                 |need                                            |
+                                |to                    |subscirbe                                       |    
+                                |subscirbe             |                                                |
+                                |                      V                                                |  
+                        RouteChange()  <----------- SubscribeList                                       |
+                            ^                                                                           |
+                            |           Get                        Load                  Update         |
+    RouteData() <----> RouteVersion() <----- Backend Thread Loop -------> temp_pointer --------> RouterDataMap(B)
+```
+2. 网络模块
+- 基于Lars_Reactor ---> one loop per thread TCP Servive
+- 主线程中的Accept()负责接收链接
+- MQ中的thread 负责处理链接的请求.
+
+3. 双map模型
+- 使用两个Map来存储路由数据. 
+- RouterDataMap ----> key = modid << 32 + cmdid, value = set of ip << 32 + port
+- RouterDataMap_A(data_pointer) : 主数据,查询请求在这个Map
+- RouterDataMap_B(temp_pointer) : 后台线程周期性重加在路由到此Map,作为最新数据替换掉上一个Map
+
+4. Backend Thread 守护线程
+    1. 负责周期性(默认 1s) 检查RouteVersion表的版本号,如果有变化就更新RouteData表的内容
+    2. 负责周期性(默认 8s) 重新加载RouteData表内容,重加在RouteData表的方法:上写锁,swap(temp_pointer, data_pointer)浅拷贝只交换地址
+
+5. 主业务
+```
+                  data_pointer
+    1.RouteData ---------------> RouterDataMap_A
+    2.temp_pointer ------------> RouterDataMap_B = nullptr;         RdLock
+    3.Agent send Query for request modid/cmdid -----> Thread Loop ---------> RouterDataMap_A.result()
+    4.if !RouterDataMap_A.result() --> agent ip + port + modid/cmdid --> Backend thread loop1  ---> ClientMap
+    5.Backend Thread pre 10s clean RouterDataMap_B ---> load RouteData --> RouterDataMap_B ---> swap();
+```
+6. Route中关于map数据类型的定义
+- 这里的Route并非reactor中的路由分发router,这里的Route是把modid/cmdid与需要管理的远程服务器的serverip/serverport的一条对应关系叫
+    一个Route
+- 使用Map来存储这些关系,key是modid/cmdid<uint64_t>的一个二进制偏移量处理,value是一个set<uint64_t>集合,因为一个modid/cmdid可能对应多个host主机的ip和port
+    
+
+7. 关于MySQL中的mysql_store_result();
+- MYSQL_RES *result = mysql_store_result(&_db_conn);
+- 将服务端的数据存储在客户端的内存中,由result指针指向的结构体控制
+- 注意,对于大型的查询结果集,一次性将所有数据加载到客户端内存可能会导致内存不足或性能问题。在这种情况下，可以考虑使用 mysql_use_result 函数，该函数允许逐行地从服务器端读取数据，而不是一次性将所有数据加载到客户端内存中。
+
+**Reporter Service**
+- 负责接收各agent对某modid、cmdid下节点的调用状态的上报。
+- agent会把代理的host节点的状态上报给Reporter，Reporter负责存储在Mysql数据库中。
+
+架构图如下:
+```
+    Agent1                                MQ ---> Thread Loop 
+           \ 上报请求              Hash   /                    \ write(Mysql)
+    Agent2 ---------> Accept() ---------> MQ ---> Thread Loop -------------> 调度状态
+           /                             \                    /
+    Agent3                                MQ ---> Thread Loop
+
+```
+
+业务:
+
+- Reporter服务模型采用了single thread TCP服务器 + 线程池处理请求
+
+1. 主线程Reporter负责接收agent请求，并根据请求中携带的modid和cmdid，拼接后进行Hash（一致性hash），分配到某个线程的MQ上 
+2. Thread 1~N负责处理请求：把MQ上的请求中的数据同步更新到MySQL数据表
+
+- 由于agent上报给Reporter的信息是携带时间的，且仅作为前台展示方便查看服务的过载情况，故通信仅有请求没有响应
+
+- 于是Reporter服务只要可以高效读取请求即可，后端写数据库的实时性能要求不高。
+
+
+
+**一些知识点**
+
+1. 关于函数参数中使用`const char* `还是 `string`的讨论
+- 如果函数需要与 C 语言进行交互、对性能要求较高、或者是对字符串的操作比较简单和局限，那么选择 const char* 更合适
+- 更关注安全性、方便性和代码的可读性，或者需要进行复杂的字符串操作，那么选择 std::string 更为合适,但string在底层是动态对内存分配,会产生额外开销
+- 如果作为map的key,必须使用string,因为key之间的比较是值(const char *的话是指针)比较,string进行了一次封装, string::operator < 判断的是指向的mapped_value
+
+2. 关于SIGNAL
     SIGPIPE: 如果客户端关闭,服务端再次write就会产生
     SIGHUP:如果终端关闭,就会给当前进程发送该信号
 
-4. 注重防御性编程
-    编写自己的assert qc_assert(),见#include <qc.hpp>
+3. 注重编程安全
+    封装一些marco,见`#include<qc.hpp>`
 
-5. 关于网络相关的一些函数
+4. 关于网络相关的一些函数
+- 通常关于网络的一些属性都是基于大端存储(更适合人类阅读),但ip地址是一个例外,其以小端字节序存储
+- 判断的方法:`char ch[] {'1','2','3','4'}; std::cout << ch;`输出4表小端,输出1表大端
+```cpp
     inet_aton(const char* cp, struct in_addr* inp);
         param[in] cp -> 表示要转换为点分十进制表示的IPv4地址
         param[in] inp -> 表示存储转换后的二进制形式的IP地址
@@ -35,229 +206,115 @@ eventLoop/thread Tcp Server Model
     ntohl(uint32_t netlong);
         network to host long -> 网络序列转换为主机序列
     ntohs(uint16_t netshort);
-
-6. 关于端口复用
-    一般来说,一个端口释放后会等待(TIME_WAIT时间)两分钟之后才能被再次使用.
-    允许多个套接字在同一台主机上同时绑定到相同的IP地址和端口.
-    作用:
+```
+5. 关于端口复用
+- 一般来说,一个端口释放后会等待(TIME_WAIT时间)两分钟之后才能被再次使用.
+- 允许多个套接字在同一台主机上同时绑定到相同的IP地址和端口.
+- 作用:
         提供相同服务多个实例
         实现快速切换服务
-    SO_REUSEADDR:   允许在绑定套接字时重用处于TIME_WAIT状态的地址和端口
+- `SO_REUSEADDR`:   允许在绑定套接字时重用处于TIME_WAIT状态的地址和端口
                     允许同一端口启动同一服务器的多个实例,只要每个实例捆绑
                     一个不同的本地IP地址即可.但对于TCP而言,不可能启动捆
                     绑相同IP地址和相同该端口号的多个服务器.
-    SO_REUSEPORT: 允许多个套接字绑定到相同IP地址和端口,after Linux3.9
+- `SO_REUSEPORT`: 允许多个套接字绑定到相同IP地址和端口,after Linux3.9
 
-    Q:编写 TCP/SOCK_STREAM 服务程序时，SO_REUSEADDR到底什么意思？
-    A:这个套接字选项通知内核，如果端口忙，但TCP状态位于 TIME_WAIT ，可以重
-    用端口。如果端口忙，而TCP状态位于其他状态，重用端口时依旧得到一个错误信
-    息，指明"地址已经使用中"。如果你的服务程序停止后想立即重启，而新套接字依旧
-    使用同一端口，此时SO_REUSEADDR 选项非常有用。必须意识到，此时任何非期望
-    数据到达，都可能导致服务程序反应混乱，不过这只是一种可能，事实上很不可能。
+6. 关于客户端连接
+- 偷懒方法 nc 127.0.0.1:7777
 
-7. 关于客户端连接
-    偷懒方法 nc 127.0.0.1 7777
+7. 关于Makefile(已经不用了,CMake更方便也更高效)
+```makefile
+OBJS = $(addsuffix.o, $(basename $(wildcard *.cc)))
+```
+- wildcard函数 会返回当前目录下所有以.cc结尾的文件列表
+- basename函数 用于去掉文件名中的扩展名(把.cc去掉)
+- addsuffix .o函数 用于在每个文件名后面添加后缀. 
 
-8. 关于Makefile
-    OBJS = $(addsuffix.o, $(basename $(wildcard *.cc)))
-    wildcard函数 会返回当前目录下所有以.cc结尾的文件列表
-    basename函数 用于去掉文件名中的扩展名(把.cc去掉)
-    addsuffix .o函数 用于在每个文件名后面添加后缀. 
-
-9. 解决TCP粘包问题
-    我们要将我们所发送的数据做一个规定,采用TLV的格式
+8. 解决TCP粘包问题
+- 我们要将我们所发送的数据做一个规定,采用TLV的格式
+- 本质就是自己实现一个缓冲区,read/recv,write/send是先向缓冲区读/写数据,保证数据一致性
+```
     DataLen Id   Data    DataLen Id  Data
     |--head--| |-body-|  |-head---| |-body-| 
+```
+9. 关于TCP连接
+- 设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
+```cpp
+int op = 1;
+setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op, sizeof(op));
+```
 
-10. 关于TCP连接
-    设置TCP_NODELAY 禁止做读写缓存,降低小包延迟
-    int op = 1;
-    setsockopt(_connfd, IPPROTO_TCP, TCP_NODELAY, &op, sizeof(op));
+10. Hook 
+- 分为外挂式和内侵式
+- 主流的都是外挂式
+- 一种方式是根据符号表将系统中的系统调用修改
+- 另一种是使用函数重载,直接调用重载后的就可以
 
-11. 关于TCP-conn中客户端socket
-    当客户端socket没有设置为非阻塞的情况下,connect()可能会出现EINPROGRESS状态,
-	
-    客户端测试程序时，由于出现很多客户端，经过connect成功后，代码卡在recv系统调用中，后来发现可能是由于socket默认是阻塞模式，所以会令很多客户端链接处于链接却不能传输数据状态。
+11. 关于pthread_t 和 tid
+- pthread_t:->线程标识符(一个class 里面有tid等信息)
+- tid:->线程ID,表示一个线程的唯一标识符在,POSIX下,pthread_t 类型的变量实际上是一个指向线程控制块(Thread Control Block,TCB)的指针,而线程控制块中包含了线程的ID等信息
 
-	后来修改socket为非阻塞模式，但在connect的时候，发现返回值为-1，刚开始以为是connect出现错误，但在服务器上看到了链接是ESTABLISED状态。证明链接是成功的
+12. 关于std::function
+- 本质上是标准库中的一个模板类,不能在一个匿名联合(anonymous union)的匿名结构体中定义具有构造函数、析构函数、拷贝构造函数的成员,因为编译器无法知道什么时候调用这些成员的析构函数,除非给匿名联合体加上名字并且在里面自己实现构造析构函数
 
-	但为什么会出现返回值是-1呢？ 经过查询资料，以及看stevens的APUE，也发现有这么一说。
+13. 配置文件格式如下
+```
+[reactor]
+ip = 127.0.0.1
+port = 7777
+maxConn = 1024
+thredNum = 5
+```
+14. 关于sstream
+- istringstream ->  将字符串作为输入流
+```cpp
+std::string str = "123 456 789"
+std::istringstream ss(str)
+int num1, num2, num3;
+iss >> num1 >> num2 >> num3; //123 456 789
+```
+- ostringstream -> 将数据写入字符串流,可以将数据格式化为字符串
+```cpp
+std::ostringstream oss;
+int num1 = 123, num2 = 456, num3 = 789;
+oss << num1 << " " << num2 << " " << num3;
+std::string str = oss.str(); // str = 123 456 789
+```
+- stringstream  -> istringstream 和 ostringstream的组合
+```cpp
+std::string str = "123 456 789"
+std::stringstream ss(str);
+```
 
-	当connect在非阻塞模式下，会出现返回-1值，错误码是EINPROGRESS，但如何判断connect是联通的呢？stevens书中说明要在connect后，继续判断该socket是否可写？
+15. 在string或者vector或者map中
+- 使用at比[]更加安全,前者会检查越界报错,后者越界的话会UB(未定义的行为)
+- 尤其对于map而言,[]表示的是写入,at()表示查找,因为[]只有非const版本,at()const和非const都有,使用[]如果误写了,会try_emplate生成一个KV,返回0
 
-	若可写，则证明链接成功。
-
-	给epoll立即添加写事件,如果可写说明连接建立成功
-
-12. 关于epoll
-    底层是红黑树+双向链表
-    事件驱动型IO模型 --> 意味着如果对一个文件描述符fd先进行写操作(对应的obuf不为空),之后再epoll_ctl()注册对应的写回调函数会立即执行
-                      如果一个文件描述符要read (其有对应的ibuf,如果ibuf不为空),那么之后epoll_ctl()注册的读回调函数会立即执行
-
-13. hook 
-    分为外挂式和内侵式,修改代码,本质上根据符号表将系统中的系统调用修改为程序员自己编写的函数(外挂式)
-    直接修改内核源码(内侵式)
-
-14. 关于pthread_mutex_t 的初始化
-    原型：
-        int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
-        可以通过attr 设置一些锁属性
-    锁类型：
-        PTHREAD_MUTEX_NORMAL： 这是默认的锁类型，没有死锁检测和错误检测。
-        PTHREAD_MUTEX_ERRORCHECK： 这种类型的锁支持错误检测，当同一线程尝试重复加锁时会返回错误。
-        PTHREAD_MUTEX_RECURSIVE： 这种类型的锁支持递归加锁，同一线程可以多次加锁，每次加锁后需要相同次数的解锁。
-        PTHREAD_MUTEX_DEFAULT： 与 PTHREAD_MUTEX_NORMAL 相同。
-        使用场景：
-            如果你希望能够在同一线程中多次获取锁而不产生死锁，可以使用 PTHREAD_MUTEX_RECURSIVE。
-            如果你希望在调试时能够捕获到重复加锁的错误，可以使用 PTHREAD_MUTEX_ERRORCHECK。
-        锁的进程共享属性：
-            PTHREAD_PROCESS_PRIVATE： 锁只在创建它的进程内有效，即不跨进程共享。
-            PTHREAD_PROCESS_SHARED： 锁可以跨进程共享。
-        使用场景：
-            如果需要在多个进程间共享锁，可以使用 PTHREAD_PROCESS_SHARED。
-
-    这些特定的锁属性可以通过 pthread_mutexattr_settype()、pthread_mutexattr_setpshared() 等函数进行设置。注意这些函数
-    是在调用pthread_mutex_init()之前。
-    eg:
-        pthread_mutex_t my_mutex;
-        pthread_mutexattr_t attr;
-
-        // 初始化属性对象
-        pthread_mutexattr_init(&attr);
-        // 设置属性为错误检测类型
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-        // 初始化互斥锁并使用属性对象
-        pthread_mutex_init(&my_mutex, &attr);
-
-    静态初始化 PTHREAD_MUTEX_INITIALIZER(直接就定死了,属性就是PTHREAD_MUTEX_NORMAL)
-    动态初始化 pthread_mutex_t mutex; pthread_mutex_init(&mutex, nullptr);(调用完init就定死了)
-    区别：
-        时机： 静态初始化是在编译时进行的，而动态初始化是在运行时进行的。
-        方式： 静态初始化是通过直接赋值进行的，而动态初始化是通过调用 pthread_mutex_init() 函数进行的。
-        适用性： 静态初始化适用于那些在编译时就可以确定初值的情况，而动态初始化适用于在运行时才能确定初值的情况，或者需要动态配置参数的情况。
-
-15. 关于pthread_t 和 tid
-    pthread_t：-> 线程标识符(一个class 里面有tid等信息)
-        pthread_t 是 POSIX 线程库中用来表示线程标识符的数据类型，通常由线程库创建和管理。它是一个抽象的数据类型，可以用来标识一个线程。
-        在 POSIX 线程库中，pthread_t 类型的变量被用来创建、等待、终止等线程操作。
-    tid：      -> 线程ID
-        tid 通常指的是线程ID，表示一个线程的唯一标识符。在 POSIX 环境下，pthread_t 类型的变量实际上是一个指向线程控制块（Thread Control
-        Block，TCB）的指针，而线程控制块中包含了线程的ID等信息。因此，可以通过某种方式来获取线程ID，比如调用 pthread_self() 函数，
-        该函数返回当前线程的 pthread_t 类型的标识符。
-
-16. 关于std::function
-    本质上是标准库中的一个模板类,不能在一个匿名联合(anonymous union)的匿名结构体中定义具有构造函数、析构函数、拷贝构造函数的成员,因为编译器无法知道什么时候调用这些成员的析构函数.
-
-17. 配置文件格式如下：
-    [reactor]
-    ip = 127.0.0.1
-    port = 7777
-    maxConn = 1024
-    thredNum = 5
-
-18. 关于sstream
-    istringstream ->  将字符串作为输入流
-        eg:
-            std::string str = "123 456 789"
-            std::istringstream ss(str)
-            int num1, num2, num3;
-            iss >> num1 >> num2 >> num3;
-                    123     456     789
-    ostringstream -> 将数据写入字符串流,可以将数据格式化为字符串
-        eg:
-            std::ostringstream oss;
-            int num1 = 123, num2 = 456, num3 = 789;
-            oss << num1 << " " << num2 << " " << num3;
-            std::string str = oss.str(); // str = 123 456 789
-    stringstream  -> istringstream 和 ostringstream的组合
-        eg:
-            std::string str = "123 456 789"
-            std::stringstream ss(str);
-            可以in 也可以out
-
-19. 关于fstream
-    用于简单的读取和写入文件
-    std::ifstream 类似于从文件中读取数据,继承自std::istream类
-        eg:
-            std::ifstream inputFile("input.txt");
-            if (!inputFile.is_open()) {
-                fprintf(stderr, "input.txt open failed\n");
-            }
-
-            std::ofstream outputFile("output.txt");
-            if (!outputFile.is_open()) {
-                cerr << "output.txt open failed\n";
-            }
-
-            // 读取输入文件内容并写入输出文件
-            std::string line;
-            while (std::getline(inputFile, line)) {
-                outputFile << line << std::endl;
-            }
-    std::ofstream 类似于从文件中写入数据,继承自std::ostream类
-
-20. 在string或者vector中
-    使用at比[]更加安全,前者会检查越界报错,后者越界的话会UB(未定义的行为)
-    
-21. Google Protocal Buffer -> Protobuf 结构化数据存储格式
-        很适合用做数据存储和作为不同应用，不同语言之间相互通信的数据交换格式,只要实现相同的协议格式,即同一proto文件被编译成不同的语言版本,
-    这样不同语言就可以解析其他语言通过protobuf序列化的数据.
-        平台无关、语言无关、可扩展
-    所谓序列化就是把复杂的结构体数据按照一定的规则编码成一个字节切片
-
-    A.常用的数据交换格式 json、xml、protobuf(二进制数据格式、需要编码和解码)
-
-22. 负载均衡
-    一个服务称为一个模块,一个模块由modid + cmdid来标识modid + cmdid 的组合表示一个远程服务,这个远程服务一般部署在多个节点上
-
-    Lars Balance以UDP的方式为业务提供:1.节点获取服务 2.节点调用结果上报服务
-
-    业务一 节点获取服务:
-        业务方每次要想远程服务发送消息时,先利用modid + cmdid去向LB Agent获取一个可用节点,之后向该节点发送消息,完成一次远程调用;
-        具体获取modid + cmdid下的哪一个节点由LB Agent决定
-    
-    业务二 节点调用结果上报服务:
-        首先通过业务一根据LB Agent获取节点,调用结果会汇报给LB Agent,以便LB Agent根据自己的LB算法来感知远程服务节点的状态是空闲还是
-        过载,进而控制节点获取时的节点调度.
-    
-    下面是示意图
-                                                           --------------<--------------     
-                                                           |        update route       |
-    business one ---> GetNode --->  Thread1    -------> LB Algo                        |
-                                UDP Server:8888                \                       |               获取route
-                                                                 MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
-    business two ---> GetNode --->  Thread2    -------> LB Algo                                        
-                                UDP Server:8889                  MQ消息队列 ---> Thread4 Dns service Client <-> Report Service
-                                                               /                                        上报状态
-    business thr ---> GetNode --->  Thread3    -------> LB Algo 
-                                UDP Server:8890
-
-    Lars Load—Balance Agent 一共由五个线程组成 一个LB算法构成.
-
-    UDP Server服务,并运行LB算法,对业务提供节点获取和节点调用结果上报服务,为了增大系统吞吐量,使用三个thread独立运行LB算法
-        (modid + cmdid) % 3 = i的那些模块的服务与调度,由第i + 1个UDP Server线程负责
-
-    Dns Service Client:Dns Server的客户端线程,向dnsserver获取一个模块的节点集合(或称为获取路由);UDP Server会按需向此线程的MQ写入获取路由
-        请求,之后Dns Server 再向UDP Server发送路由信息更新.
-
-    Report Service Client: 是report的客户端线程,负责将每个模块下所有节点在一段时间内的调用结果、过载情况上报到report service中,便于观察、做警报;本身消费MQ数据
+16. Google Protocal Buffer -> Protobuf 结构化数据存储格式
+- 很适合用做数据存储和作为不同应用，不同语言之间相互通信的数据交换格式,只要实现相同的协议格式,即同一proto文件被编译成不同的语言版本,这样不同语言就可以解析其他语言通过protobuf序列化的数据,平台无关、语言无关、可扩展
+- 所谓序列化就是把复杂的结构体数据按照一定的规则编码成一个字节切片
+- 常用的数据交换格式 json、xml、protobuf(二进制数据格式、需要编码和解码)
 
 
-23. 关于重复定义
-    在lars_loadbalance_agent遇到了重复定义的问题,解决方法如下:
-        将全局变量定义在源文件中,不要放在名字空间中。在其他文件中使用extern包含即可。
+17. 关于重复定义
+- 在lars_loadbalance_agent遇到了重复定义的问题,解决方法如下:
+- 第一种方法将全局变量定义在源文件中,不要放在名字空间中,在其他文件中使用extern包含即可
+- 第二种方法使用inline将这个全局变量定义在一个头文件中,使用inline修饰,不要放在名字空间中,其他文件也不需要extern
 
-24. 关于git 
-    如果出现无法git push
-        git remote -v
-        如果对应的.git传输协议为https
-        git remote set-url origin https://yourusername@yourrepositoryurl.git
+18. 关于git 
+- 由于开发环境是 主机Window + 虚拟机(Ubuntu24.04),所以主机上有梯子能登陆github也没用,你得虚拟机要能登上github
+- 解决方法:
+- 1.给虚拟机也整上梯子
+- 2.安装双系统
+- 3.使用代理
+- 4.在 /etc/hosts中将github域名对应的ip保存下来,之后输入下面的bash
+```bash
+git remote -v
+git remote set-url origin https://yourusername@yourrepositoryurl.git
+```
 
-25. 关于ip和port
-    提取ip : struct in_addr inaddr -> inaddr.s_addr = host.ip()
-            std::string ip = inet_ntoa(inaddr); -> net to ascii
-            or
-            int ip = inet_aton(inaddr); -> ascii to net
-
-26. 关于函数的返回值
-    只要不是void类型的函数,切记都要加上返回值,否则会SIGSEGV
+19. 关于protobuf
+- 一般对于Cpp而言,在接收数据包的时候使用ParseFromArray
+- 本质上 ParseFromArray 和 ParseFromString 的处理结果是一致的.
+- ParseFromString多用于Python,而ParseFromArray多用于C++
+- 在message中的reapted属性,如果要一个一个获取,其类型为const.
