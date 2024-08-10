@@ -25,6 +25,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../lars_reactor/include)
 include_directories(${CMAKE_SOURCE_DIR}/../base)
 include_directories(/usr/include/mysql-connector-c/include)
+include_directories(${CMAKE_SOURCE_DIR}/../co_async)
 
 # 添加静态库目录
 link_directories(${CMAKE_SOURCE_DIR}/../lars_reactor/lib)

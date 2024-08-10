@@ -60,12 +60,14 @@ using listen_fd_set = std::unordered_set<int>;
 
 // 这里实现的事件循环只是针对于普通函数而言
 // 要集成函数的话,不能简单直接继承IoLoop,因为即使同名也会被子类隐藏,但是依然存在
-// 也就是说如果 IoLoop中的_epfd和event_loop中的_epfd重名,那么IoLoop中的就没有办法用到
+// 也就是说如果 IoLoop中的_epfd和event_loop中的_epfd重名,那么IoLoop中的就没有办法用到(除非特别指定)
 // 所以我们的设计如下
 // 每个事件循环都有两个epoll,一个专门用来监听普通成员,另一个专门用来监听协程函数
 // 这样的设计好不好? 目前如果不是所有的函数都是协程,那么是好的
 // 但是对于IO来说,其只涉及read和write这样的话,所有的read和write都应该被hook成协程函数
 // 那么只使用IoLoop是好的
+// 但是考虑到epoll只是监听事件,如何触发回调函数和执行协程,是由程序员自己编写实现
+// 所以最好的解决办法是融合在一起
 
 // 总结
 // 这里的设计 最好是将两者直接整合在一起, qc::event_loop 重新实现 co_async::event_loop
