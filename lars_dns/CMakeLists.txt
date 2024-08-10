@@ -23,6 +23,7 @@ set(PROTOBUF_SRC_INC ${CMAKE_CURRENT_LIST_DIR}/base/proto)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../lars_reactor/include)
 include_directories(${CMAKE_SOURCE_DIR}/../base)
+include_directories(${CMAKE_SOURCE_DIR}/../co_async)
 include_directories(/usr/include/mysql-connector-c/include)
 
 # 添加静态库目录
@@ -30,6 +31,8 @@ link_directories(${CMAKE_SOURCE_DIR}/../lars_reactor/lib)
 link_directories(/usr/include/mysql-connector-c/lib)
 link_directories(/usr/local/protobuf/lib)
 link_directories(${CMAKE_SOURCE_DIR}/../base/lib)
+#link_directories(${CMAKE_SOURCE_DIR}/../co_async/lib)
+
 
 # 查找 pthread 库
 find_package(Threads REQUIRED)
@@ -49,11 +52,12 @@ add_executable(lars_dns ${SOURCES})
 
 
 # 链接静态库,如果调用的是第三方库,就可以不用添加头文件搜索路径,因为下面有PUBLIC,当CMake找到这个库的时候就会自动在Config.cmake中添加target_include_directories.
+target_link_libraries(lars_dns PUBLIC lars_reactor)
 target_link_libraries(lars_dns PUBLIC Threads::Threads)
 target_link_libraries(lars_dns PUBLIC mysqlclient)
 target_link_libraries(lars_dns PUBLIC base)
 target_link_libraries(lars_dns PUBLIC protobuf)
-target_link_libraries(lars_dns PUBLIC lars_reactor)
+#target_link_libraries(lars_dns PUBLIC co_async)
 
 target_include_directories(lars_dns PUBLIC include)
 

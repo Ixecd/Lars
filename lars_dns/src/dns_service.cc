@@ -19,7 +19,7 @@
 #include "mysql.h"
 
 using namespace qc;
-
+using namespace co_async;
 // server 不在 namespace 中
 tcp_server *server;
 

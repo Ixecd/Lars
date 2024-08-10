@@ -89,5 +89,5 @@
     },
     "cmake.sourceDirectory": "/home/qc/Lars/",
     // 走的CMake,只要CMakeLists.txt中头文件路径ok就行
-    "C_Cpp.errorSquiggles": "disabled"
+    // "C_Cpp.errorSquiggles": "disabled"
 }

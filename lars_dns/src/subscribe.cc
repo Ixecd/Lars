@@ -14,7 +14,7 @@
 /// @brief 声明一变量,保证程序执行过程中只有一个实例
 /// @details 如果不想使用extern 那就都包含在namespace qc中即可
 extern qc::tcp_server *server;
-
+using namespace co_async;
 namespace qc {
 
 // tcp_server *server;
