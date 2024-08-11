@@ -81,8 +81,8 @@
 - Epoll可以`同时监听很多EPOLLIN/EPOLLOUT事件`,指的是`多个文件描述的事件`,每个文件描述符,在同一时刻只能有一个EPOLLIN事件/一个EPOLLOUT事件/俩都有一个,这里的意思是指对于每一个文件描述符而言EPOLLIN和EPOLLOUT事件最多都只有一个
 
 *详解EPOLLIN和EPOLLOUT*
-- EPOLLIN:读事件,当生成一个socket之后,其对应一个缓冲区,如果有其他方向这个socket发送数据,数据会存储到这个缓冲区中,如果缓冲区中有事件就会触发EPOLLIN
-- EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区,如果这个缓冲区能写数据,就会触发EPOLLOUT,一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
+- EPOLLIN:读事件,当生成一个socket之后,其对应一个缓冲区(内核态,数据轮询地从通过DMA技术存放在环形缓冲区Ring Buffer(sk_buff)中读取),如果有其他方向这个socket发送数据,数据会存储到这个缓冲区中,如果缓冲区中有事件就会触发EPOLLIN
+- EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区(内核态),如果这个缓冲区能写数据,就会触发EPOLLOUT,一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
 
 *详解LT和ET*
 - LT(level-trigger) : 水平触发,看的是这个缓冲区,如果之前触发过一次,但是下一次epoll_wait发现对应文件描述符中的缓冲区还有数据,就会立即再次触发一次这个事件
