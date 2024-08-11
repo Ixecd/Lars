@@ -81,12 +81,16 @@
 - Epoll可以`同时监听很多EPOLLIN/EPOLLOUT事件`,指的是`多个文件描述的事件`,每个文件描述符,在同一时刻只能有一个EPOLLIN事件/一个EPOLLOUT事件/俩都有一个,这里的意思是指对于每一个文件描述符而言EPOLLIN和EPOLLOUT事件最多都只有一个
 
 *详解EPOLLIN和EPOLLOUT*
-- EPOLLIN:读事件,当生成一个socket之后,其对应一个缓冲区(内核态,数据轮询地从通过DMA技术存放在环形缓冲区Ring Buffer(sk_buff)中读取),如果有其他方向这个socket发送数据,数据会存储到这个缓冲区中,如果缓冲区中有事件就会触发EPOLLIN
-- EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区(内核态),如果这个缓冲区能写数据,就会触发EPOLLOUT,一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
+- EPOLLIN:读事件,当生成一个socket之后,其对应一个缓冲区(soket_buffer,内核态,数据轮询地从通过DMA技术存放在环形缓冲区Ring Buffer(存放sk_buff)中读取,由内核中的ksofttirqd线程读取到socket_buffer中),如果有其他用户向这个socket发送数据,数据会存储到这个缓冲区中,如果缓冲区中有事件就会触发EPOLLIN
+- EPOLLOUT:写事件,当生成一个socket之后,其也对应一个缓冲区(内核态),如果这个缓冲区能写数据,就会触发EPOLLOUT(将用户待发送的数据拷贝到sk_buff内存,之后将其加入到socket的缓冲区中,网络协议栈从缓冲区中取出sk_buff,通过传输层/网络层最后到网络接口层逐层处理,准备好之后放入网卡的发送队列,之后触发软中端,告诉网卡驱动程序,有新的网络包要发送,之后驱动程序会从发送队列中读取sk_buff添加到Ring Buffer中,之后将sk_buff数据映射到网卡可访问的内存DMA区域,最后触发真实的发送),一般当生成这个socket的时候,缓冲区也就初始化好了,所以`EPOLLOUT是立即触发的`,所以EPOLLOUT触发后从epoll_wait退出,首先要从epoll中删除对应的EPOLLOUT事件,之后再执行对应的回调函数
+- 对于操作系统提供的IO API,比如read/write,recv/send其实都是向socket_buffer中添加数据,并不会真正发送,首先将用户数据拷贝到sk_buff(内核申请的),之后将其添加到socket_buffer中,之后一步一步封装在sk_buff中,最后添加到Ring Buffer中,将其再映射在网卡可访问的内存DMA区域,最后才真实发送
+- 而对于服务器中的EPOLL而言,其只负责socket对应的缓冲区
 
 *详解LT和ET*
 - LT(level-trigger) : 水平触发,看的是这个缓冲区,如果之前触发过一次,但是下一次epoll_wait发现对应文件描述符中的缓冲区还有数据,就会立即再次触发一次这个事件
 - ET(edge-trigger) : 边沿触发,看的是文件描述符的状态,如果之间触发过一次,但是缓冲区中还有数据,也就是文件描述符的状态没有发生变化,并不会再次触发,适合一次性处理完缓冲区中所有数据的场景
+
+- 对于底层数据包到达通知操作系统的方式也是通过类似于ET的方式触发,DMA-->Ring Buffer(触发硬件中断,暂时屏蔽中断,之后如果还有数据包来,就不会触发硬件中断,开启软中断,恢复屏蔽的中断)-->sk_buff(内核线程ksoftirqd收到软中断之后,就会轮询的处理Ring Buffer中的数据)--> 一层一层拆包 --> socket_buffer
 
 *关于EINPROGRESS*
 - 当客户端socket没有设置为非阻塞的情况下,connect()可能会出现EINPROGRESS状态
