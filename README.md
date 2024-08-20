@@ -330,3 +330,10 @@ git remote set-url origin https://yourusername@yourrepositoryurl.git
 - 本质上 ParseFromArray 和 ParseFromString 的处理结果是一致的.
 - ParseFromString多用于Python,而ParseFromArray多用于C++
 - 在message中的reapted属性,如果要一个一个获取,其类型为const.
+
+20. 关于RAII
+- 本项目中规定只在创建的时候make_shared一次,后面都用get,裸指针
+- 因为一般没人手动delete,是为了防止内存泄漏,并且同时兼顾了内存开销,同时还保留了Cpp指针特色
+- 良好的Cpp程序是不能出现 new 和 delete 的
+- 相较于std::shared_ptr<T> ptr(new T()) 更加推荐 std::shared_ptr<T> ptr = std::make_shared<T>();
+- 后者比前者少一次申请内存
