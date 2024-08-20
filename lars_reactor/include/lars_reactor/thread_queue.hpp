@@ -14,6 +14,7 @@
 #include <queue>
 #include <functional>
 #include <sys/eventfd.h>
+#include <memory>
 #include <lars_reactor/event_loop.hpp>
 #include <lars_reactor/task_msg.hpp>
 #include <lars_reactor/mutex.hpp>
@@ -30,6 +31,7 @@ class thread_queue {
 public: 
     typedef Mutex MutexType;
     thread_queue() {
+        // _loop = nullptr;
         _loop = nullptr;
         /// @brief 创建一个事件文件描述符_evfd,用于在后续的程序中进行事件通知,并设置了非阻塞的读取模式。
         ///        主要用来在多线程或多进程中进行事件通知和同步
@@ -86,7 +88,7 @@ private:
     int _evfd;
     /// @brief 当前消息队列绑定在哪一个event_loop事件触发机制中
     /// @details 触发消息到达,捕获消息并且触发处理消息业务的动作
-    event_loop *_loop;
+    event_loop* _loop;
     /// @brief 任务队列
     std::queue<T> _queue;
     /// @brief 静态初始化_mutex 锁属性为PTHREAD_MUTEX_NORMAL,这里的_mutex是一个class,构造函数调用的时候锁就初始化好了
