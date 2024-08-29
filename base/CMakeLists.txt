@@ -23,15 +23,17 @@ else ()
 endif ()
 
 
-# 添加头文件搜索路径
-include_directories(${CMAKE_SOURCE_DIR}/proto)
+# CMAKE_SOURCE_DIR / CMAKE_CURRENT_LIST_DIR
 
-file(GLOB_RECURSE srcs CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/proto/*.cc)
+# 添加头文件搜索路径
+include_directories(${CMAKE_CURRENT_LIST_DIR}/proto)
+
+file(GLOB_RECURSE srcs CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/proto/*.cc)
+
 
 foreach(src ${srcs})
     message(STATUS "Found source file: ${src}")
 endforeach()
-
 
 add_library(base STATIC ${srcs})
 

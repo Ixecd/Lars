@@ -59,5 +59,8 @@ void *store_main(void *args) {
 
     // 7.开启事件监听
     loop.event_process();
+
+    // 8.对于比较旧的函数,记得返回值
+    return nullptr;
 }
 }  // namespace qc

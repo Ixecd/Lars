@@ -16,7 +16,4 @@ add_subdirectory(lars_reactor)
 add_subdirectory(lars_dns)
 add_subdirectory(lars_reporter)
 add_subdirectory(lars_loadbalance_agent)
-add_subdirectory(co_async)
-add_subdirectory(example)
-
-
+# add_subdirectory(co_async)

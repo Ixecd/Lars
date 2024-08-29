@@ -23,10 +23,11 @@ endif()
 set(PROTOBUF_SRC_INC ${CMAKE_CURRENT_LIST_DIR}/../../../base/proto)
 
 # 添加头文件搜索路径
-include_directories(${CMAKE_SOURCE_DIR}/)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../lars_reactor/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../base)
 include_directories(/usr/include/mysql-connector-c/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../co_async)
 
 # 添加库目录
 link_directories(${CMAKE_CURRENT_LIST_DIR}/../../../lars_reactor/lib)
@@ -44,8 +45,8 @@ else ()
 endif ()
 
 # 将 src 目录中的源文件添加到工程中
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.cc")
-# "${CMAKE_SOURCE_DIR}/../lars_api/*.cc"
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/*.cc")
+# "${CMAKE_CURRENT_LIST_DIR}/../lars_api/*.cc"
 
 # 创建可执行文件
 add_library(lars_client STATIC ${SOURCES})

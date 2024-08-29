@@ -208,6 +208,6 @@ event_loop::addListener(EventFilePromise &promise, int op) {
 
 inline bool 
 event_loop::tryRun(std::optional<std::chrono::system_clock::duration> timeout) {
-    
+    return true;
 }
 }  // namespace qc

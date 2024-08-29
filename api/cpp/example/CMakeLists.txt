@@ -24,6 +24,7 @@ include_directories(${CMAKE_SOURCE_DIR}/../lars_api)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../lars_reactor/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../base)
 include_directories(/usr/include/mysql-connector-c/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../../../co_async)
 
 # 添加库目录
 link_directories(${CMAKE_CURRENT_LIST_DIR}/../../../lars_reactor/lib)
