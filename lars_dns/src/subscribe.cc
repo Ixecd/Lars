@@ -19,19 +19,25 @@ namespace qc {
 
 // tcp_server *server;
 
-SubscribeList::SubscribeList() {}
+SubscribeList::SubscribeList() {
+    _book_list = new subscribe_map();
+    _push_list = new publish_map();
+}
 
 void SubscribeList::subscribe(uint64_t mod, int fd) {
-    mutex_book_list.lock();
-    _book_list[mod].insert(fd);
-    mutex_book_list.unlock();
+    // mutex_book_list.lock();
+    std::unique_lock<std::mutex> ulk(mtx);
+    // 根源
+    (*_book_list)[mod].insert(fd);
+    // mutex_book_list.unlock();
 }
 
 void SubscribeList::unsubscribe(uint64_t mod, int fd) {
-    mutex_book_list.lock();
-    _book_list[mod].erase(fd);
-    if (_book_list[mod].empty() == true) _book_list.erase(mod);
-    mutex_book_list.unlock();
+    // mutex_book_list.lock();
+    std::unique_lock<std::mutex> ulk(mtx);
+    (*_book_list)[mod].erase(fd);
+    if ((*_book_list)[mod].empty() == true) (*_book_list).erase(mod);
+    // mutex_book_list.unlock();
 }
 
 void SubscribeList::make_publish_map(listen_fd_set &online_fds,
@@ -44,11 +50,11 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
     // 预处理将要删除的文件描述符先保存起来
     // 这里是因为_push_list的类型为unordered_map,在哈希表中使用erase会导致后面的元素的迭代器失效
     std::vector<int> preseve;
-    for (auto it = _push_list.begin(); it != _push_list.end(); ++it) {
+    for (auto it = (*_push_list).begin(); it != (*_push_list).end(); ++it) {
         // 需要publish的订阅列表在online_fds中找到了
         if (online_fds.find(it->first) != online_fds.end()) {
             preseve.push_back(it->first);
-            need_publish[it->first] = _push_list[it->first];
+            need_publish[it->first] = (*_push_list)[it->first];
             // _push_list是一次性的
             // 注意:这里的it是以引用的方式传入的erase(it)成功之后it指向下一个元素
             // std::cout << "before erase..." << std::endl;
@@ -60,7 +66,7 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
     }
 
     // 开始删除
-    for (int num : preseve) _push_list.erase(num);
+    for (int num : preseve) (*_push_list).erase(num);
 
     mutex_push_list.unlock();
 }
@@ -140,14 +146,14 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
 
     bool tickle = false;
     for (uint64_t &mod : change_mods) {
-        if (_book_list.find(mod) != _book_list.end()) {
+        if ((*_book_list).find(mod) != (*_book_list).end()) {
             // 将mod下面的fd set拷贝到 _push_list中
             // 遍历mod对应的所有客户
             tickle = true;
-            for (auto fds_it = _book_list[mod].begin();
-                 fds_it != _book_list[mod].end(); ++fds_it) {
+            for (auto fds_it = (*_book_list)[mod].begin();
+                 fds_it != (*_book_list)[mod].end(); ++fds_it) {
                 int fd = *fds_it;
-                _push_list[fd].insert(mod);
+                (*_push_list)[fd].insert(mod);
             }
         }
     }

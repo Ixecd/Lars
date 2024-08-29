@@ -16,6 +16,7 @@
 #include <lars_dns/subscribe.hpp>
 #include <proto/lars.pb.h>
 #include <lars_reactor/lars_reactor.hpp>
+#include <string>
 #include "mysql.h"
 
 using namespace qc;
@@ -35,7 +36,8 @@ void clear_subscribe(net_connection *conn, void *args) {
          it != ((client_sub_list *)(conn->param))->end(); ++it) {
         // 下面退订阅
         uint64_t mod = *it;
-        SubscribeList::GetInstance()->unsubscribe(mod, conn->get_fd());
+        // SubscribeList::GetInstance()->unsubscribe(mod, conn->get_fd());
+        GetInstance<SubscribeList>()->unsubscribe(mod, conn->get_fd());
     }
 
     delete conn->param;
@@ -58,10 +60,17 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 一个conn对应一个client_sub_list->存储了客户端对应订阅的modid和cmdid信息,也就是说订阅信息存储在客户端
     uint64_t mod = ((uint64_t)modid << 32) + cmdid;
     client_sub_list *sub_list = (client_sub_list *)conn->param;
+
     if (sub_list == nullptr) std::cout << "cur client_sub_list is nullptr" << std::endl; 
     else if (sub_list->find(mod) == sub_list->end()) {
         sub_list->insert(mod);
-        SubscribeList::GetInstance()->subscribe(mod, conn->get_fd());
+        // !!TM的问题在这里
+        // 这里只是简单上锁解锁啊??
+        // SubscribeList::get_instance()->subscribe(mod, conn->get_fd());
+        // ok 问题进一步缩小,出现在subscribe上
+        int fd = conn->get_fd();
+        // GetInstance<SubscribeList>()->subscribe(mod, fd); // err
+        // GetInstance<SubscribeList>()->test(); // ok
     }
 
     // 3. 根据modid和cmdid获取host ip 和 port 信息
@@ -85,7 +94,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 6.发送给客户端
     std::string responseString;
     rep.SerializeToString(&responseString);
-    // !!!SIGEGV
+
     conn->send_message(responseString.c_str(), responseString.size(),
                        lars::ID_GetRouteResponse);
 }

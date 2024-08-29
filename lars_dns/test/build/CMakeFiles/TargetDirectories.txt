@@ -1,0 +1,3 @@
+/home/qc/Lars/lars_dns/test/build/CMakeFiles/lars_dns_test.dir
+/home/qc/Lars/lars_dns/test/build/CMakeFiles/edit_cache.dir
+/home/qc/Lars/lars_dns/test/build/CMakeFiles/rebuild_cache.dir

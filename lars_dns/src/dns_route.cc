@@ -279,7 +279,7 @@ void *check_route_change(void *args) {
 
             // 推送
             if (changes.size() != 0)
-                SubscribeList::GetInstance()->publish(changes);
+                GetInstance<SubscribeList>()->publish(changes);
 
             // 删除当前版本之前的修改记录
             if (changes.size() != 0)

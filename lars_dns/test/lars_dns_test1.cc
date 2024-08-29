@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-#include "dns_route.hpp"
-#include "lars.pb.h"
-#include "lars_reactor.hpp"
+#include <lars_dns/dns_route.hpp>
+#include <proto/lars.pb.h>
+#include <lars_reactor/lars_reactor.hpp>
 using namespace qc;
 
 // 命令行参数
@@ -72,12 +72,12 @@ void deal_get_route(const char *data, uint32_t len, int msgid,
 
 int main(int argc, char **argv) {
     // 1. 解析命令行参数
-    parse_option(argc, argv);
+    // parse_option(argc, argv);
 
     event_loop loop;
 
     tcp_client *client =
-        new tcp_client(&loop, option.ip, option.port, "lars_dns_client");
+        new tcp_client(&loop, "127.0.0.1", 7775, "lars_dns_client");
 
     qc_assert(client != nullptr);
 
