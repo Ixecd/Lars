@@ -21,7 +21,7 @@
 #include <lars_dns/subscribe.hpp>
 
 using namespace std;
-using namespace co_async;
+// using namespace co_async;
 namespace qc {
 
 Route::Route() {

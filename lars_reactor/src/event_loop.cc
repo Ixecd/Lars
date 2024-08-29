@@ -14,7 +14,7 @@
 // 集成协程 + 定时器
 #include <chrono>
 #include <optional>
-#include <co_async/timerLoop.hpp>
+// #include <co_async/timerLoop.hpp>
 
 namespace qc {
 
@@ -28,41 +28,41 @@ event_loop::event_loop() {
 void event_loop::event_process() {
     while (true) {
 
-        // 先判断定时器中是否有任务, 每个loop都有单独的一个定时器
-        int time_out = 100; // 默认等待100ms
-        if (co_async::getTimerLoop().hasTimer()) {
-            std::optional<std::chrono::system_clock::duration> opt = co_async::getTimerLoop().getNext();
-            if (opt.has_value()) {
-                auto t = opt.value();
-                time_out = t.count();
-                  //std::chrono::duration_cast<std::chrono::duration<int, std::milli>(t).count();
-            }
-        }
+        // // 先判断定时器中是否有任务, 每个loop都有单独的一个定时器
+        // int time_out = 100; // 默认等待100ms
+        // if (co_async::getTimerLoop().hasTimer()) {
+        //     std::optional<std::chrono::system_clock::duration> opt = co_async::getTimerLoop().getNext();
+        //     if (opt.has_value()) {
+        //         auto t = opt.value();
+        //         time_out = t.count();
+        //           //std::chrono::duration_cast<std::chrono::duration<int, std::milli>(t).count();
+        //     }
+        // }
 
         io_event_map_it ev_it;
-        int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, time_out);
+        int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, 1000);
 
-        // 先处理定时器,里面所有任务都是协程,会把超时的都执行完,之后返回下一个定时器的时间/如果没有返回nullopt;
-        co_async::getTimerLoop().run();
+        // // 先处理定时器,里面所有任务都是协程,会把超时的都执行完,之后返回下一个定时器的时间/如果没有返回nullopt;
+        // co_async::getTimerLoop().run();
 
         for (int i = 0; i < nfds; i++) {
             // 通过判断data.ptr来判断是否是一个协程句柄
             // 普通IO事件不会设置data.ptr
-            if (_fired_evs[i].data.ptr != nullptr) {
-                // 当前监听的事件对应的体是一个协程句柄
-                auto &event = _fired_evs[i];
-                auto &promise = *(EventFilePromise *)_fired_evs[i].data.ptr;
-                //checkError(epoll_ctl(_epfd, EPOLL_CTL_DEL, promise.mFd, nullptr));
-                // 下面promise 对应的协程句柄执行完就会析构掉promise,也就会析构掉事件
-                // 这个promise就剩下一个省略的co_return了
-                // std::coroutine_handle<EventFilePromise>::from_promise(promise).resume();
-                // 先开香槟,后触发,再返回
-                promise.mAwaiter->mResumeEvents = event.events;
-                // resume结束之后就会调用EventFilePromise对应的析构函数,删除事件
-                std::coroutine_handle<EventFilePromise>::from_promise(promise).resume();
-                // 不走下面
-                continue;
-            }
+            // if (_fired_evs[i].data.ptr != nullptr) {
+            //     // 当前监听的事件对应的体是一个协程句柄
+            //     auto &event = _fired_evs[i];
+            //     auto &promise = *(EventFilePromise *)_fired_evs[i].data.ptr;
+            //     //checkError(epoll_ctl(_epfd, EPOLL_CTL_DEL, promise.mFd, nullptr));
+            //     // 下面promise 对应的协程句柄执行完就会析构掉promise,也就会析构掉事件
+            //     // 这个promise就剩下一个省略的co_return了
+            //     // std::coroutine_handle<EventFilePromise>::from_promise(promise).resume();
+            //     // 先开香槟,后触发,再返回
+            //     promise.mAwaiter->mResumeEvents = event.events;
+            //     // resume结束之后就会调用EventFilePromise对应的析构函数,删除事件
+            //     std::coroutine_handle<EventFilePromise>::from_promise(promise).resume();
+            //     // 不走下面
+            //     continue;
+            // }
             //通过触发的fd找到对应的绑定事件
             ev_it = _io_evs.find(_fired_evs[i].data.fd);
             qc_assert(ev_it != _io_evs.end());
@@ -187,27 +187,27 @@ void event_loop::execute_ready_tasks() {
 }
 
 // ---------- 处理协程 ------------
-inline
-EventFilePromise::~EventFilePromise() {
-    mAwaiter->mLoop.removeListener(mAwaiter->mFd);
-}
+// inline
+// EventFilePromise::~EventFilePromise() {
+//     mAwaiter->mLoop.removeListener(mAwaiter->mFd);
+// }
 
-inline bool 
-event_loop::addListener(EventFilePromise &promise, int op) {
-    struct epoll_event event;
-    // EPOLLONSHOT 只触发一次 -> 避免对同一个fd重复添加相同event
-    event.events = promise.mAwaiter->mEvents;
-    event.data.ptr = &promise;
-    // 服务器一旦运行起来,如果你下面直接抛出异常了,那还服务啥??
-    // checkError(epoll_ctl(_epfd, EPOLL_CTL_ADD, promise.mAwaiter->mFd, &event));
-    int rt = epoll_ctl(_epfd, op, promise.mAwaiter->mFd.fileNo(), &event);
-    if (rt == -1) return false;
-    if (op == EPOLL_CTL_ADD) _count++;
-    return true;
-}
+// inline bool 
+// event_loop::addListener(EventFilePromise &promise, int op) {
+//     struct epoll_event event;
+//     // EPOLLONSHOT 只触发一次 -> 避免对同一个fd重复添加相同event
+//     event.events = promise.mAwaiter->mEvents;
+//     event.data.ptr = &promise;
+//     // 服务器一旦运行起来,如果你下面直接抛出异常了,那还服务啥??
+//     // checkError(epoll_ctl(_epfd, EPOLL_CTL_ADD, promise.mAwaiter->mFd, &event));
+//     int rt = epoll_ctl(_epfd, op, promise.mAwaiter->mFd.fileNo(), &event);
+//     if (rt == -1) return false;
+//     if (op == EPOLL_CTL_ADD) _count++;
+//     return true;
+// }
 
-inline bool 
-event_loop::tryRun(std::optional<std::chrono::system_clock::duration> timeout) {
-    return true;
-}
+// inline bool 
+// event_loop::tryRun(std::optional<std::chrono::system_clock::duration> timeout) {
+//     return true;
+// }
 }  // namespace qc

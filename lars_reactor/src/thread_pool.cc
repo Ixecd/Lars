@@ -81,13 +81,14 @@ thread_pool::thread_pool(size_t threads) {
     _index = 0;
     _queues.resize(threads);
     _thread_cnt = threads;
+    _threads.resize(threads);
 
     // 任务队列的个数要和线程池中线程的数量一致
     // printf("cur threads = %d \n", threads);
     
     // _queues = new thread_queue<task_msg>*[threads];
     // _tids = new pthread_t[threads];
-
+    _tids.resize(threads);
     int rt;
     for (size_t i = 0; i < threads; ++i) {
         // 创建一个线程
@@ -95,13 +96,16 @@ thread_pool::thread_pool(size_t threads) {
         // 给当前线程创建一个任务消息队列
         // 一个thread_queue<task_msg>中单独有一个evfd和loop
         _queues[i] = std::make_shared<thread_queue<task_msg>>();
+        // _queues[i] = new thread_queue<task_msg>();
         qc_assert(_queues[i] != nullptr);
 
         rt = pthread_create(&_tids[i], nullptr, thread_main, _queues[i].get());
-        qc_assert(rt == 0);
+        // _threads.emplace_back(std::thread(std::bind(thread_main, _queues[i].get())));
+
 
         // 线程脱离
         pthread_detach(_tids[i]);
+        // _threads[i].detach();
     }
 }
 

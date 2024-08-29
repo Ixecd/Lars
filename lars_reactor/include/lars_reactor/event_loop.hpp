@@ -20,8 +20,8 @@
 #include <lars_reactor/event_base.hpp>
 #include <lars_reactor/task_msg.hpp>
 // 集成协程
-#include <co_async/ioLoop.hpp>
-#include <co_async/timerLoop.hpp>
+// #include <co_async/ioLoop.hpp>
+// #include <co_async/timerLoop.hpp>
 
 #define MAXEVENTS 128
 
@@ -29,24 +29,24 @@ namespace qc {
 
 class event_loop;
 
-struct EventFilePromise : co_async::Promise<std::uint32_t> {
+// struct EventFilePromise : co_async::Promise<std::uint32_t> {
 
-    auto get_return_object() {
-        return std::coroutine_handle<EventFilePromise>::from_promise(*this);
-    }
+//     auto get_return_object() {
+//         return std::coroutine_handle<EventFilePromise>::from_promise(*this);
+//     }
 
-    ~EventFilePromise();
+//     ~EventFilePromise();
 
-    EventFilePromise& operator=(EventFilePromise&&) = delete;
+//     EventFilePromise& operator=(EventFilePromise&&) = delete;
 
-    // Promise和IoLoop相互依赖,所以这里用指针,并且析构函数要放下实现,还要记得+inline
-    // struct event_loop *mLoop;
-    // int mFd;
-    // uint32_t mEvents;
+//     // Promise和IoLoop相互依赖,所以这里用指针,并且析构函数要放下实现,还要记得+inline
+//     // struct event_loop *mLoop;
+//     // int mFd;
+//     // uint32_t mEvents;
 
-    // 直接记录Awaiter,由Awaiter记录信息
-    struct EventFileAwaiter *mAwaiter{};
-};
+//     // 直接记录Awaiter,由Awaiter记录信息
+//     struct EventFileAwaiter *mAwaiter{};
+// };
 
 /// @brief 定义异步任务回调函数类型
 typedef void (*task_func)(event_loop *loop, void *args);
@@ -73,23 +73,23 @@ using listen_fd_set = std::unordered_set<int>;
 // 这里的设计 最好是将两者直接整合在一起, qc::event_loop 重新实现 co_async::event_loop
 class event_loop {
 public:
-    bool addListener(EventFilePromise &promise, int op);
+    // bool addListener(EventFilePromise &promise, int op);
 
-    void removeListener(co_async::AsyncFile &file) {
-        co_async::checkError(epoll_ctl(_epfd, EPOLL_CTL_DEL, file.fileNo(), nullptr));
-        --_count;
-    }
+    // void removeListener(co_async::AsyncFile &file) {
+    //     co_async::checkError(epoll_ctl(_epfd, EPOLL_CTL_DEL, file.fileNo(), nullptr));
+    //     --_count;
+    // }
 
-    bool hasEvent() const noexcept { return _count != 0; }
+    // bool hasEvent() const noexcept { return _count != 0; }
 
-    bool tryRun(std::optional<std::chrono::system_clock::duration> timeout = std::nullopt);
+    // bool tryRun(std::optional<std::chrono::system_clock::duration> timeout = std::nullopt);
 
-    void process() {
-        while (1) {
-            bool rt = tryRun(1s);
-            if (rt == false) break;
-        }
-    }
+    // void process() {
+    //     while (1) {
+    //         bool rt = tryRun(1s);
+    //         if (rt == false) break;
+    //     }
+    // }
 
     // 只保留默认构造函数
     event_loop& operator = (event_loop&&) = delete;
@@ -132,33 +132,33 @@ private:
     std::vector<task_func_pair> _ready_tasks;
 };
 
-struct EventFileAwaiter {
+// struct EventFileAwaiter {
 
-    bool await_ready() const noexcept { return false; }
+//     bool await_ready() const noexcept { return false; }
 
-    void await_suspend(std::coroutine_handle<EventFilePromise> coroutine) {
-        auto &promise = coroutine.promise();
-        promise.mAwaiter = this;
-        if (!mLoop.addListener(promise, op)) {
-            // 添加失败
-            promise.mAwaiter = nullptr;
-            coroutine.resume();
-        }
-    }
+//     void await_suspend(std::coroutine_handle<EventFilePromise> coroutine) {
+//         auto &promise = coroutine.promise();
+//         promise.mAwaiter = this;
+//         if (!mLoop.addListener(promise, op)) {
+//             // 添加失败
+//             promise.mAwaiter = nullptr;
+//             coroutine.resume();
+//         }
+//     }
 
-    uint32_t await_resume() const noexcept {
-        return mResumeEvents;
-    }
+//     uint32_t await_resume() const noexcept {
+//         return mResumeEvents;
+//     }
 
-    using ClockType = std::chrono::system_clock;
+//     using ClockType = std::chrono::system_clock;
 
-    event_loop &mLoop;
-    // int mFd;
-    co_async::AsyncFile &mFd;
-    uint32_t mEvents;
-    uint32_t mResumeEvents = 0;
-    int op = EPOLL_CTL_ADD;
-};
+//     event_loop &mLoop;
+//     // int mFd;
+//     co_async::AsyncFile &mFd;
+//     uint32_t mEvents;
+//     uint32_t mResumeEvents = 0;
+//     int op = EPOLL_CTL_ADD;
+// };
 
 
 

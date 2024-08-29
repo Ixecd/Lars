@@ -241,6 +241,7 @@ int lars_client::get_route(int modid, int cmdid, route_set &route) {
         int port = host.port();
         route.push_back(ip_port(ip, port));
     }
+    std::cout << "get_rout done!" << std::endl;
     return lars::RET_SUCC;
 }
 

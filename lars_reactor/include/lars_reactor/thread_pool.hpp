@@ -15,6 +15,7 @@
 #include <lars_reactor/task_msg.hpp>
 #include <lars_reactor/thread_queue.hpp>
 #include <vector>
+#include <thread>
 namespace qc {
 
 class thread_pool {
@@ -39,6 +40,8 @@ private:
     std::vector<pthread_t> _tids;
     /// @brief 当前选中的线程在_queues中的下标
     int _index;
+    /// @brief 线程池
+    std::vector<std::thread> _threads;
 
 };
 

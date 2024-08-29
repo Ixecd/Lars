@@ -19,7 +19,7 @@
 #include "mysql.h"
 
 using namespace qc;
-using namespace co_async;
+// using namespace co_async;
 // server 不在 namespace 中
 tcp_server *server;
 
@@ -85,6 +85,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 6.发送给客户端
     std::string responseString;
     rep.SerializeToString(&responseString);
+    // !!!SIGEGV
     conn->send_message(responseString.c_str(), responseString.size(),
                        lars::ID_GetRouteResponse);
 }
