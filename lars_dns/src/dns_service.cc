@@ -68,6 +68,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
         // 这里只是简单上锁解锁啊??
         // SubscribeList::get_instance()->subscribe(mod, conn->get_fd());
         // ok 问题进一步缩小,出现在subscribe上
+	// ok 找到问题了,果然祸不单行,subscribe() 和 publish()方法有冲突
         int fd = conn->get_fd();
         // GetInstance<SubscribeList>()->subscribe(mod, fd); // err
         // GetInstance<SubscribeList>()->test(); // ok
