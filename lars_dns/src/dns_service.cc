@@ -8,22 +8,21 @@
  * @copyright Copyright (c) 2024
  *
  */
+#include <proto/lars.pb.h>
 #include <pthread.h>
 
 #include <iostream>
-
 #include <lars_dns/dns_route.hpp>
 #include <lars_dns/subscribe.hpp>
-#include <proto/lars.pb.h>
 #include <lars_reactor/lars_reactor.hpp>
 #include <string>
+
 #include "mysql.h"
 
 using namespace qc;
 // using namespace co_async;
 // server 不在 namespace 中
 tcp_server *server;
-
 using client_sub_list = std::unordered_set<uint64_t>;
 
 void create_subscribe(net_connection *conn, void *args) {
@@ -39,10 +38,12 @@ void clear_subscribe(net_connection *conn, void *args) {
         // SubscribeList::GetInstance()->unsubscribe(mod, conn->get_fd());
         GetInstance<SubscribeList>()->unsubscribe(mod, conn->get_fd());
     }
-
-    delete conn->param;
+    client_sub_list *sub_list = (client_sub_list *)conn->param;
+    delete sub_list;
+    // delete conn->param;
     conn->param = nullptr;
 }
+
 
 void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
                void *user_data) {
@@ -61,17 +62,18 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     uint64_t mod = ((uint64_t)modid << 32) + cmdid;
     client_sub_list *sub_list = (client_sub_list *)conn->param;
 
-    if (sub_list == nullptr) std::cout << "cur client_sub_list is nullptr" << std::endl; 
-    else if (sub_list->find(mod) == sub_list->end()) {
+
+    if (sub_list == nullptr)
+        std::cout << "cur client_sub_list is nullptr" << std::endl;
+    if (sub_list->find(mod) == sub_list->end()) {
         sub_list->insert(mod);
         // !!TM的问题在这里
         // 这里只是简单上锁解锁啊??
-        // SubscribeList::get_instance()->subscribe(mod, conn->get_fd());
         // ok 问题进一步缩小,出现在subscribe上
-	// ok 找到问题了,果然祸不单行,subscribe() 和 publish()方法有冲突
         int fd = conn->get_fd();
-        // GetInstance<SubscribeList>()->subscribe(mod, fd); // err
-        // GetInstance<SubscribeList>()->test(); // ok
+        // SubscribeList::GetInstance()->subscribe(mod, fd);
+        // ptr->subscribe(mod, fd);  // err
+        GetInstance<SubscribeList>()->subscribe(mod, fd); // ok
     }
 
     // 3. 根据modid和cmdid获取host ip 和 port 信息
@@ -79,7 +81,8 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
 
     // 4. 将数据打包成protobuf
     lars::GetRouteResponse rep;
-    rep.set_modid(modid), rep.set_cmdid(cmdid);
+    rep.set_modid(modid);
+    rep.set_cmdid(cmdid);
 
     // 5. 真正获取host ip port 对应的信息
     for (host_set_iterator it = hosts.begin(); it != hosts.end(); ++it) {
@@ -89,6 +92,8 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
         lars::HostInfo host;
         host.set_ip((uint32_t)(ip_port >> 32));
         host.set_port((uint32_t)(ip_port));
+        std::cout << (uint32_t)(ip_port >> 32) << ' ' << (uint32_t)ip_port
+                  << std::endl;
         rep.add_host()->CopyFrom(host);
     }
 
@@ -100,24 +105,22 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
                        lars::ID_GetRouteResponse);
 }
 
-
 int main(int argc, char **argv) {
     event_loop loop;
 
-    // 加载配置信息
-    // 这里加载的路径是相对路径,由于到时候是在config_file.cc中执行Load所以这里要改成绝对路径
-    // 这里和操作系统有关系和config_file::setPath中的API有关,如果当前.cc文件和.conf文件在同一个目录下,操作系统就可以正确识别,如果不在同一目录下,就不能正确识别
     config_file::setPath("/home/qc/Lars/lars_dns/conf/lars.conf");
     // 输出所有配置信息
     // config_file::GetInstance()->get_all_info(config_file::GetInstance());
 
-    std::string ip =
-        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
-    short port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 9876);
-	// 创建好server之后会自动创建5个线程
+    std::string ip = config_file_instance::GetInstance()->GetString(
+        "reactor", "ip", "0.0.0.0");
+    short port =
+        config_file_instance::GetInstance()->GetNumber("reactor", "port", 9876);
+    // 创建好server之后会自动创建5个线程
     // server只负责accept,执行到accept函数的时候已经建立好链接了,只不过要封装成tcp_conn,之后将相应的文件描述符注册到线程池中的一个消息队列的事件循环上即可,之后通信都是在消息队列上
     server = new tcp_server(&loop, ip.c_str(), port);
-    std::cout << "dns_server ip = " << ip.c_str() << " port = " << port << std::endl;
+    std::cout << "dns_server ip = " << ip.c_str() << " port = " << port
+              << std::endl;
 
     // 创建好server之后直接注册Hook函数
     server->set_conn_start(create_subscribe);
@@ -128,14 +131,14 @@ int main(int argc, char **argv) {
 
     // -------- 开启 Backend Thread 实现周期性更新RouteData --------
     // 这里是单独开辟一个线程来实现
-    pthread_t tid;
-    int rt = pthread_create(&tid, nullptr, check_route_change, nullptr);
-    qc_assert(rt != -1);
+    // pthread_t tid;
+    // int rt = pthread_create(&tid, nullptr, check_route_change, nullptr);
+    // qc_assert(rt != -1);
 
-    // 设置线程分离
-    pthread_detach(tid);
-    
-    // 懒汉式
+    // // 设置线程分离
+    // pthread_detach(tid);
+
+    GetInstance<SubscribeList>();
     Route::GetInstance();
 
     // 测试mysql接口

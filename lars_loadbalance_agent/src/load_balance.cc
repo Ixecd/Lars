@@ -89,12 +89,13 @@ int load_balance::pull() {
 }
 
 /// @brief 向自己的idle_list中添加主机信息
-/// @param rsp
+/// @details load_balance pull之后等dns_server处理完返回GetRouteResponse再由update来更新
 void load_balance::update(lars::GetRouteResponse &rsp) {
     qc_assert(rsp.host_size() != 0);
     long current_time = time(nullptr);
-
+    // 数据库中有效的ip + port
     std::set<uint64_t> remote_hosts;
+    // 数据库已经删除了的ip + port 并且当前load_balance中依然存在的
     std::set<uint64_t> need_delete;
 
     for (int i = 0; i < rsp.host_size(); ++i) {

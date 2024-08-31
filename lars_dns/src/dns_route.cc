@@ -9,16 +9,17 @@
  *
  */
 
-#include <lars_dns/dns_route.hpp>
-
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 
 #include <iostream>
-#include "mysql.h"
+#include <lars_dns/dns_route.hpp>
+#include <lars_reactor/config_file.hpp>
+// #include <lars_dns/subscribe.hpp>
 #include <lars_reactor/qc.hpp>
-#include <lars_dns/subscribe.hpp>
+
+#include "mysql.h"
 
 using namespace std;
 // using namespace co_async;
@@ -38,16 +39,16 @@ Route::Route() {
 
 void Route::connect_db() {
     // --- mysql 配置 ---
-    std::string db_host =
-        config_file_instance::GetInstance()->GetString("mysql", "db_host", "localhost");
-    short db_port =
-        config_file_instance::GetInstance()->GetNumber("mysql", "db_port", 3306);
-    std::string db_user =
-        config_file_instance::GetInstance()->GetString("mysql", "db_user", "qc");
-    std::string db_passwd =
-        config_file_instance::GetInstance()->GetString("mysql", "db_passwd", "qcMysql");
-    std::string db_name =
-        config_file_instance::GetInstance()->GetString("mysql", "db_name", "lars_dns");
+    std::string db_host = config_file_instance::GetInstance()->GetString(
+        "mysql", "db_host", "localhost");
+    short db_port = config_file_instance::GetInstance()->GetNumber(
+        "mysql", "db_port", 3306);
+    std::string db_user = config_file_instance::GetInstance()->GetString(
+        "mysql", "db_user", "qc");
+    std::string db_passwd = config_file_instance::GetInstance()->GetString(
+        "mysql", "db_passwd", "qcMysql");
+    std::string db_name = config_file_instance::GetInstance()->GetString(
+        "mysql", "db_name", "lars_dns");
     /// @brief 开始链接
     mysql_init(&_db_conn);
     /// @brief mysql超时30ms自动断开
@@ -172,8 +173,8 @@ int Route::load_route_data() {
     MYSQL_ROW row;
     for (long i = 0; i < lines; ++i) {
         row = mysql_fetch_row(result);
-        uint modid = atoi(row[0]), cmdid = atoi(row[1]);
-        uint ip = atoi(row[2]), port = atoi(row[3]);
+        int modid = atoi(row[0]), cmdid = atoi(row[1]);
+        int ip = atoi(row[2]), port = atoi(row[3]);
 
         uint64_t key = ((uint64_t)modid << 32) + cmdid;
         uint64_t value = ((uint64_t)ip << 32) + port;
@@ -191,7 +192,10 @@ void Route::swap() {
     // std::cout << "Route::swap() begin..." << std::endl;
     // 加读写范围锁
     RWMutexType::WriteLock Lock(mutex);
-    std::swap(_data_pointer, _temp_pointer);
+    // std::swap(std::move(_data_pointer), std::move(_temp_pointer));
+    route_map *temp = _data_pointer;
+    _data_pointer = _temp_pointer;
+    _temp_pointer = temp;
 
     // std::cout << "Route::swap() end..." << std::endl;
     return;
@@ -245,18 +249,18 @@ void *check_route_change(void *args) {
     long last_load_time = time(nullptr);
 
     // 清空全部RouteChange
-    // Route::GetInstance()->remove_changes(true);
+    // Route::GetInstance()->remove_changes(false);
 
     while (true) {
         std::cout << "Backend_Thread run again..." << std::endl;
-        // sleep(wait_time);
-        sleep(1);
+        sleep(2);
+        // sleep(1);
         long current_time = time(nullptr);
 
         // 1.加载当前版本信息
         int rt = Route::GetInstance()->load_version();
 
-        rt = 1;
+        cout << "cur rt = " << rt << endl;
 
         // 版本号被修改了
         if (rt == 1) {
@@ -278,19 +282,22 @@ void *check_route_change(void *args) {
                 std::cout << "changes = " << num << std::endl;
 
             // 推送
-            if (changes.size() != 0)
-                GetInstance<SubscribeList>()->publish(changes);
+            if (changes.size() != 0) {
+                // SubscribeList::GetInstance()->publish(changes);
+                // std::cout << "published" << std::endl;
+                // GetInstance<SubscribeList>()->publish(changes);
+            }
 
             // 删除当前版本之前的修改记录
-            if (changes.size() != 0)
-                 Route::GetInstance()->remove_changes(false);
+            Route::GetInstance()->remove_changes(false);
         } else {
             // 版本号没有被修改
-            if (current_time - last_load_time >= wait_time) {
+            if (current_time - last_load_time >= 2) {
                 // 超时
                 if (Route::GetInstance()->load_route_data() == 0) {
                     Route::GetInstance()->swap();
                     last_load_time = current_time;
+                    std::cout << "swap() succ" << std::endl;
                 }
             }
         }
