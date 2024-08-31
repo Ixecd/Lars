@@ -8,11 +8,14 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include <lars_reactor/lars_reactor.hpp>
+#include <proto/lars.pb.h>
+
+#include <cstring>
 #include <lars_dns/dns_route.hpp>
 #include <lars_dns/subscribe.hpp>
+#include <lars_reactor/lars_reactor.hpp>
+#include <string>
 #include <unordered_set>
-#include <proto/lars.pb.h>
 
 #include "mysql.h"
 
@@ -32,15 +35,14 @@ void clear_subscribe(net_connection *conn, void *args) {
          it != ((client_sub_list *)(conn->param))->end(); ++it) {
         // 下面退订阅
         uint64_t mod = *it;
-        // SubscribeList::GetInstance()->unsubscribe(mod, conn->get_fd());
-        GetInstance<SubscribeList>()->unsubscribe(mod, conn->get_fd());
+        SubscribeList::GetInstance()->unsubscribe(mod, conn->get_fd());
+        // GetInstance<SubscribeList>()->unsubscribe(mod, conn->get_fd());
     }
     client_sub_list *sub_list = (client_sub_list *)conn->param;
     delete sub_list;
     // delete conn->param;
     conn->param = nullptr;
 }
-
 
 void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
                void *user_data) {
@@ -58,8 +60,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 一个conn对应一个client_sub_list->存储了客户端对应订阅的modid和cmdid信息,也就是说订阅信息存储在客户端
     uint64_t mod = ((uint64_t)modid << 32) + cmdid;
     client_sub_list *sub_list = (client_sub_list *)conn->param;
-
-
+    int fd = conn->get_fd();
     if (sub_list == nullptr)
         std::cout << "cur client_sub_list is nullptr" << std::endl;
     if (sub_list->find(mod) == sub_list->end()) {
@@ -67,10 +68,13 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
         // !!TM的问题在这里
         // 这里只是简单上锁解锁啊??
         // ok 问题进一步缩小,出现在subscribe上
-        int fd = conn->get_fd();
-        // SubscribeList::GetInstance()->subscribe(mod, fd);
+        std::cout << conn->get_fd() << std::endl;
+
+        // int fd = conn->get_fd();
+        SubscribeList::GetInstance()->subscribe(mod, fd);
         // ptr->subscribe(mod, fd);  // err
-        GetInstance<SubscribeList>()->subscribe(mod, fd); // ok
+        // GetInstance<SubscribeList>()->subscribe(mod, fd); // ok
+        std::cout << conn->get_fd() << std::endl;
     }
 
     // 3. 根据modid和cmdid获取host ip 和 port 信息
@@ -88,8 +92,8 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
         uint64_t ip_port = *it;
         lars::HostInfo host;
         host.set_ip((uint32_t)(ip_port >> 32));
-        host.set_port((uint32_t)(ip_port));
-        std::cout << (uint32_t)(ip_port >> 32) << ' ' << (uint32_t)ip_port
+        host.set_port((int)(ip_port));
+        std::cout << (uint32_t)(ip_port >> 32) << ' ' << (int)ip_port
                   << std::endl;
         rep.add_host()->CopyFrom(host);
     }
@@ -97,6 +101,13 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 6.发送给客户端
     std::string responseString;
     rep.SerializeToString(&responseString);
+
+    // 取出链接信息
+    // net_connection *_conn = tcp_server::conns[fd];
+    // if (_conn)
+    //     _conn->send_message(responseString.c_str(),
+    //                                responseString.size(),
+    //                                lars::ID_GetRouteResponse);
 
     conn->send_message(responseString.c_str(), responseString.size(),
                        lars::ID_GetRouteResponse);
@@ -128,15 +139,12 @@ int main(int argc, char **argv) {
 
     // -------- 开启 Backend Thread 实现周期性更新RouteData --------
     // 这里是单独开辟一个线程来实现
-    // pthread_t tid;
-    // int rt = pthread_create(&tid, nullptr, check_route_change, nullptr);
-    // qc_assert(rt != -1);
+    pthread_t tid;
+    int rt = pthread_create(&tid, nullptr, check_route_change, nullptr);
+    qc_assert(rt != -1);
 
-    // // 设置线程分离
-    // pthread_detach(tid);
-
-    GetInstance<SubscribeList>();
-    Route::GetInstance();
+    // 设置线程分离
+    pthread_detach(tid);
 
     // 测试mysql接口
     // MYSQL dbconn;

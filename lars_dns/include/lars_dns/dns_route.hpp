@@ -13,15 +13,17 @@
 #include <pthread.h>
 
 #include <lars_reactor/mutex.hpp>
+#include <lars_reactor/qc.hpp>
+#include <lars_reactor/singleton.hpp>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "mysql.h"
-#include <lars_reactor/qc.hpp>
 
 namespace qc {
 
-/// @brief 定义用来保存modid/cmdid 和 ip/port对应的关系, 这里保证modid和cmdid非负
+/// @brief 定义用来保存modid/cmdid 和 ip/port对应的关系,
+/// 这里保证modid和cmdid非负
 using route_map = std::unordered_map<uint64_t, std::unordered_set<uint64_t>>;
 using route_map_iterator = route_map::iterator;
 
@@ -29,7 +31,7 @@ using route_map_iterator = route_map::iterator;
 using host_set = std::unordered_set<uint64_t>;
 using host_set_iterator = host_set::iterator;
 
-void* check_route_change(void *args);
+void *check_route_change(void *args);
 
 /// @brief 单例模式
 class Route : public Singleton<Route> {
@@ -47,7 +49,7 @@ public:
 
 public:
     /// @brief 获取Host信息
-    host_set get_hosts(uint modid, uint cmdid);
+    host_set get_hosts(int modid, int cmdid);
 
 public:
     /// @brief 加载版本信息, 1 success, 0 everything is update
@@ -69,11 +71,9 @@ public:
 private:
     /// @brief 私有三大件
     Route();
-    Route(const Route&);
-    const Route &operator=(const Route &);
+    Route &operator=(Route &&) = delete;
 
 private:
-
     // ========== 属性 ==========
     /// @brief 数据库链接
     MYSQL _db_conn;

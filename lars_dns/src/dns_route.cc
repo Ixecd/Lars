@@ -10,14 +10,12 @@
  */
 
 #include <string.h>
-#include <time.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-#include <iostream>
+#include <lars_reactor/lars_reactor.hpp>
 #include <lars_dns/dns_route.hpp>
-#include <lars_reactor/config_file.hpp>
 #include <lars_dns/subscribe.hpp>
-#include <lars_reactor/qc.hpp>
 
 #include "mysql.h"
 
@@ -33,6 +31,9 @@ Route::Route() {
 
     /// @brief 链接数据库
     this->connect_db();
+
+    if (this->load_version() == -1) exit(1);
+
     /// @brief 在数据库中创建两个map
     this->build_maps();
 }
@@ -103,7 +104,7 @@ void Route::build_maps() {
         uint64_t key = ((uint64_t)modID << 32) + cmdID;
         uint64_t value = ((uint64_t)ip << 32) + port;
 
-        printf("modID = %d, cmdID = %d, ip = %lu, port = %d\n", modID, cmdID,
+        printf("modID = %d, cmdID = %d, ip = %u, port = %d\n", modID, cmdID,
                ip, port);
 
         // 插入到RouterDataMap_A中
@@ -112,7 +113,7 @@ void Route::build_maps() {
     mysql_free_result(result);
 }
 
-host_set Route::get_hosts(uint modid, uint cmdid) {
+host_set Route::get_hosts(int modid, int cmdid) {
     host_set hosts;
     // 组装key
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
@@ -130,14 +131,22 @@ int Route::load_version() {
     snprintf(_sql, 1000, "select version from RouteVersion where id = 1;");
     // 成功返回0,结果存储在MySQL服务端
     int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
-    qc_assert(rt == 0);
+    if (rt) {
+        fprintf(stderr, "load version error: %s\n", mysql_error(&_db_conn));
+        return -1;
+    }
     // 将MySQL服务端的数据存储到客户端的内存中
     MYSQL_RES *result = mysql_store_result(&_db_conn);
-    qc_assert(result != nullptr);
+    if (result == nullptr) {
+        fprintf(stderr, "mysql store result: %s\n", mysql_error(&_db_conn));
+        return -1;
+    }
 
     // 获得查询的行数
     long lines = mysql_num_rows(result);
-    qc_assert(lines != 0);
+    if (lines == 0) {
+        fprintf(stderr, "No version in table RouteVersion: %s\n", mysql_error(&_db_conn));
+    }
 
     // 这里等值查询,结果只有一行
     MYSQL_ROW row = mysql_fetch_row(result);
@@ -174,14 +183,14 @@ int Route::load_route_data() {
     for (long i = 0; i < lines; ++i) {
         row = mysql_fetch_row(result);
         int modid = atoi(row[0]), cmdid = atoi(row[1]);
-        int ip = atoi(row[2]), port = atoi(row[3]);
+        uint ip = atoi(row[2]);
+        int port = atoi(row[3]);
 
         uint64_t key = ((uint64_t)modid << 32) + cmdid;
         uint64_t value = ((uint64_t)ip << 32) + port;
 
         (*_temp_pointer)[key].insert(value);
     }
-    // printf("load data to temp succ! size is %ld\n", _temp_pointer->size());
     // 释放内存
     mysql_free_result(result);
 
@@ -192,10 +201,10 @@ void Route::swap() {
     // std::cout << "Route::swap() begin..." << std::endl;
     // 加读写范围锁
     RWMutexType::WriteLock Lock(mutex);
-    // std::swap(std::move(_data_pointer), std::move(_temp_pointer));
-    route_map *temp = _data_pointer;
-    _data_pointer = _temp_pointer;
-    _temp_pointer = temp;
+    std::swap(_data_pointer, _temp_pointer);
+    // route_map *temp = _data_pointer;
+    // _data_pointer = _temp_pointer;
+    // _temp_pointer = temp;
 
     // std::cout << "Route::swap() end..." << std::endl;
     return;
@@ -203,7 +212,6 @@ void Route::swap() {
 
 void Route::load_changes(std::vector<uint64_t> &changes) {
     // 读取当前版本之前所有修改
-    std::cout << "cur _version = " << _version << std::endl;
     snprintf(_sql, 1000,
              "select modid, cmdid from RouteChange where version <= %ld;",
              _version);
@@ -213,14 +221,17 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
 
     MYSQL_RES *result = mysql_store_result(&_db_conn);
     qc_assert(result != nullptr);
-
-    // lines可以为0 RouteChange中没有数据的时候
+    // --------------
     long lines = mysql_num_rows(result);
+    if (lines == 0) {
+        fprintf(stderr, "No version in table ChangeLog: %s\n", mysql_error(&_db_conn));
+        return;
+    }
 
     MYSQL_ROW row;
     for (long i = 0; i < lines; ++i) {
         row = mysql_fetch_row(result);
-        uint modid = atoi(row[0]), cmdid = atoi(row[1]);
+        int modid = atoi(row[0]), cmdid = atoi(row[1]);
         uint64_t key = ((uint64_t)modid << 32) + cmdid;
         changes.push_back(key);
     }
@@ -230,14 +241,16 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
 void Route::remove_changes(bool remove_all) {
     if (remove_all) {
         snprintf(_sql, 1000, "delete from RouteChange;");
-        int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
-        qc_assert(rt == 0);
     } else {  // 删除当前版本和之前的所有修改记录,只保留最新的
         snprintf(_sql, 1000, "delete from RouteChange where version <= %ld;",
                  _version);
-        int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
-        qc_assert(rt == 0);
     }
+    int rt = mysql_real_query(&_db_conn, _sql, strlen(_sql));
+    if (rt != 0) {
+        fprintf(stderr, "delete RouteChange: %s\n", mysql_error(&_db_conn));
+        return;
+    }
+    return;
 }
 
 /// @brief 周期性的检查db中route的version信息,由Backend Thread业务调用
@@ -249,7 +262,7 @@ void *check_route_change(void *args) {
     long last_load_time = time(nullptr);
 
     // 清空全部RouteChange
-    // Route::GetInstance()->remove_changes(false);
+    Route::GetInstance()->remove_changes(true);
 
     while (true) {
         std::cout << "Backend_Thread run again..." << std::endl;
@@ -283,16 +296,15 @@ void *check_route_change(void *args) {
 
             // 推送
             if (changes.size() != 0) {
-                // SubscribeList::GetInstance()->publish(changes);
-                // std::cout << "published" << std::endl;
+                SubscribeList::GetInstance()->publish(changes);
                 // GetInstance<SubscribeList>()->publish(changes);
             }
 
             // 删除当前版本之前的修改记录
-            Route::GetInstance()->remove_changes(false);
+            Route::GetInstance()->remove_changes();
         } else {
             // 版本号没有被修改
-            if (current_time - last_load_time >= 2) {
+            if (current_time - last_load_time >= wait_time) {
                 // 超时
                 if (Route::GetInstance()->load_route_data() == 0) {
                     Route::GetInstance()->swap();

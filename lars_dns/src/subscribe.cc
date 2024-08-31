@@ -22,12 +22,20 @@ namespace qc {
 SubscribeList::SubscribeList() {}
 
 void SubscribeList::subscribe(uint64_t mod, int fd) {
+    net_connection* conn = tcp_server::conns[fd];
     std::unique_lock<std::mutex> ulk(mutex_book_list);
+    std::cout << conn->get_fd() << std::endl;
     _book_list[mod].insert(fd);
+
+    std::cout << conn->get_fd() << std::endl;
+
+    ulk.unlock();
+
+    std::cout << conn->get_fd() << std::endl;
 }
 
 void SubscribeList::unsubscribe(uint64_t mod, int fd) {
-    std::unique_lock<std::mutex> glk(mutex_book_list);
+    std::unique_lock<std::mutex> ulk(mutex_book_list);
     if (_book_list.find(mod) != _book_list.end()) {
         _book_list[mod].erase(fd);
         if (_book_list[mod].empty() == true) _book_list.erase(mod);
@@ -42,29 +50,24 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
     // 遍历_push_list 找到对应的online_fds,然后放到need_publish中
     // mutex_push_list.lock();
 
-    std::unique_lock<std::mutex> glk(mutex_push_list);
+    std::unique_lock<std::mutex> ulk(mutex_push_list);
 
     // 这里不知道什么原因,不能在遍历的时候顺便删除_push_list
     // 预处理将要删除的文件描述符先保存起来
     // 这里是因为_push_list的类型为unordered_map,在哈希表中使用erase会导致后面的元素的迭代器失效
     std::vector<int> preseve;
-    for (auto it = _push_list.begin(); it != _push_list.end(); ++it) {
+    for (auto it = _push_list.begin(); it != _push_list.end(); ) {
         // 需要publish的订阅列表在online_fds中找到了
         if (online_fds.find(it->first) != online_fds.end()) {
-            preseve.push_back(it->first);
+            // preseve.push_back(it->first);
             need_publish[it->first] = _push_list[it->first];
-            // _push_list是一次性的
-            // 注意:这里的it是以引用的方式传入的erase(it)成功之后it指向下一个元素
-            // std::cout << "before erase..." << std::endl;
-            // _push_list.erase(it->first);
+            _push_list.erase(it->first);
             // std::advance(it, -1);
-
-            // std::cout << "after erase()..." << std::endl;
-        }
+        } else ++it;
     }
 
     // 开始删除
-    for (int num : preseve) _push_list.erase(num);
+    // for (int num : preseve) _push_list.erase(num);
 
     // mutex_push_list.unlock();
 }
@@ -133,7 +136,7 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
         if (_book_list.find(mod) != _book_list.end()) {
             // 将mod下面的fd set拷贝到 _push_list中
             // 遍历mod对应的所有客户
-            // tickle = true;
+            tickle = true;
             for (auto fds_it = _book_list[mod].begin();
                  fds_it != _book_list[mod].end(); ++fds_it) {
                 int fd = *fds_it;
@@ -145,6 +148,7 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
     ulk1.unlock();
 
     // 最后通知server的各个线程去执行
+    // this -> GetInstance<Subscribe>
     if (tickle) (server->get_thread_pool())->send_task(push_change_task, this);
 }
 }  // namespace qc
