@@ -337,3 +337,8 @@ git remote set-url origin https://yourusername@yourrepositoryurl.git
 - 良好的Cpp程序是不能出现 new 和 delete 的
 - 相较于std::shared_ptr<T> ptr(new T()) 更加推荐 std::shared_ptr<T> ptr = std::make_shared<T>();
 - 后者比前者少一次申请内存
+
+21. 切勿滥用unordered_map
+- 在dns_service中,要集成subscribe,如果使用`unordered_map<uint64_t, unordered_set<int>>`话
+- 在对容器进行操作之后,这个内存是不保证安全的,有可能会覆盖掉之前的一些变量,因为unordered_map底层实现是哈希,value被映射到哪里是透明的,出现了这个问题说明,标准库的实现还是有问题的,后面对conn->的所有操作都会报段错误
+- 改成map和set后问题就可以解决
