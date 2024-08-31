@@ -18,7 +18,6 @@
 
 #include "mysql.h"
 #include <lars_reactor/qc.hpp>
-#include <lars_reactor/singleton.hpp>
 
 namespace qc {
 

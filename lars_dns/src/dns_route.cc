@@ -16,7 +16,7 @@
 #include <iostream>
 #include <lars_dns/dns_route.hpp>
 #include <lars_reactor/config_file.hpp>
-// #include <lars_dns/subscribe.hpp>
+#include <lars_dns/subscribe.hpp>
 #include <lars_reactor/qc.hpp>
 
 #include "mysql.h"

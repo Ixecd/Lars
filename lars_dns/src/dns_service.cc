@@ -8,14 +8,11 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include <proto/lars.pb.h>
-#include <pthread.h>
-
-#include <iostream>
+#include <lars_reactor/lars_reactor.hpp>
 #include <lars_dns/dns_route.hpp>
 #include <lars_dns/subscribe.hpp>
-#include <lars_reactor/lars_reactor.hpp>
-#include <string>
+#include <unordered_set>
+#include <proto/lars.pb.h>
 
 #include "mysql.h"
 
