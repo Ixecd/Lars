@@ -116,6 +116,8 @@ void *agent_server_main(void *args) {
     return nullptr;
 }
 
+// TODO: 为了考虑系统的安全和可靠,这里将单进程多线程的方式改为多进程模式,每个进程负责一个agent_server_main线程
+
 void start_UDP_servers() {
     // 创建三个线程
     long index = 0;
