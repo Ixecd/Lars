@@ -118,18 +118,36 @@ void *agent_server_main(void *args) {
 
 // TODO: 为了考虑系统的安全和可靠,这里将单进程多线程的方式改为多进程模式,每个进程负责一个agent_server_main线程
 
+// 光荣退休!
+// void start_UDP_servers() {
+//     // 创建三个线程
+//     long index = 0;
+//     for (int i = 0; i < 3; ++i) {
+//         pthread_t tid;
+//         index = i;
+//         int rt = pthread_create(&tid, nullptr, agent_server_main, (void *)index);
+//         qc_assert(rt != -1);
+//         pthread_detach(tid);
+//     }
+// }
+
 void start_UDP_servers() {
-    // 创建三个线程
-    long index = 0;
+    // 创建三个进程
+    int index = 0;
     for (int i = 0; i < 3; ++i) {
-        pthread_t tid;
-        index = i;
-        int rt = pthread_create(&tid, nullptr, agent_server_main, (void *)index);
-        qc_assert(rt != -1);
-        pthread_detach(tid);
+        // 父进程返回子进程的pid
+        // 子进程返回0
+        // 这里一共有四个进程,一个main进程,三个agent_server_main进程
+        pid_t pid = fork();
+        if (pid == 0) {
+            index = i;
+            agent_server_main((void *)index);
+            exit(0);
+        }
     }
 }
-}
+
+} // namespace qc
 
 
 
