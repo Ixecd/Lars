@@ -111,8 +111,10 @@ int main() {
         config_file_instance::GetInstance()->GetNumber("dnsserver", "port", 5678);
 
     // 2. 启动UDP线程实现监听业务
+    // 采用多进程的方式,读时共享,写时拷贝
     start_UDP_servers();
 
+    // 只有父进程才会下来
     // 3. 启动report client
     report_queue = new thread_queue<lars::ReportStatusReq>();
     qc_assert(report_queue != nullptr);

@@ -74,6 +74,8 @@ int lars_client::get_host(int modid, int cmdid, std::string &ip, int &port) {
     req.SerializeToArray(write_buf + MESSAGE_HEAD_LEN, head.msglen);
 
     // 简单的hash来发送给对应的agent udp server
+    // 这里负载均衡分为两层,为了实现会话粘连,所以这里用modid+cmdid来做hash
+    // 去到对应的router_lb
     int index = (modid + cmdid) % 3;
     // UDP sendto
     int rt = sendto(_sockfd[index], write_buf, head.msglen + MESSAGE_HEAD_LEN, 0, nullptr, 0);

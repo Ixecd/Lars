@@ -1,0 +1,152 @@
+[
+{
+  "directory": "/home/qc/Lars/build/base",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/base/proto -I/home/qc/Lars/base/. -g -std=c++23 -o CMakeFiles/base.dir/proto/lars.pb.cc.o -c /home/qc/Lars/base/proto/lars.pb.cc",
+  "file": "/home/qc/Lars/base/proto/lars.pb.cc",
+  "output": "base/CMakeFiles/base.dir/proto/lars.pb.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/buf_pool.cc.o -c /home/qc/Lars/lars_reactor/src/buf_pool.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/buf_pool.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/buf_pool.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/config_file.cc.o -c /home/qc/Lars/lars_reactor/src/config_file.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/config_file.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/config_file.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/event_loop.cc.o -c /home/qc/Lars/lars_reactor/src/event_loop.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/event_loop.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/event_loop.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/io_buf.cc.o -c /home/qc/Lars/lars_reactor/src/io_buf.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/io_buf.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/io_buf.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/reactor.cc.o -c /home/qc/Lars/lars_reactor/src/reactor.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/reactor.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/reactor.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/tcp_client.cc.o -c /home/qc/Lars/lars_reactor/src/tcp_client.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/tcp_client.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/tcp_client.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/tcp_conn.cc.o -c /home/qc/Lars/lars_reactor/src/tcp_conn.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/tcp_conn.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/tcp_conn.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/tcp_server.cc.o -c /home/qc/Lars/lars_reactor/src/tcp_server.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/tcp_server.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/tcp_server.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/thread_pool.cc.o -c /home/qc/Lars/lars_reactor/src/thread_pool.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/thread_pool.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/thread_pool.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/udp_client.cc.o -c /home/qc/Lars/lars_reactor/src/udp_client.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/udp_client.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/udp_client.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reactor",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/lars_reactor/../co_async -g -std=c++23 -o CMakeFiles/lars_reactor.dir/src/udp_server.cc.o -c /home/qc/Lars/lars_reactor/src/udp_server.cc",
+  "file": "/home/qc/Lars/lars_reactor/src/udp_server.cc",
+  "output": "lars_reactor/CMakeFiles/lars_reactor.dir/src/udp_server.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_dns",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_dns/include -I/home/qc/Lars/lars_dns/../lars_reactor/include -I/home/qc/Lars/lars_dns/../base -I/home/qc/Lars/lars_dns/../co_async -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/base/. -g -std=c++23 -fPIC -o CMakeFiles/lars_dns.dir/src/dns_route.cc.o -c /home/qc/Lars/lars_dns/src/dns_route.cc",
+  "file": "/home/qc/Lars/lars_dns/src/dns_route.cc",
+  "output": "lars_dns/CMakeFiles/lars_dns.dir/src/dns_route.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_dns",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_dns/include -I/home/qc/Lars/lars_dns/../lars_reactor/include -I/home/qc/Lars/lars_dns/../base -I/home/qc/Lars/lars_dns/../co_async -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/base/. -g -std=c++23 -fPIC -o CMakeFiles/lars_dns.dir/src/dns_service.cc.o -c /home/qc/Lars/lars_dns/src/dns_service.cc",
+  "file": "/home/qc/Lars/lars_dns/src/dns_service.cc",
+  "output": "lars_dns/CMakeFiles/lars_dns.dir/src/dns_service.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_dns",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_dns/include -I/home/qc/Lars/lars_dns/../lars_reactor/include -I/home/qc/Lars/lars_dns/../base -I/home/qc/Lars/lars_dns/../co_async -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reactor/include -I/home/qc/Lars/base/. -g -std=c++23 -fPIC -o CMakeFiles/lars_dns.dir/src/subscribe.cc.o -c /home/qc/Lars/lars_dns/src/subscribe.cc",
+  "file": "/home/qc/Lars/lars_dns/src/subscribe.cc",
+  "output": "lars_dns/CMakeFiles/lars_dns.dir/src/subscribe.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reporter",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reporter/include -I/home/qc/Lars/lars_reporter/../lars_reactor/include -I/home/qc/Lars/lars_reporter/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reporter/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_reporter.dir/src/reporter_server.cc.o -c /home/qc/Lars/lars_reporter/src/reporter_server.cc",
+  "file": "/home/qc/Lars/lars_reporter/src/reporter_server.cc",
+  "output": "lars_reporter/CMakeFiles/lars_reporter.dir/src/reporter_server.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reporter",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reporter/include -I/home/qc/Lars/lars_reporter/../lars_reactor/include -I/home/qc/Lars/lars_reporter/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reporter/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_reporter.dir/src/store_report.cc.o -c /home/qc/Lars/lars_reporter/src/store_report.cc",
+  "file": "/home/qc/Lars/lars_reporter/src/store_report.cc",
+  "output": "lars_reporter/CMakeFiles/lars_reporter.dir/src/store_report.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_reporter",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_reporter/include -I/home/qc/Lars/lars_reporter/../lars_reactor/include -I/home/qc/Lars/lars_reporter/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_reporter/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_reporter.dir/src/store_threads.cc.o -c /home/qc/Lars/lars_reporter/src/store_threads.cc",
+  "file": "/home/qc/Lars/lars_reporter/src/store_threads.cc",
+  "output": "lars_reporter/CMakeFiles/lars_reporter.dir/src/store_threads.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/agent_udp_server.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/agent_udp_server.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/agent_udp_server.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/agent_udp_server.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/dns_client.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/dns_client.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/dns_client.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/dns_client.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/host_info.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/host_info.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/host_info.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/host_info.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/load_balance.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/load_balance.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/load_balance.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/load_balance.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/main_server.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/main_server.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/main_server.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/main_server.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/reporter_client.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/reporter_client.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/reporter_client.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/reporter_client.cc.o"
+},
+{
+  "directory": "/home/qc/Lars/build/lars_loadbalance_agent",
+  "command": "/usr/bin/g++  -I/home/qc/Lars/lars_loadbalance_agent/include -I/home/qc/Lars/lars_loadbalance_agent/../lars_reactor/include -I/home/qc/Lars/lars_loadbalance_agent/../base -I/usr/include/mysql-connector-c/include -I/home/qc/Lars/lars_loadbalance_agent/../co_async -I/home/qc/Lars/base/. -I/home/qc/Lars/lars_reactor/include -g -std=c++23 -fPIC -o CMakeFiles/lars_loadbalance_agent.dir/src/route_lb.cc.o -c /home/qc/Lars/lars_loadbalance_agent/src/route_lb.cc",
+  "file": "/home/qc/Lars/lars_loadbalance_agent/src/route_lb.cc",
+  "output": "lars_loadbalance_agent/CMakeFiles/lars_loadbalance_agent.dir/src/route_lb.cc.o"
+}
+]

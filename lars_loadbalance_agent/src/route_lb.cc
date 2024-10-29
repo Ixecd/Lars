@@ -103,8 +103,9 @@ int route_lb::get_route(int modid, int cmdid, lars::GetRouteResponse &rsp) {
     int rt = lars::RET_SUCC;
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
     // 范围锁
-    MutexType::Lock lock(_mutex);
-    std::cout << "get lock" << std::endl;
+    // 锁是在多线程上加的,架构改为多进程之后,这里是否还需要加锁?
+    // MutexType::Lock lock(_mutex);
+    // std::cout << "get lock" << std::endl;
     if (_route_lb_map.find(key) == _route_lb_map.end()) {
         // 当前route_lb_map中没有对应key,那就创建一个
         load_balance *lb = new load_balance(modid, cmdid);
