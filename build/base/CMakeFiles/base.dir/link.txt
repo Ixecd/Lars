@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/qc/Lars/base/lib/libbase.a CMakeFiles/base.dir/proto/lars.pb.cc.o
-/usr/bin/ranlib /home/qc/Lars/base/lib/libbase.a
