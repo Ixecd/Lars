@@ -3,14 +3,14 @@
 #include <lars_loadbalance_agent/main_server.hpp>
 
 // 与report_client通信的thread_queue消息队列
-// thread_queue<lars::ReportStatusReq> *report_queue;
-// 与dns_client通信的thread_queue消息队列
-// thread_queue<lars::GetRouteRequest> *dns_queue;
-
-// 与report_client通信的thread_queue消息队列
 extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
 // 与dns_client通信的thread_queue消息队列
-extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+// qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+
+// 与report_client通信的thread_queue消息队列
+// extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
+// 与dns_client通信的thread_queue消息队列
+// extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
 
 namespace qc {
 
@@ -57,6 +57,7 @@ void *report_client_thread(void *args) {
     tcp_client client(&loop, ip.c_str(), port, "reporter client");
 
     // 将thread_queue消息回调事件绑定到loop中
+    report_queue = (qc::thread_queue<lars::ReportStatusReq> *)args;
     report_queue->set_loop(&loop);
     report_queue->set_callback(new_report_request, &client);
 
@@ -65,11 +66,11 @@ void *report_client_thread(void *args) {
     return nullptr;
 }
 
-void start_report_client() {
+void start_report_client(qc::thread_queue<lars::ReportStatusReq> *report_queue) {
     // 开辟一个线程
     pthread_t tid;
 
-    int rt = pthread_create(&tid, nullptr, report_client_thread, nullptr);
+    int rt = pthread_create(&tid, nullptr, report_client_thread, report_queue);
     qc_assert(rt != -1);
 
     // 线程分离

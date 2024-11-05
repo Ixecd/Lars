@@ -17,9 +17,10 @@
 using namespace qc;
 
 // 与report_client通信的thread_queue消息队列,agent负责上报请求消息
-thread_queue<lars::ReportStatusReq>* report_queue;
+// thread_queue<lars::ReportStatusReq>* report_queue;
 // 与dns_client通信的thread_queue消息队列,agent负责
-thread_queue<lars::GetRouteRequest>* dns_queue;
+// thread_queue<lars::GetRouteRequest>* dns_queue;
+
 // 每个Agent UDP server的负载均衡路由 route_lb
 // 一个route_lb管理多个load_balance
 route_lb* r_lb[3];
@@ -114,16 +115,16 @@ int main() {
     // 采用多进程的方式,读时共享,写时拷贝
     start_UDP_servers();
 
-    // 只有父进程才会下来
+    // 只有父进程才会下来, worker进程并没有两个任务队列,所以不能和report和dns通信
     // 3. 启动report client
-    report_queue = new thread_queue<lars::ReportStatusReq>();
-    qc_assert(report_queue != nullptr);
-    start_report_client();
+    // report_queue = new thread_queue<lars::ReportStatusReq>();
+    // qc_assert(report_queue != nullptr);
+    // start_report_client();
 
     // 4. 启动dns
-    dns_queue = new thread_queue<lars::GetRouteRequest>();
-    qc_assert(dns_queue != nullptr);
-    start_dns_client();
+    // dns_queue = new thread_queue<lars::GetRouteRequest>();
+    // qc_assert(dns_queue != nullptr);
+    // start_dns_client();
 
     while (1) sleep(10);
 

@@ -50,10 +50,10 @@ namespace qc {
     void start_UDP_servers();
 
     // 启动lars_reporter client 线程
-    void start_report_client();
+    void start_report_client(qc::thread_queue<lars::ReportStatusReq> *report_queue);
 
     // 启动lars_dns client线程
-    void start_dns_client();
+    void start_dns_client(qc::thread_queue<lars::GetRouteRequest> *dns_queue);
 
 }
 

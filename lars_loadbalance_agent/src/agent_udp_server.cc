@@ -13,10 +13,17 @@
 #include <lars_loadbalance_agent/route_lb.hpp>
 #include <lars_reactor/lars_reactor.hpp>
 
+
+
+/// @brief 多进程下,每个进程都要有两个消息队列
+
 // 与report_client通信的thread_queue消息队列
-extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
+// extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
+qc::thread_queue<lars::ReportStatusReq> *report_queue;
 // 与dns_client通信的thread_queue消息队列
-extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+// extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+
 // route_lb -> 一个管理多个load_balance
 extern qc::route_lb *r_lb[3];
 
@@ -125,6 +132,18 @@ void *agent_server_main(void *args) {
 
     std::cout << "agent UDP server: port " << port << " is started...\n";
 
+
+    // 3. 启动report client
+    report_queue = new thread_queue<lars::ReportStatusReq>();
+    qc_assert(report_queue != nullptr);
+    start_report_client(report_queue);
+
+    // 4. 启动dns
+    dns_queue = new thread_queue<lars::GetRouteRequest>();
+    qc_assert(dns_queue != nullptr);
+    start_dns_client(dns_queue);
+
+
     loop.event_process();
 
     return nullptr;
@@ -134,6 +153,7 @@ void *agent_server_main(void *args) {
 // 为了考虑系统的安全和可靠,这里将单进程多线程的方式改为多进程模式,每个进程负责一个agent_server_main线程
 
 // 光荣退休!
+#if 0
 void start_UDP_servers() {
     // 创建三个线程
     long index = 0;
@@ -145,21 +165,23 @@ void start_UDP_servers() {
     }
 }
 
-// void start_UDP_servers() {
-//     // 创建三个进程
-//     long index = 0;
-//     for (int i = 0; i < 3; ++i) {
-//         // 父进程返回子进程的pid
-//         // 子进程返回0
-//         // 这里一共有四个进程,一个main进程,三个agent_server_main进程
-//         pid_t pid = fork();
-//         if (pid == 0) {
-//             index = i;
-//             agent_server_main((void *)index);
-//             // 下不来的,必须在angent_server_main中初始化环境
-//             exit(0);
-//         }
-//     }
-// }
+#else 
+void start_UDP_servers() {
+    // 创建三个进程
+    long index = 0;
+    for (int i = 0; i < 3; ++i) {
+        // 父进程返回子进程的pid
+        // 子进程返回0
+        // 这里一共有四个进程,一个main进程,三个agent_server_main进程
+        pid_t pid = fork();
+        if (pid == 0) {
+            index = i;
+            agent_server_main((void *)index);
+            // 下不来的,必须在angent_server_main中初始化环境
+            exit(0);
+        }
+    }
+}
+#endif
 
 }  // namespace qc

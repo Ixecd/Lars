@@ -82,6 +82,8 @@ int load_balance::pull() {
     route_req.set_cmdid(_cmdid);
 
     // 通过DNS client的thread queue发送请求
+    // 架构从多线程变成多进程,必须每个worker进程都要有对应的两个消息队列,否则无法拉取信息
+    // 之前的BUG就出现在这里
     dns_queue->send(route_req);
 
     status = PULLING;

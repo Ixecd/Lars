@@ -15,7 +15,7 @@
 #include <pthread.h>
 
 // 与report_client通信的thread_queue消息队列
-extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
+// qc::thread_queue<lars::ReportStatusReq> *report_queue;
 // 与dns_client通信的thread_queue消息队列
 extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
 // route_loadbalance
@@ -86,6 +86,8 @@ void *dns_client_thread(void *args) {
     // dns 客户端是使用tcp传输
     tcp_client client(&loop, ip.c_str(), port, "dns_client");
 
+    dns_queue = (qc::thread_queue<lars::GetRouteRequest> *)args;
+
     // 将thread_queue消息回调事件,绑定到loop上
     dns_queue->set_loop(&loop);
     dns_queue->set_callback(new_dns_request, &client);
@@ -99,10 +101,10 @@ void *dns_client_thread(void *args) {
     loop.event_process();
 }
 
-void start_dns_client() {
+void start_dns_client(qc::thread_queue<lars::GetRouteRequest> *dns_queue) {
     // 创建一个个线程
     pthread_t tid;
-    int rt = pthread_create(&tid, nullptr, dns_client_thread, nullptr);
+    int rt = pthread_create(&tid, nullptr, dns_client_thread, dns_queue);
     qc_assert(rt != -1);
 
     pthread_detach(tid);
