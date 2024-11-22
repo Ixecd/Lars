@@ -86,7 +86,7 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         //cli->send_message(msg, strlen(msg), msgid);
 
         // ================ 发送msgid：2 =====
-        //const char *msg2 = "hello Aceld!";
+        //const char *msg2 = "hello Ixecd!";
         //msgid = 2;
         //cli->send_message(msg2, strlen(msg2), msgid);
         // ================
