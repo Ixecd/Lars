@@ -52,12 +52,8 @@ void *test_qps(void *args) {
             ret == 3) {  // 成功,过载，不存在 均是合法返回
             ++qps;
             if (ret == 0) {
-                std::cout << "modid " << modid << ", cmdid " << cmdid
-                          << " get host: " << ip << ":" << port << std::endl;
                 api.report(modid, cmdid, ip, port, 0);  // 上报成功
-                std::cout << "report succ!!!" << std::endl;
             } else if (ret == 1) {
-                // std::cout << "report overload!" << std::endl;
                 api.report(modid, cmdid, ip, port, 1);  // 上报过载
             }
         } else {
