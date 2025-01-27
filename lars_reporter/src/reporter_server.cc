@@ -26,6 +26,7 @@ void get_report_status(const char *data, uint len, int msgid,
 
     // 轮询将消息平均发送到每个线程的消息队列中
     static int index = 0;
+    qc_assert(reportQueues != nullptr);
     reportQueues[index++]->send(req);
     qc_assert(threads > 0);
     index = index % threads;

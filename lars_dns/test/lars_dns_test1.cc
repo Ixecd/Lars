@@ -8,7 +8,7 @@
 using namespace qc;
 
 // 命令行参数
-struct Option {
+struct Option { 
     Option() : ip(nullptr), port(0) {}
     char *ip;
     short port;

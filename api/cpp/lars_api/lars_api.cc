@@ -171,6 +171,8 @@ void lars_client::report(int modid, int cmdid, std::string &ip, int port, int re
     // UDP 注意:发送的是所有的信息,包括头和体
     int rt = sendto(_sockfd[index], write_buf, report.ByteSizeLong() + MESSAGE_HEAD_LEN, 0, nullptr, 0);
     qc_assert(rt != -1);
+
+    std::cout << "report done!!!" << std::endl;
 }
 
 /// @brief lars系统获取某个modid/cmdid全部的hosts(route)信息 

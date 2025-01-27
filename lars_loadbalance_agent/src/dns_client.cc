@@ -99,6 +99,8 @@ void *dns_client_thread(void *args) {
     client.set_conn_start(conn_init);
 
     loop.event_process();
+
+    return nullptr;
 }
 
 void start_dns_client(qc::thread_queue<lars::GetRouteRequest> *dns_queue) {

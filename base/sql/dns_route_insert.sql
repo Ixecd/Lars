@@ -6,8 +6,6 @@ INSERT INTO RouteData(modid, cmdid, serverip, serverport) VALUES(1, 2, 323223595
 INSERT INTO RouteData(modid, cmdid, serverip, serverport) VALUES(1, 2, 3232235956, 7779);
 
 UPDATE RouteVersion SET version = UNIX_TIMESTAMP(NOW()) WHERE id = 1;
-Lars/base/sql/dns_route_drop.sql
-
 USE lars_dns;
 
 DELETE FROM RouteData;
