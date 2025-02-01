@@ -8,7 +8,6 @@
 
 using namespace qc;
 
-tcp_server *server;
 
 void callback_busi(const char *data, int len, int msgid, net_connection *conn, void *user_data)  {
     printf("callback_busi running...\n");
