@@ -21,8 +21,8 @@ int main() {
     //加载配置文件
     config_file::setPath("./serv.conf");
     std::string ip =
-        config_file::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
-    short port = config_file::GetInstance()->GetNumber("reactor", "port", 8888);
+        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
+    short port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 8888);
 
     printf("ip = %s, port = %d\n", ip.c_str(), port);
 

@@ -40,7 +40,6 @@ using io_event_map_it = std::unordered_map<int, io_event>::iterator;
 
 using listen_fd_set = std::unordered_set<int>;
 
-co_async::event_loop
 class event_loop {
 public:
     // 只保留默认构造函数
