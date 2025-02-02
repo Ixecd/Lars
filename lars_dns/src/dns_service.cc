@@ -27,9 +27,6 @@ using client_sub_list = std::set<uint64_t>;
 
 void create_subscribe(net_connection *conn, void *args) {
     conn->param = (void *)new client_sub_list;
-    std::cout << "[conn start] " << conn << std::endl;
-
-    std::cout << "[conn start] conn->param " << conn->param << std::endl;
 }
 
 void clear_subscribe(net_connection *conn, void *args) {
@@ -42,9 +39,6 @@ void clear_subscribe(net_connection *conn, void *args) {
     }
 
     delete sub_list;
-
-    std::cout << "[conn start] " << conn << std::endl;
-    std::cout << "[conn close] conn->param " << conn->param << std::endl;
 }
 
 void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,

@@ -93,12 +93,10 @@ void push_change_task(event_loop *loop, void *args) {
     subscribe->make_publish_map(online_fds, need_publish);
 
     // 3. 依次从need_publish去除数据发送给对应客户端连接
-    bool tag = false;
     for (auto it = need_publish.begin(); it != need_publish.end(); ++it) {
         int fd = it->first;
         // 遍历当前文件描述符对应的modid/cmdid
         for (auto st = it->second.begin(); st != it->second.end(); ++st) {
-            tag = true;
             uint modid = (uint)((*st) >> 32);
             uint cmdid = uint(*st);
 
@@ -123,17 +121,12 @@ void push_change_task(event_loop *loop, void *args) {
 
             // 取出链接信息
             net_connection *conn = tcp_server::conns[fd];
-
-            std::cout << "[publish] " << conn << ' ' << conn->param << std::endl;
-
             if (conn)
                 conn->send_message(responseString.c_str(),
                                    responseString.size(),
                                    lars::ID_GetRouteResponse);
         }
     }
-    if (tag) std::cout << "[push_change_task] end" << std::endl;
-    else std::cout << "[push_change_task] no change" << std::endl;
 }
 
 /// @brief 当前modid/cmdid被修改了,要通知所有订阅了这些服务的客户端
