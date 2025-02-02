@@ -11,7 +11,7 @@
 
 #include <lars_dns/subscribe.hpp>
 
-/// @brief 声明一变量,保证程序执行过程中只有一个实例
+/// @brief 声明一变量,保证程序执行过程中只有一个实例,链接的时候在其他文件中查找
 /// @details 如果不想使用extern 那就都包含在namespace qc中即可
 extern qc::tcp_server *server;
 // using namespace co_async;
@@ -24,14 +24,12 @@ SubscribeList::SubscribeList() {}
 void SubscribeList::subscribe(uint64_t mod, int fd) {
     net_connection* conn = tcp_server::conns[fd];
     std::unique_lock<std::mutex> ulk(mutex_book_list);
-    std::cout << conn->get_fd() << std::endl;
+
+    std::cout << "[Subscribe]" << conn->get_fd() << ":" << mod << std::endl;
+
     _book_list[mod].insert(fd);
 
-    std::cout << conn->get_fd() << std::endl;
-
-    ulk.unlock();
-
-    std::cout << conn->get_fd() << std::endl;
+    // ulk.unlock();
 }
 
 void SubscribeList::unsubscribe(uint64_t mod, int fd) {
@@ -55,13 +53,17 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
     // 这里不知道什么原因,不能在遍历的时候顺便删除_push_list
     // 预处理将要删除的文件描述符先保存起来
     // 这里是因为_push_list的类型为unordered_map,在哈希表中使用erase会导致后面的元素的迭代器失效
-    std::vector<int> preseve;
+    // std::vector<int> preseve;
+    // std::cout << "[make_publish_map]" << std::endl;
     for (auto it = _push_list.begin(); it != _push_list.end(); ) {
         // 需要publish的订阅列表在online_fds中找到了
         if (online_fds.find(it->first) != online_fds.end()) {
             // preseve.push_back(it->first);
-            need_publish[it->first] = _push_list[it->first];
-            _push_list.erase(it->first);
+            // std::cout << "[get!]" << it->first << std::endl;
+            // need_publish[it->first] = _push_list[it->first];
+            need_publish[it->first] = it->second;
+            // push_list.erase(it->first); 语法上没有问题,但是实际上会导致迭代器失效,it会指向被删除的元素
+            it = _push_list.erase(it); // ok 返回下一个元素的迭代器
             // std::advance(it, -1);
         } else ++it;
     }
@@ -73,6 +75,7 @@ void SubscribeList::make_publish_map(listen_fd_set &online_fds,
 }
 
 void push_change_task(event_loop *loop, void *args) {
+    // std::cout << "[push_change_task] start" << std::endl;
     SubscribeList *subscribe = (SubscribeList *)args;
 
     // 1. 获取全部的在线客户端fd
@@ -80,18 +83,24 @@ void push_change_task(event_loop *loop, void *args) {
     listen_fd_set online_fds;
     loop->get_listen_fds(online_fds);
 
+    // for (auto it = online_fds.begin(); it != online_fds.end(); ++it) {
+    //     std::cout << " " << *it;
+    // }
+    // std::cout << std::endl;
+
     publish_map need_publish;
     // 2. 把当前epoll监听的所有文件描述符对应的订阅信息全部放到need_publish中
     subscribe->make_publish_map(online_fds, need_publish);
 
     // 3. 依次从need_publish去除数据发送给对应客户端连接
+    bool tag = false;
     for (auto it = need_publish.begin(); it != need_publish.end(); ++it) {
         int fd = it->first;
         // 遍历当前文件描述符对应的modid/cmdid
         for (auto st = it->second.begin(); st != it->second.end(); ++st) {
-
-            int modid = (int)((*st) >> 32);
-            int cmdid = int(*st);
+            tag = true;
+            uint modid = (uint)((*st) >> 32);
+            uint cmdid = uint(*st);
 
             // 组装pb消息,发送给客户
 
@@ -104,8 +113,8 @@ void push_change_task(event_loop *loop, void *args) {
             for (auto hit = hosts.begin(); hit != hosts.end(); ++hit) {
                 uint64_t ip_port = *hit;
                 lars::HostInfo host_info;
-                host_info.set_ip((uint32_t)(ip_port >> 32));
-                host_info.set_port((int)ip_port);
+                host_info.set_ip((uint)(ip_port >> 32));
+                host_info.set_port((uint)ip_port);
                 rep.add_host()->CopyFrom(host_info);
             }
 
@@ -114,12 +123,17 @@ void push_change_task(event_loop *loop, void *args) {
 
             // 取出链接信息
             net_connection *conn = tcp_server::conns[fd];
+
+            std::cout << "[publish] " << conn << ' ' << conn->param << std::endl;
+
             if (conn)
                 conn->send_message(responseString.c_str(),
                                    responseString.size(),
                                    lars::ID_GetRouteResponse);
         }
     }
+    if (tag) std::cout << "[push_change_task] end" << std::endl;
+    else std::cout << "[push_change_task] no change" << std::endl;
 }
 
 /// @brief 当前modid/cmdid被修改了,要通知所有订阅了这些服务的客户端
@@ -149,6 +163,7 @@ void SubscribeList::publish(std::vector<uint64_t> &change_mods) {
 
     // 最后通知server的各个线程去执行
     // this -> GetInstance<Subscribe>
+    // std::cout << "[tickle]" << std::endl;
     if (tickle) (server->get_thread_pool())->send_task(push_change_task, this);
 }
 }  // namespace qc

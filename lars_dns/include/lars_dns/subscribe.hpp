@@ -53,11 +53,13 @@ private:
     SubscribeList &operator=(SubscribeList &&) = delete;
 
 private:
-    std::map<uint64_t, std::set<int>> _book_list;
+    /// @brief modid/cmdid订阅列表
+    subscribe_map _book_list;
 
     std::mutex mutex_book_list;
 
-    std::map<int, std::set<uint64_t>> _push_list;
+    /// @brief fd对应的modid/cmdid列表
+    publish_map _push_list;
 
     std::mutex mutex_push_list;
 };

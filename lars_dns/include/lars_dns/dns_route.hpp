@@ -49,7 +49,7 @@ public:
 
 public:
     /// @brief 获取Host信息
-    host_set get_hosts(int modid, int cmdid);
+    host_set get_hosts(uint modid, uint cmdid);
 
 public:
     /// @brief 加载版本信息, 1 success, 0 everything is update

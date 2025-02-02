@@ -6,8 +6,8 @@ BASE = ../../base
 BASE_H = $(BASE)/include
 
 LARS_REACTOR = ../../Lars_reactor
-LARS_REACTOR_H = $(LARS_REACTOR)/include
-LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llreactor
+LARS_REACTOR_H = $(LARS_REACTOR)/include $(LARS_REACTOR)/include/lars_reactor
+LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llars_reactor
 
 PROTO = $(BASE)/proto
 PROTO_H = $(BASE)/proto
@@ -18,7 +18,7 @@ MYSQL_LIB = /usr/include/mysql-connector-c/lib/libmysqlclient.a
 
 
 OTHER_LIB = -lpthread -ldl -lprotobuf
-SRC = .././src
+SRC = ../src
 INC = -I../include -I$(BASE_H) -I$(LARS_REACTOR_H) -I$(MYSQL_H) -I$(PROTO_H)
 LIB = $(MYSQL_LIB) -L$(LARS_REACTOR_LIB) $(OTHER_LIB)
 

@@ -65,9 +65,10 @@ void Route::connect_db() {
 
     // qc_assert(connection != nullptr);
 
-    MYSQL *connection =
-        mysql_real_connect(&_db_conn, "localhost", "root", "yqc2192629378",
-                           "lars_dns", 3306, nullptr, 0);
+    MYSQL *connection = mysql_real_connect(&_db_conn, db_host.c_str(),
+                                           db_user.c_str(), db_passwd.c_str(),
+                                           db_name.c_str(), db_port, nullptr, 0);
+
     if (connection == nullptr) {
         cout << "connection error\n" << endl;
         // 获取错误信息
@@ -95,16 +96,16 @@ void Route::build_maps() {
     MYSQL_ROW row;
     for (long i = 0; i < line_num; ++i) {
         row = mysql_fetch_row(result);
-        int modID = atoi(row[1]);
-        int cmdID = atoi(row[2]);
-        unsigned long ip = atoi(row[3]);
-        int port = atoi(row[4]);
+        uint modID = atoi(row[1]);
+        uint cmdID = atoi(row[2]);
+        uint ip = atoi(row[3]);
+        uint port = atoi(row[4]);
 
         // 组装map的key，有modID/cmdID组合
         uint64_t key = ((uint64_t)modID << 32) + cmdID;
         uint64_t value = ((uint64_t)ip << 32) + port;
 
-        printf("modID = %d, cmdID = %d, ip = %u, port = %d\n", modID, cmdID,
+        printf("modID = %u, cmdID = %u ip = %u, port = %u\n", modID, cmdID,
                ip, port);
 
         // 插入到RouterDataMap_A中
@@ -113,7 +114,7 @@ void Route::build_maps() {
     mysql_free_result(result);
 }
 
-host_set Route::get_hosts(int modid, int cmdid) {
+host_set Route::get_hosts(uint modid, uint cmdid) {
     host_set hosts;
     // 组装key
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
@@ -182,9 +183,9 @@ int Route::load_route_data() {
     MYSQL_ROW row;
     for (long i = 0; i < lines; ++i) {
         row = mysql_fetch_row(result);
-        int modid = atoi(row[0]), cmdid = atoi(row[1]);
+        uint modid = atoi(row[0]), cmdid = atoi(row[1]);
         uint ip = atoi(row[2]);
-        int port = atoi(row[3]);
+        uint port = atoi(row[3]);
 
         uint64_t key = ((uint64_t)modid << 32) + cmdid;
         uint64_t value = ((uint64_t)ip << 32) + port;
@@ -200,7 +201,7 @@ int Route::load_route_data() {
 void Route::swap() {
     // std::cout << "Route::swap() begin..." << std::endl;
     // 加读写范围锁
-    RWMutexType::WriteLock Lock(mutex);
+    RWMutexType::WriteLock lock(mutex);
     std::swap(_data_pointer, _temp_pointer);
     // route_map *temp = _data_pointer;
     // _data_pointer = _temp_pointer;
@@ -231,7 +232,7 @@ void Route::load_changes(std::vector<uint64_t> &changes) {
     MYSQL_ROW row;
     for (long i = 0; i < lines; ++i) {
         row = mysql_fetch_row(result);
-        int modid = atoi(row[0]), cmdid = atoi(row[1]);
+        uint modid = atoi(row[0]), cmdid = atoi(row[1]);
         uint64_t key = ((uint64_t)modid << 32) + cmdid;
         changes.push_back(key);
     }
@@ -265,19 +266,18 @@ void *check_route_change(void *args) {
     Route::GetInstance()->remove_changes(true);
 
     while (true) {
-        std::cout << "Backend_Thread run again..." << std::endl;
-        sleep(2);
-        // sleep(1);
+        std::cout << "[Backend_Thread] run..." << std::endl;
+        sleep(3);
+
         long current_time = time(nullptr);
 
         // 1.加载当前版本信息
         int rt = Route::GetInstance()->load_version();
 
-        cout << "cur rt = " << rt << endl;
-
         // 版本号被修改了
         if (rt == 1) {
             // 意味着有modid/cmdid修改
+            std::cout << "[version changed]" << std::endl;
 
             // 将最新的RouteData移动到_temp_pointer中
             if (Route::GetInstance()->load_route_data() == 0) {
@@ -296,6 +296,7 @@ void *check_route_change(void *args) {
 
             // 推送
             if (changes.size() != 0) {
+                std::cout << "[start publish]" << std::endl;
                 SubscribeList::GetInstance()->publish(changes);
                 // GetInstance<SubscribeList>()->publish(changes);
             }
@@ -309,7 +310,7 @@ void *check_route_change(void *args) {
                 if (Route::GetInstance()->load_route_data() == 0) {
                     Route::GetInstance()->swap();
                     last_load_time = current_time;
-                    std::cout << "swap() succ" << std::endl;
+                    std::cout << "[swapped]" << std::endl;
                 }
             }
         }

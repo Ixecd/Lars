@@ -6,8 +6,8 @@ BASE = ../base
 BASE_H = $(BASE)/include
 
 LARS_REACTOR = ../lars_reactor
-LARS_REACTOR_H = $(LARS_REACTOR)/include
-LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llreactor
+LARS_REACTOR_H = $(LARS_REACTOR)/include/lars_reactor
+LARS_REACTOR_LIB = $(LARS_REACTOR)/lib  -llars_reactor
 
 PROTO = $(BASE)/proto
 PROTO_H = $(BASE)/proto

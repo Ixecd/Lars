@@ -7,5 +7,3 @@ insert into `RouteData`(modid, cmdid, serverip,serverport) values(1, 1, 32322359
 update `RouteVersion` set version = @time where id = 1;
 
 insert into `RouteChange`(modid, cmdid, version) values(1,1,@time);
-
--- insert into `RouteChange`(modid, cmdid, version) values(1,2, 1000);
