@@ -29,8 +29,9 @@ void deal_task_message(event_loop *loop, int fd, void *args) {
 
         if (task.type == task_msg::NEW_CONN) {
             // 此时已经将对应的connfd绑定到消息队列上的事件循环
-            std::shared_ptr<tcp_conn> conn = std::make_shared<tcp_conn>(task.connfd, loop);
-            // tcp_conn *conn = new tcp_conn(task.connfd, loop);
+            // MD!
+            // std::shared_ptr<tcp_conn> conn = std::make_shared<tcp_conn>(task.connfd, loop);
+            tcp_conn *conn = new tcp_conn(task.connfd, loop);
             qc_assert(conn != nullptr);
             printf("[thread] : get new connection succ!\n");
         } else if (task.type == task_msg::NEW_TASK) {

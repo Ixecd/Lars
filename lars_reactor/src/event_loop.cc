@@ -186,28 +186,4 @@ void event_loop::execute_ready_tasks() {
     _ready_tasks.clear();
 }
 
-// ---------- 处理协程 ------------
-// inline
-// EventFilePromise::~EventFilePromise() {
-//     mAwaiter->mLoop.removeListener(mAwaiter->mFd);
-// }
-
-// inline bool 
-// event_loop::addListener(EventFilePromise &promise, int op) {
-//     struct epoll_event event;
-//     // EPOLLONSHOT 只触发一次 -> 避免对同一个fd重复添加相同event
-//     event.events = promise.mAwaiter->mEvents;
-//     event.data.ptr = &promise;
-//     // 服务器一旦运行起来,如果你下面直接抛出异常了,那还服务啥??
-//     // checkError(epoll_ctl(_epfd, EPOLL_CTL_ADD, promise.mAwaiter->mFd, &event));
-//     int rt = epoll_ctl(_epfd, op, promise.mAwaiter->mFd.fileNo(), &event);
-//     if (rt == -1) return false;
-//     if (op == EPOLL_CTL_ADD) _count++;
-//     return true;
-// }
-
-// inline bool 
-// event_loop::tryRun(std::optional<std::chrono::system_clock::duration> timeout) {
-//     return true;
-// }
 }  // namespace qc

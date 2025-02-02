@@ -31,7 +31,7 @@ public:
     virtual int get_fd() = 0;
 
     /// @brief tcp客户端 通信的时候可以通过这个参数传递一些自定义的参数 
-    void *param;
+    void *param = nullptr;
 
     virtual int send_message(const char *data, int datalen, int msgid) = 0;
 
