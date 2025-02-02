@@ -32,8 +32,8 @@ struct HostInfoDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT HostInfoDefaultTypeInternal _HostInfo_default_instance_;
 constexpr GetRouteRequest::GetRouteRequest(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : modid_(0)
-  , cmdid_(0){}
+  : modid_(0u)
+  , cmdid_(0u){}
 struct GetRouteRequestDefaultTypeInternal {
   constexpr GetRouteRequestDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -46,8 +46,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT GetRouteRequestDefaultTypeInter
 constexpr GetRouteResponse::GetRouteResponse(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : host_()
-  , modid_(0)
-  , cmdid_(0){}
+  , modid_(0u)
+  , cmdid_(0u){}
 struct GetRouteResponseDefaultTypeInternal {
   constexpr GetRouteResponseDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -59,8 +59,8 @@ struct GetRouteResponseDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT GetRouteResponseDefaultTypeInternal _GetRouteResponse_default_instance_;
 constexpr HostCallResult::HostCallResult(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : ip_(0)
-  , port_(0)
+  : ip_(0u)
+  , port_(0u)
   , succ_(0u)
   , err_(0u)
   , overload_(false){}
@@ -76,9 +76,9 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT HostCallResultDefaultTypeIntern
 constexpr ReportStatusReq::ReportStatusReq(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : results_()
-  , modid_(0)
-  , cmdid_(0)
-  , caller_(0)
+  , modid_(0u)
+  , cmdid_(0u)
+  , caller_(0u)
   , ts_(0u){}
 struct ReportStatusReqDefaultTypeInternal {
   constexpr ReportStatusReqDefaultTypeInternal()
@@ -92,8 +92,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ReportStatusReqDefaultTypeInter
 constexpr GetHostRequest::GetHostRequest(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : seq_(0u)
-  , modid_(0)
-  , cmdid_(0){}
+  , modid_(0u)
+  , cmdid_(0u){}
 struct GetHostRequestDefaultTypeInternal {
   constexpr GetHostRequestDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -107,9 +107,9 @@ constexpr GetHostResponse::GetHostResponse(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : host_(nullptr)
   , seq_(0u)
-  , modid_(0)
-  , cmdid_(0)
-  , retcode_(0){}
+  , modid_(0u)
+  , cmdid_(0u)
+  , retcode_(0u){}
 struct GetHostResponseDefaultTypeInternal {
   constexpr GetHostResponseDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -122,9 +122,9 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT GetHostResponseDefaultTypeInter
 constexpr ReportRequest::ReportRequest(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : host_(nullptr)
-  , modid_(0)
-  , cmdid_(0)
-  , retcode_(0){}
+  , modid_(0u)
+  , cmdid_(0u)
+  , retcode_(0u){}
 struct ReportRequestDefaultTypeInternal {
   constexpr ReportRequestDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -243,21 +243,21 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_lars_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\nlars.proto\022\004lars\"$\n\010HostInfo\022\n\n\002ip\030\001 \001"
   "(\r\022\014\n\004port\030\002 \001(\r\"/\n\017GetRouteRequest\022\r\n\005m"
-  "odid\030\001 \001(\005\022\r\n\005cmdid\030\002 \001(\005\"N\n\020GetRouteRes"
-  "ponse\022\r\n\005modid\030\001 \001(\005\022\r\n\005cmdid\030\002 \001(\005\022\034\n\004h"
+  "odid\030\001 \001(\r\022\r\n\005cmdid\030\002 \001(\r\"N\n\020GetRouteRes"
+  "ponse\022\r\n\005modid\030\001 \001(\r\022\r\n\005cmdid\030\002 \001(\r\022\034\n\004h"
   "ost\030\003 \003(\0132\016.lars.HostInfo\"W\n\016HostCallRes"
-  "ult\022\n\n\002ip\030\001 \001(\005\022\014\n\004port\030\002 \001(\005\022\014\n\004succ\030\003 "
+  "ult\022\n\n\002ip\030\001 \001(\r\022\014\n\004port\030\002 \001(\r\022\014\n\004succ\030\003 "
   "\001(\r\022\013\n\003err\030\004 \001(\r\022\020\n\010overload\030\005 \001(\010\"r\n\017Re"
-  "portStatusReq\022\r\n\005modid\030\001 \001(\005\022\r\n\005cmdid\030\002 "
-  "\001(\005\022\016\n\006caller\030\003 \001(\005\022%\n\007results\030\004 \003(\0132\024.l"
+  "portStatusReq\022\r\n\005modid\030\001 \001(\r\022\r\n\005cmdid\030\002 "
+  "\001(\r\022\016\n\006caller\030\003 \001(\r\022%\n\007results\030\004 \003(\0132\024.l"
   "ars.HostCallResult\022\n\n\002ts\030\005 \001(\r\";\n\016GetHos"
-  "tRequest\022\013\n\003seq\030\001 \001(\r\022\r\n\005modid\030\002 \001(\005\022\r\n\005"
-  "cmdid\030\003 \001(\005\"k\n\017GetHostResponse\022\013\n\003seq\030\001 "
-  "\001(\r\022\r\n\005modid\030\002 \001(\005\022\r\n\005cmdid\030\003 \001(\005\022\017\n\007ret"
-  "code\030\004 \001(\005\022\034\n\004host\030\005 \001(\0132\016.lars.HostInfo"
-  "\"\\\n\rReportRequest\022\r\n\005modid\030\001 \001(\005\022\r\n\005cmdi"
-  "d\030\002 \001(\005\022\034\n\004host\030\003 \001(\0132\016.lars.HostInfo\022\017\n"
-  "\007retcode\030\004 \001(\005*\344\001\n\tMessageId\022\r\n\tID_UNKNO"
+  "tRequest\022\013\n\003seq\030\001 \001(\r\022\r\n\005modid\030\002 \001(\r\022\r\n\005"
+  "cmdid\030\003 \001(\r\"k\n\017GetHostResponse\022\013\n\003seq\030\001 "
+  "\001(\r\022\r\n\005modid\030\002 \001(\r\022\r\n\005cmdid\030\003 \001(\r\022\017\n\007ret"
+  "code\030\004 \001(\r\022\034\n\004host\030\005 \001(\0132\016.lars.HostInfo"
+  "\"\\\n\rReportRequest\022\r\n\005modid\030\001 \001(\r\022\r\n\005cmdi"
+  "d\030\002 \001(\r\022\034\n\004host\030\003 \001(\0132\016.lars.HostInfo\022\017\n"
+  "\007retcode\030\004 \001(\r*\344\001\n\tMessageId\022\r\n\tID_UNKNO"
   "W\020\000\022\026\n\022ID_GetRouteRequest\020\001\022\027\n\023ID_GetRou"
   "teResponse\020\002\022\031\n\025ID_ReportStatusReques\020\003\022"
   "\025\n\021ID_GetHostRequest\020\004\022\026\n\022ID_GetHostResp"
@@ -601,7 +601,7 @@ const char* GetRouteRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 modid = 1;
+      // uint32 modid = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -609,7 +609,7 @@ const char* GetRouteRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 2;
+      // uint32 cmdid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -646,16 +646,16 @@ uint8_t* GetRouteRequest::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_cmdid(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -674,14 +674,14 @@ size_t GetRouteRequest::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -816,7 +816,7 @@ const char* GetRouteResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 modid = 1;
+      // uint32 modid = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -824,7 +824,7 @@ const char* GetRouteResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 2;
+      // uint32 cmdid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -874,16 +874,16 @@ uint8_t* GetRouteResponse::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_cmdid(), target);
   }
 
   // repeated .lars.HostInfo host = 3;
@@ -917,14 +917,14 @@ size_t GetRouteResponse::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -1058,7 +1058,7 @@ const char* HostCallResult::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 ip = 1;
+      // uint32 ip = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           ip_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1066,7 +1066,7 @@ const char* HostCallResult::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
         } else
           goto handle_unusual;
         continue;
-      // int32 port = 2;
+      // uint32 port = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           port_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1127,16 +1127,16 @@ uint8_t* HostCallResult::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 ip = 1;
+  // uint32 ip = 1;
   if (this->_internal_ip() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_ip(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_ip(), target);
   }
 
-  // int32 port = 2;
+  // uint32 port = 2;
   if (this->_internal_port() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_port(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_port(), target);
   }
 
   // uint32 succ = 3;
@@ -1173,14 +1173,14 @@ size_t HostCallResult::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // int32 ip = 1;
+  // uint32 ip = 1;
   if (this->_internal_ip() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_ip());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_ip());
   }
 
-  // int32 port = 2;
+  // uint32 port = 2;
   if (this->_internal_port() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_port());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_port());
   }
 
   // uint32 succ = 3;
@@ -1339,7 +1339,7 @@ const char* ReportStatusReq::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 modid = 1;
+      // uint32 modid = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1347,7 +1347,7 @@ const char* ReportStatusReq::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 2;
+      // uint32 cmdid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1355,7 +1355,7 @@ const char* ReportStatusReq::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 caller = 3;
+      // uint32 caller = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           caller_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1413,22 +1413,22 @@ uint8_t* ReportStatusReq::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_cmdid(), target);
   }
 
-  // int32 caller = 3;
+  // uint32 caller = 3;
   if (this->_internal_caller() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_caller(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_caller(), target);
   }
 
   // repeated .lars.HostCallResult results = 4;
@@ -1468,19 +1468,19 @@ size_t ReportStatusReq::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
-  // int32 caller = 3;
+  // uint32 caller = 3;
   if (this->_internal_caller() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_caller());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_caller());
   }
 
   // uint32 ts = 5;
@@ -1633,7 +1633,7 @@ const char* GetHostRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
         } else
           goto handle_unusual;
         continue;
-      // int32 modid = 2;
+      // uint32 modid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1641,7 +1641,7 @@ const char* GetHostRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 3;
+      // uint32 cmdid = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1684,16 +1684,16 @@ uint8_t* GetHostRequest::_InternalSerialize(
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_seq(), target);
   }
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_cmdid(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1717,14 +1717,14 @@ size_t GetHostRequest::ByteSizeLong() const {
     total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_seq());
   }
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -1882,7 +1882,7 @@ const char* GetHostResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 modid = 2;
+      // uint32 modid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1890,7 +1890,7 @@ const char* GetHostResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 3;
+      // uint32 cmdid = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1898,7 +1898,7 @@ const char* GetHostResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
         } else
           goto handle_unusual;
         continue;
-      // int32 retcode = 4;
+      // uint32 retcode = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
           retcode_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -1949,22 +1949,22 @@ uint8_t* GetHostResponse::_InternalSerialize(
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_seq(), target);
   }
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_cmdid(), target);
   }
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   if (this->_internal_retcode() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_retcode(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_retcode(), target);
   }
 
   // .lars.HostInfo host = 5;
@@ -2003,19 +2003,19 @@ size_t GetHostResponse::ByteSizeLong() const {
     total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_seq());
   }
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   if (this->_internal_retcode() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_retcode());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_retcode());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -2171,7 +2171,7 @@ const char* ReportRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // int32 modid = 1;
+      // uint32 modid = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           modid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -2179,7 +2179,7 @@ const char* ReportRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
         } else
           goto handle_unusual;
         continue;
-      // int32 cmdid = 2;
+      // uint32 cmdid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           cmdid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -2195,7 +2195,7 @@ const char* ReportRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
         } else
           goto handle_unusual;
         continue;
-      // int32 retcode = 4;
+      // uint32 retcode = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
           retcode_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
@@ -2232,16 +2232,16 @@ uint8_t* ReportRequest::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_modid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_modid(), target);
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_cmdid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_cmdid(), target);
   }
 
   // .lars.HostInfo host = 3;
@@ -2252,10 +2252,10 @@ uint8_t* ReportRequest::_InternalSerialize(
         3, _Internal::host(this), target, stream);
   }
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   if (this->_internal_retcode() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_retcode(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_retcode(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2281,19 +2281,19 @@ size_t ReportRequest::ByteSizeLong() const {
         *host_);
   }
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   if (this->_internal_modid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_modid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_modid());
   }
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   if (this->_internal_cmdid() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_cmdid());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_cmdid());
   }
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   if (this->_internal_retcode() != 0) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_retcode());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32SizePlusOne(this->_internal_retcode());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);

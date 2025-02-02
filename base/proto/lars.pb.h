@@ -435,22 +435,22 @@ class GetRouteRequest final :
     kModidFieldNumber = 1,
     kCmdidFieldNumber = 2,
   };
-  // int32 modid = 1;
+  // uint32 modid = 1;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.GetRouteRequest)
@@ -460,8 +460,8 @@ class GetRouteRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  int32_t modid_;
-  int32_t cmdid_;
+  uint32_t modid_;
+  uint32_t cmdid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
 };
@@ -611,22 +611,22 @@ class GetRouteResponse final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::lars::HostInfo >&
       host() const;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.GetRouteResponse)
@@ -637,8 +637,8 @@ class GetRouteResponse final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::lars::HostInfo > host_;
-  int32_t modid_;
-  int32_t cmdid_;
+  uint32_t modid_;
+  uint32_t cmdid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
 };
@@ -772,22 +772,22 @@ class HostCallResult final :
     kErrFieldNumber = 4,
     kOverloadFieldNumber = 5,
   };
-  // int32 ip = 1;
+  // uint32 ip = 1;
   void clear_ip();
-  int32_t ip() const;
-  void set_ip(int32_t value);
+  uint32_t ip() const;
+  void set_ip(uint32_t value);
   private:
-  int32_t _internal_ip() const;
-  void _internal_set_ip(int32_t value);
+  uint32_t _internal_ip() const;
+  void _internal_set_ip(uint32_t value);
   public:
 
-  // int32 port = 2;
+  // uint32 port = 2;
   void clear_port();
-  int32_t port() const;
-  void set_port(int32_t value);
+  uint32_t port() const;
+  void set_port(uint32_t value);
   private:
-  int32_t _internal_port() const;
-  void _internal_set_port(int32_t value);
+  uint32_t _internal_port() const;
+  void _internal_set_port(uint32_t value);
   public:
 
   // uint32 succ = 3;
@@ -824,8 +824,8 @@ class HostCallResult final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  int32_t ip_;
-  int32_t port_;
+  uint32_t ip_;
+  uint32_t port_;
   uint32_t succ_;
   uint32_t err_;
   bool overload_;
@@ -980,31 +980,31 @@ class ReportStatusReq final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::lars::HostCallResult >&
       results() const;
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
-  // int32 caller = 3;
+  // uint32 caller = 3;
   void clear_caller();
-  int32_t caller() const;
-  void set_caller(int32_t value);
+  uint32_t caller() const;
+  void set_caller(uint32_t value);
   private:
-  int32_t _internal_caller() const;
-  void _internal_set_caller(int32_t value);
+  uint32_t _internal_caller() const;
+  void _internal_set_caller(uint32_t value);
   public:
 
   // uint32 ts = 5;
@@ -1024,9 +1024,9 @@ class ReportStatusReq final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::lars::HostCallResult > results_;
-  int32_t modid_;
-  int32_t cmdid_;
-  int32_t caller_;
+  uint32_t modid_;
+  uint32_t cmdid_;
+  uint32_t caller_;
   uint32_t ts_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
@@ -1168,22 +1168,22 @@ class GetHostRequest final :
   void _internal_set_seq(uint32_t value);
   public:
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.GetHostRequest)
@@ -1194,8 +1194,8 @@ class GetHostRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   uint32_t seq_;
-  int32_t modid_;
-  int32_t cmdid_;
+  uint32_t modid_;
+  uint32_t cmdid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
 };
@@ -1356,31 +1356,31 @@ class GetHostResponse final :
   void _internal_set_seq(uint32_t value);
   public:
 
-  // int32 modid = 2;
+  // uint32 modid = 2;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 3;
+  // uint32 cmdid = 3;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   void clear_retcode();
-  int32_t retcode() const;
-  void set_retcode(int32_t value);
+  uint32_t retcode() const;
+  void set_retcode(uint32_t value);
   private:
-  int32_t _internal_retcode() const;
-  void _internal_set_retcode(int32_t value);
+  uint32_t _internal_retcode() const;
+  void _internal_set_retcode(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.GetHostResponse)
@@ -1392,9 +1392,9 @@ class GetHostResponse final :
   typedef void DestructorSkippable_;
   ::lars::HostInfo* host_;
   uint32_t seq_;
-  int32_t modid_;
-  int32_t cmdid_;
-  int32_t retcode_;
+  uint32_t modid_;
+  uint32_t cmdid_;
+  uint32_t retcode_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
 };
@@ -1545,31 +1545,31 @@ class ReportRequest final :
       ::lars::HostInfo* host);
   ::lars::HostInfo* unsafe_arena_release_host();
 
-  // int32 modid = 1;
+  // uint32 modid = 1;
   void clear_modid();
-  int32_t modid() const;
-  void set_modid(int32_t value);
+  uint32_t modid() const;
+  void set_modid(uint32_t value);
   private:
-  int32_t _internal_modid() const;
-  void _internal_set_modid(int32_t value);
+  uint32_t _internal_modid() const;
+  void _internal_set_modid(uint32_t value);
   public:
 
-  // int32 cmdid = 2;
+  // uint32 cmdid = 2;
   void clear_cmdid();
-  int32_t cmdid() const;
-  void set_cmdid(int32_t value);
+  uint32_t cmdid() const;
+  void set_cmdid(uint32_t value);
   private:
-  int32_t _internal_cmdid() const;
-  void _internal_set_cmdid(int32_t value);
+  uint32_t _internal_cmdid() const;
+  void _internal_set_cmdid(uint32_t value);
   public:
 
-  // int32 retcode = 4;
+  // uint32 retcode = 4;
   void clear_retcode();
-  int32_t retcode() const;
-  void set_retcode(int32_t value);
+  uint32_t retcode() const;
+  void set_retcode(uint32_t value);
   private:
-  int32_t _internal_retcode() const;
-  void _internal_set_retcode(int32_t value);
+  uint32_t _internal_retcode() const;
+  void _internal_set_retcode(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:lars.ReportRequest)
@@ -1580,9 +1580,9 @@ class ReportRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::lars::HostInfo* host_;
-  int32_t modid_;
-  int32_t cmdid_;
-  int32_t retcode_;
+  uint32_t modid_;
+  uint32_t cmdid_;
+  uint32_t retcode_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_lars_2eproto;
 };
@@ -1641,42 +1641,42 @@ inline void HostInfo::set_port(uint32_t value) {
 
 // GetRouteRequest
 
-// int32 modid = 1;
+// uint32 modid = 1;
 inline void GetRouteRequest::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t GetRouteRequest::_internal_modid() const {
+inline uint32_t GetRouteRequest::_internal_modid() const {
   return modid_;
 }
-inline int32_t GetRouteRequest::modid() const {
+inline uint32_t GetRouteRequest::modid() const {
   // @@protoc_insertion_point(field_get:lars.GetRouteRequest.modid)
   return _internal_modid();
 }
-inline void GetRouteRequest::_internal_set_modid(int32_t value) {
+inline void GetRouteRequest::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void GetRouteRequest::set_modid(int32_t value) {
+inline void GetRouteRequest::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.GetRouteRequest.modid)
 }
 
-// int32 cmdid = 2;
+// uint32 cmdid = 2;
 inline void GetRouteRequest::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t GetRouteRequest::_internal_cmdid() const {
+inline uint32_t GetRouteRequest::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t GetRouteRequest::cmdid() const {
+inline uint32_t GetRouteRequest::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.GetRouteRequest.cmdid)
   return _internal_cmdid();
 }
-inline void GetRouteRequest::_internal_set_cmdid(int32_t value) {
+inline void GetRouteRequest::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void GetRouteRequest::set_cmdid(int32_t value) {
+inline void GetRouteRequest::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.GetRouteRequest.cmdid)
 }
@@ -1685,42 +1685,42 @@ inline void GetRouteRequest::set_cmdid(int32_t value) {
 
 // GetRouteResponse
 
-// int32 modid = 1;
+// uint32 modid = 1;
 inline void GetRouteResponse::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t GetRouteResponse::_internal_modid() const {
+inline uint32_t GetRouteResponse::_internal_modid() const {
   return modid_;
 }
-inline int32_t GetRouteResponse::modid() const {
+inline uint32_t GetRouteResponse::modid() const {
   // @@protoc_insertion_point(field_get:lars.GetRouteResponse.modid)
   return _internal_modid();
 }
-inline void GetRouteResponse::_internal_set_modid(int32_t value) {
+inline void GetRouteResponse::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void GetRouteResponse::set_modid(int32_t value) {
+inline void GetRouteResponse::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.GetRouteResponse.modid)
 }
 
-// int32 cmdid = 2;
+// uint32 cmdid = 2;
 inline void GetRouteResponse::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t GetRouteResponse::_internal_cmdid() const {
+inline uint32_t GetRouteResponse::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t GetRouteResponse::cmdid() const {
+inline uint32_t GetRouteResponse::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.GetRouteResponse.cmdid)
   return _internal_cmdid();
 }
-inline void GetRouteResponse::_internal_set_cmdid(int32_t value) {
+inline void GetRouteResponse::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void GetRouteResponse::set_cmdid(int32_t value) {
+inline void GetRouteResponse::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.GetRouteResponse.cmdid)
 }
@@ -1769,42 +1769,42 @@ GetRouteResponse::host() const {
 
 // HostCallResult
 
-// int32 ip = 1;
+// uint32 ip = 1;
 inline void HostCallResult::clear_ip() {
-  ip_ = 0;
+  ip_ = 0u;
 }
-inline int32_t HostCallResult::_internal_ip() const {
+inline uint32_t HostCallResult::_internal_ip() const {
   return ip_;
 }
-inline int32_t HostCallResult::ip() const {
+inline uint32_t HostCallResult::ip() const {
   // @@protoc_insertion_point(field_get:lars.HostCallResult.ip)
   return _internal_ip();
 }
-inline void HostCallResult::_internal_set_ip(int32_t value) {
+inline void HostCallResult::_internal_set_ip(uint32_t value) {
   
   ip_ = value;
 }
-inline void HostCallResult::set_ip(int32_t value) {
+inline void HostCallResult::set_ip(uint32_t value) {
   _internal_set_ip(value);
   // @@protoc_insertion_point(field_set:lars.HostCallResult.ip)
 }
 
-// int32 port = 2;
+// uint32 port = 2;
 inline void HostCallResult::clear_port() {
-  port_ = 0;
+  port_ = 0u;
 }
-inline int32_t HostCallResult::_internal_port() const {
+inline uint32_t HostCallResult::_internal_port() const {
   return port_;
 }
-inline int32_t HostCallResult::port() const {
+inline uint32_t HostCallResult::port() const {
   // @@protoc_insertion_point(field_get:lars.HostCallResult.port)
   return _internal_port();
 }
-inline void HostCallResult::_internal_set_port(int32_t value) {
+inline void HostCallResult::_internal_set_port(uint32_t value) {
   
   port_ = value;
 }
-inline void HostCallResult::set_port(int32_t value) {
+inline void HostCallResult::set_port(uint32_t value) {
   _internal_set_port(value);
   // @@protoc_insertion_point(field_set:lars.HostCallResult.port)
 }
@@ -1873,62 +1873,62 @@ inline void HostCallResult::set_overload(bool value) {
 
 // ReportStatusReq
 
-// int32 modid = 1;
+// uint32 modid = 1;
 inline void ReportStatusReq::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t ReportStatusReq::_internal_modid() const {
+inline uint32_t ReportStatusReq::_internal_modid() const {
   return modid_;
 }
-inline int32_t ReportStatusReq::modid() const {
+inline uint32_t ReportStatusReq::modid() const {
   // @@protoc_insertion_point(field_get:lars.ReportStatusReq.modid)
   return _internal_modid();
 }
-inline void ReportStatusReq::_internal_set_modid(int32_t value) {
+inline void ReportStatusReq::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void ReportStatusReq::set_modid(int32_t value) {
+inline void ReportStatusReq::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.ReportStatusReq.modid)
 }
 
-// int32 cmdid = 2;
+// uint32 cmdid = 2;
 inline void ReportStatusReq::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t ReportStatusReq::_internal_cmdid() const {
+inline uint32_t ReportStatusReq::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t ReportStatusReq::cmdid() const {
+inline uint32_t ReportStatusReq::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.ReportStatusReq.cmdid)
   return _internal_cmdid();
 }
-inline void ReportStatusReq::_internal_set_cmdid(int32_t value) {
+inline void ReportStatusReq::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void ReportStatusReq::set_cmdid(int32_t value) {
+inline void ReportStatusReq::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.ReportStatusReq.cmdid)
 }
 
-// int32 caller = 3;
+// uint32 caller = 3;
 inline void ReportStatusReq::clear_caller() {
-  caller_ = 0;
+  caller_ = 0u;
 }
-inline int32_t ReportStatusReq::_internal_caller() const {
+inline uint32_t ReportStatusReq::_internal_caller() const {
   return caller_;
 }
-inline int32_t ReportStatusReq::caller() const {
+inline uint32_t ReportStatusReq::caller() const {
   // @@protoc_insertion_point(field_get:lars.ReportStatusReq.caller)
   return _internal_caller();
 }
-inline void ReportStatusReq::_internal_set_caller(int32_t value) {
+inline void ReportStatusReq::_internal_set_caller(uint32_t value) {
   
   caller_ = value;
 }
-inline void ReportStatusReq::set_caller(int32_t value) {
+inline void ReportStatusReq::set_caller(uint32_t value) {
   _internal_set_caller(value);
   // @@protoc_insertion_point(field_set:lars.ReportStatusReq.caller)
 }
@@ -2017,42 +2017,42 @@ inline void GetHostRequest::set_seq(uint32_t value) {
   // @@protoc_insertion_point(field_set:lars.GetHostRequest.seq)
 }
 
-// int32 modid = 2;
+// uint32 modid = 2;
 inline void GetHostRequest::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t GetHostRequest::_internal_modid() const {
+inline uint32_t GetHostRequest::_internal_modid() const {
   return modid_;
 }
-inline int32_t GetHostRequest::modid() const {
+inline uint32_t GetHostRequest::modid() const {
   // @@protoc_insertion_point(field_get:lars.GetHostRequest.modid)
   return _internal_modid();
 }
-inline void GetHostRequest::_internal_set_modid(int32_t value) {
+inline void GetHostRequest::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void GetHostRequest::set_modid(int32_t value) {
+inline void GetHostRequest::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.GetHostRequest.modid)
 }
 
-// int32 cmdid = 3;
+// uint32 cmdid = 3;
 inline void GetHostRequest::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t GetHostRequest::_internal_cmdid() const {
+inline uint32_t GetHostRequest::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t GetHostRequest::cmdid() const {
+inline uint32_t GetHostRequest::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.GetHostRequest.cmdid)
   return _internal_cmdid();
 }
-inline void GetHostRequest::_internal_set_cmdid(int32_t value) {
+inline void GetHostRequest::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void GetHostRequest::set_cmdid(int32_t value) {
+inline void GetHostRequest::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.GetHostRequest.cmdid)
 }
@@ -2081,62 +2081,62 @@ inline void GetHostResponse::set_seq(uint32_t value) {
   // @@protoc_insertion_point(field_set:lars.GetHostResponse.seq)
 }
 
-// int32 modid = 2;
+// uint32 modid = 2;
 inline void GetHostResponse::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t GetHostResponse::_internal_modid() const {
+inline uint32_t GetHostResponse::_internal_modid() const {
   return modid_;
 }
-inline int32_t GetHostResponse::modid() const {
+inline uint32_t GetHostResponse::modid() const {
   // @@protoc_insertion_point(field_get:lars.GetHostResponse.modid)
   return _internal_modid();
 }
-inline void GetHostResponse::_internal_set_modid(int32_t value) {
+inline void GetHostResponse::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void GetHostResponse::set_modid(int32_t value) {
+inline void GetHostResponse::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.GetHostResponse.modid)
 }
 
-// int32 cmdid = 3;
+// uint32 cmdid = 3;
 inline void GetHostResponse::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t GetHostResponse::_internal_cmdid() const {
+inline uint32_t GetHostResponse::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t GetHostResponse::cmdid() const {
+inline uint32_t GetHostResponse::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.GetHostResponse.cmdid)
   return _internal_cmdid();
 }
-inline void GetHostResponse::_internal_set_cmdid(int32_t value) {
+inline void GetHostResponse::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void GetHostResponse::set_cmdid(int32_t value) {
+inline void GetHostResponse::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.GetHostResponse.cmdid)
 }
 
-// int32 retcode = 4;
+// uint32 retcode = 4;
 inline void GetHostResponse::clear_retcode() {
-  retcode_ = 0;
+  retcode_ = 0u;
 }
-inline int32_t GetHostResponse::_internal_retcode() const {
+inline uint32_t GetHostResponse::_internal_retcode() const {
   return retcode_;
 }
-inline int32_t GetHostResponse::retcode() const {
+inline uint32_t GetHostResponse::retcode() const {
   // @@protoc_insertion_point(field_get:lars.GetHostResponse.retcode)
   return _internal_retcode();
 }
-inline void GetHostResponse::_internal_set_retcode(int32_t value) {
+inline void GetHostResponse::_internal_set_retcode(uint32_t value) {
   
   retcode_ = value;
 }
-inline void GetHostResponse::set_retcode(int32_t value) {
+inline void GetHostResponse::set_retcode(uint32_t value) {
   _internal_set_retcode(value);
   // @@protoc_insertion_point(field_set:lars.GetHostResponse.retcode)
 }
@@ -2235,42 +2235,42 @@ inline void GetHostResponse::set_allocated_host(::lars::HostInfo* host) {
 
 // ReportRequest
 
-// int32 modid = 1;
+// uint32 modid = 1;
 inline void ReportRequest::clear_modid() {
-  modid_ = 0;
+  modid_ = 0u;
 }
-inline int32_t ReportRequest::_internal_modid() const {
+inline uint32_t ReportRequest::_internal_modid() const {
   return modid_;
 }
-inline int32_t ReportRequest::modid() const {
+inline uint32_t ReportRequest::modid() const {
   // @@protoc_insertion_point(field_get:lars.ReportRequest.modid)
   return _internal_modid();
 }
-inline void ReportRequest::_internal_set_modid(int32_t value) {
+inline void ReportRequest::_internal_set_modid(uint32_t value) {
   
   modid_ = value;
 }
-inline void ReportRequest::set_modid(int32_t value) {
+inline void ReportRequest::set_modid(uint32_t value) {
   _internal_set_modid(value);
   // @@protoc_insertion_point(field_set:lars.ReportRequest.modid)
 }
 
-// int32 cmdid = 2;
+// uint32 cmdid = 2;
 inline void ReportRequest::clear_cmdid() {
-  cmdid_ = 0;
+  cmdid_ = 0u;
 }
-inline int32_t ReportRequest::_internal_cmdid() const {
+inline uint32_t ReportRequest::_internal_cmdid() const {
   return cmdid_;
 }
-inline int32_t ReportRequest::cmdid() const {
+inline uint32_t ReportRequest::cmdid() const {
   // @@protoc_insertion_point(field_get:lars.ReportRequest.cmdid)
   return _internal_cmdid();
 }
-inline void ReportRequest::_internal_set_cmdid(int32_t value) {
+inline void ReportRequest::_internal_set_cmdid(uint32_t value) {
   
   cmdid_ = value;
 }
-inline void ReportRequest::set_cmdid(int32_t value) {
+inline void ReportRequest::set_cmdid(uint32_t value) {
   _internal_set_cmdid(value);
   // @@protoc_insertion_point(field_set:lars.ReportRequest.cmdid)
 }
@@ -2365,22 +2365,22 @@ inline void ReportRequest::set_allocated_host(::lars::HostInfo* host) {
   // @@protoc_insertion_point(field_set_allocated:lars.ReportRequest.host)
 }
 
-// int32 retcode = 4;
+// uint32 retcode = 4;
 inline void ReportRequest::clear_retcode() {
-  retcode_ = 0;
+  retcode_ = 0u;
 }
-inline int32_t ReportRequest::_internal_retcode() const {
+inline uint32_t ReportRequest::_internal_retcode() const {
   return retcode_;
 }
-inline int32_t ReportRequest::retcode() const {
+inline uint32_t ReportRequest::retcode() const {
   // @@protoc_insertion_point(field_get:lars.ReportRequest.retcode)
   return _internal_retcode();
 }
-inline void ReportRequest::_internal_set_retcode(int32_t value) {
+inline void ReportRequest::_internal_set_retcode(uint32_t value) {
   
   retcode_ = value;
 }
-inline void ReportRequest::set_retcode(int32_t value) {
+inline void ReportRequest::set_retcode(uint32_t value) {
   _internal_set_retcode(value);
   // @@protoc_insertion_point(field_set:lars.ReportRequest.retcode)
 }
