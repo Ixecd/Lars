@@ -53,35 +53,14 @@ StoreReport::StoreReport() {
 
 /// @brief
 /// 对于StoreReport类来说,不需要单独的数据结构来存储结果,直接通过MYSQL将结果存储在数据库中
-void StoreReport::store(lars::ReportStatusReq &req) {
-    std::cout << "store report\n";
+void StoreReport::store(lars::ReportStatusRequest &req) {
+    std::cout << "[report_store] report..." << std::endl;
     for (int i = 0; i < req.results_size(); ++i) {
         /// @brief
         /// 在ReportStatusRep中可以有多个客户端发起Report,这些信息都记录在ReportStatusReq中的results中
         // 一条记录
         const lars::HostCallResult &result = req.results(i);
         int overload = result.overload() ? 1 : 0;
-
-        // 往数据库中存储数据
-        // char sql[1024];
-        // snprintf(sql, 1024, "insert into ServerCallStatus(modid, cmdid, ip,
-        // port, caller, succ_cnt, err_cnt, ts, overload) values (%d %d %u %u %u
-        // %u %u %u %d) on duplicate key update succ_cnt = %u, err_cnt = %u, ts
-        // = %u, overload = %d", req.modid(), req.cmdid(), result.ip(),
-        // result.port(), req.caller(), result.succ(), result.err(), req.ts(),
-        // overload, result.succ(), result.err(), req.ts(), overload);
-
-        // snprintf(sql, 1024,
-        //          "INSERT INTO ServerCallStatus(modid, cmdid, ip, port,
-        //          caller, " "succ_cnt, err_cnt, ts, overload) VALUES (%d, %d,
-        //          %d, %u, %u, "
-        //          "%u, %u, "
-        //          "%u, %d) ON DUPLICATE KEY UPDATE succ_cnt = %u, err_cnt =
-        //          %u, " "ts = %u, " "overload = %d", req.modid(), req.cmdid(),
-        //          result.ip(), result.port(), req.caller(), result.succ(),
-        //          result.err(), req.ts(), overload, result.succ(),
-        //          result.err(), req.ts(), overload);
-
         // 增加缓冲区安全余量（建议至少 2KB）
         char sql[2048];
 
@@ -129,6 +108,8 @@ void StoreReport::store(lars::ReportStatusReq &req) {
         if (rt) printf("%s\n", mysql_error(&_db_conn));
 
         qc_assert(rt == 0);
+
+        std::cout << "[report_store] succ" << std::endl;
     }
 }
 

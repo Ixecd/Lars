@@ -9,7 +9,7 @@ using namespace qc;
 tcp_server *server;
 
 // 直接用现成写好的就可以
-thread_queue<lars::ReportStatusReq> **reportQueues = nullptr;
+thread_queue<lars::ReportStatusRequest> **reportQueues = nullptr;
 // 处理io入库操作的线程数量
 int threads = 0;
 
@@ -18,7 +18,7 @@ int threads = 0;
 void get_report_status(const char *data, uint len, int msgid,
                        net_connection *conn, void *args) {
     // 封装消息访问数据库
-    lars::ReportStatusReq req;
+    lars::ReportStatusRequest req;
     req.ParseFromArray(data, len);
     // 上报数据
     // StoreReport sr;
@@ -28,7 +28,7 @@ void get_report_status(const char *data, uint len, int msgid,
     static int index = 0;
     qc_assert(reportQueues != nullptr);
     reportQueues[index++]->send(req);
-    qc_assert(threads > 0);
+    qc_assert(threads != 0);
     index = index % threads;
 }
 
@@ -37,13 +37,13 @@ void create_reportdb_threads() {
     threads = config_file_instance::GetInstance()->GetNumber("reporter", "db_thread_cnt", 2);
 
     // 开辟线程池的消息队列
-    reportQueues = new thread_queue<lars::ReportStatusReq> *[threads];
+    reportQueues = new thread_queue<lars::ReportStatusRequest> *[threads];
     qc_assert(reportQueues != nullptr);
 
     for (int i = 0; i < threads; ++i) {
         // std::cout << "cur create the " << i << " threads" << std::endl;
         // 给每个创建的线程创建一个消息队列
-        reportQueues[i] = new thread_queue<lars::ReportStatusReq>();
+        reportQueues[i] = new thread_queue<lars::ReportStatusRequest>();
         qc_assert(reportQueues[i] != nullptr);
 
         // 创建线程执行report函数
@@ -77,7 +77,7 @@ int main() {
     // 这里先启动io线程池还是添加消息分发处理业务??
 
     // 添加数据上报请求处理的消息分发处理业务
-    server->add_msg_router(lars::ID_ReportStatusReques, get_report_status);
+    server->add_msg_router(lars::ID_ReportStatusRequest, get_report_status);
     // std::cout << "after add_msg_router..." << std::endl;
 
     // 启动io线程池

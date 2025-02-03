@@ -7,7 +7,7 @@ void report_status(net_connection *conn, void *args) {
     // 客户端负责发送消息
     tcp_client *client = (tcp_client *)args;
 
-    lars::ReportStatusReq req;
+    lars::ReportStatusRequest req;
     // 这里只是简单测试一下组装消息
     req.set_modid(rand() % 3);
     req.set_cmdid(1);
@@ -29,7 +29,7 @@ void report_status(net_connection *conn, void *args) {
     req.SerializeToString(&request);
 
     conn->send_message(request.c_str(), request.size(),
-                       lars::ID_ReportStatusReques);
+                       lars::ID_ReportStatusRequest);
 }
 
 void connection_build(net_connection *conn, void *args) {
@@ -40,7 +40,7 @@ int main() {
 
     event_loop loop;
 
-    tcp_client client(&loop, "127.0.0.1", 7778, "test_reportCient");
+    tcp_client client(&loop, "127.0.0.1", 7777, "test_reportCient");
 
     // 设置Hook函数,建立成功立即执行
     client.set_conn_start(connection_build);

@@ -15,19 +15,19 @@
 namespace qc {
 
 struct Args {
-    thread_queue<lars::ReportStatusReq> *first;
+    thread_queue<lars::ReportStatusRequest> *first;
     StoreReport *second;
 };
 
 void thread_report(event_loop *loop, int fd, void *args) {
     // 1.从queue中取出需要report的数据
-    thread_queue<lars::ReportStatusReq> *queue = ((Args *)args)->first;
+    thread_queue<lars::ReportStatusRequest> *queue = ((Args *)args)->first;
     StoreReport *sr = ((Args *)args)->second;
-    std::queue<lars::ReportStatusReq> report_message;
+    std::queue<lars::ReportStatusRequest> report_message;
     // 2. 从消息队列中取出全部的消息元素集合
     queue->recv(report_message);
     while (!report_message.empty()) {
-        lars::ReportStatusReq msg = report_message.front();
+        lars::ReportStatusRequest msg = report_message.front();
         report_message.pop();
 
         // 将数据存储到Mysql中
@@ -37,8 +37,8 @@ void thread_report(event_loop *loop, int fd, void *args) {
 
 void *store_main(void *args) {
     // 1.得到对应的thread_queue
-    thread_queue<lars::ReportStatusReq> *queue =
-        (thread_queue<lars::ReportStatusReq> *)args;
+    thread_queue<lars::ReportStatusRequest> *queue =
+        (thread_queue<lars::ReportStatusRequest> *)args;
 
     // 2.定义事件触发机制
     event_loop loop;
