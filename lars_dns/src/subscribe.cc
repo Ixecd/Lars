@@ -25,7 +25,9 @@ void SubscribeList::subscribe(uint64_t mod, int fd) {
     net_connection* conn = tcp_server::conns[fd];
     std::unique_lock<std::mutex> ulk(mutex_book_list);
 
-    std::cout << "[Subscribe]" << conn->get_fd() << ":" << mod << std::endl;
+    std::cout << "[Subscribe]" << "fd = " << fd << "; modid = " << uint(mod >> 32) << " cmdid = " << uint(mod) << std::endl;
+
+    // std::cout << "[Subscribe]" << conn->get_fd() << ":" << mod << std::endl;
 
     _book_list[mod].insert(fd);
 

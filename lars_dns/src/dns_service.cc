@@ -51,7 +51,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 2. 得到modid和cmdid
     uint modid = req.modid(), cmdid = req.cmdid();
 
-    std::cout << "[GetRouteRequest] modid = " << modid << ", cmdid = " << cmdid
+    std::cout << "[GetRouteRequest]" << "fd = " << conn->get_fd() << ";modid = " << modid << ", cmdid = " << cmdid
               << std::endl;
 
     // 2.5 如果之前没有订阅过这个modid/cmdid 订阅
@@ -109,7 +109,7 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     //                                responseString.size(),
     //                                lars::ID_GetRouteResponse);
 
-    std::cout << "[get_route()]" << conn << " " << conn->param << std::endl;
+    // std::cout << "[get_route()]" << conn << " " << conn->param << std::endl;
 
     conn->send_message(responseString.c_str(), responseString.size(),
                        lars::ID_GetRouteResponse);
