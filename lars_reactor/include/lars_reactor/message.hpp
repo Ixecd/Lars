@@ -44,13 +44,13 @@ using msg_callback = std::function<void(const char *data, uint32_t len, int msgi
 class msg_router {
 public:
     msg_router(){
-        printf("msg router init...\n");
+        // printf("msg router init...\n");
     }
 
     // 给一个消息ID注册一个对应的回调业务函数
     int register_msg_router(int msgid, msg_callback msg_cb, void *user_data = nullptr) {
         if (_router.find(msgid) != _router.end()) return -1;
-        printf("add msg cb msgid = %d\n", msgid);
+        printf("[msg_router] add msg cb msgid = %d\n", msgid);
         _router[msgid] = msg_cb;
         _args[msgid] = user_data;
         return 0;

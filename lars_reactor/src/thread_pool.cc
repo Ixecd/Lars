@@ -94,7 +94,7 @@ thread_pool::thread_pool(size_t threads) {
     int rt;
     for (size_t i = 0; i < threads; ++i) {
         // 创建一个线程
-        printf("create %ld thread\n", i);
+        printf("[server] :create %ld thread\n", i);
         // 给当前线程创建一个任务消息队列
         // 一个thread_queue<task_msg>中单独有一个evfd和loop
         _queues[i] = std::make_shared<thread_queue<task_msg>>();
