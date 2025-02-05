@@ -71,7 +71,7 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         //链接是建立成功的
         cli->connected = true;
 
-        printf("connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
+        printf("[tcp_client] connect %s:%d succ!\n", inet_ntoa(cli->_server_addr.sin_addr),
                ntohs(cli->_server_addr.sin_port));
 
         // --- 调用开发者注册的创建的Hook链接
@@ -105,7 +105,7 @@ static void connection_delay(event_loop *loop, int fd, void *args) {
         }
     } else {
         //链接创建失败
-        fprintf(stderr, "connection %s:%d error\n",
+        fprintf(stderr, "[connect] %s:%d error\n",
                 inet_ntoa(cli->_server_addr.sin_addr),
                 ntohs(cli->_server_addr.sin_port));
     }
@@ -143,7 +143,7 @@ void tcp_client::do_connect() {
             _loop->add_io_event(_sockfd, write_callback, EPOLLOUT, this);
         }
 
-        printf("connect %s:%d succ!\n", inet_ntoa(_server_addr.sin_addr),
+        printf("[tcp_client] connect %s:%d succ!\n", inet_ntoa(_server_addr.sin_addr),
                ntohs(_server_addr.sin_port));
     } else {
         if (errno == EINPROGRESS) {
@@ -151,7 +151,7 @@ void tcp_client::do_connect() {
 
             // fd是非阻塞的，可能会出现这个错误,但是并不表示链接创建失败
             //如果fd是可写状态，则为链接是创建成功的.
-            fprintf(stderr, "do_connect EINPROGRESS\n");
+            fprintf(stderr, "[connect] EINPROGRESS\n");
 
             //让event_loop去触发一个创建判断链接业务 用EPOLLOUT事件立刻触发
             // 等待socket可写,就会触发EPOLLOUT事件
@@ -220,15 +220,15 @@ int tcp_client::do_read() {
     if (ret == 0) {
         //对端关闭
         if (_name != NULL) {
-            printf("%s client: connection close by peer!\n", _name);
+            printf("[%s client]: connection close by peer!\n", _name);
         } else {
-            printf("client: connection close by peer!\n");
+            printf("[client] connection close by peer!\n");
         }
 
         clean_conn();
         return -1;
     } else if (ret == -1) {
-        fprintf(stderr, "client: do_read() , error\n");
+        fprintf(stderr, "[client] do_read() , error\n");
         clean_conn();
         return -1;
     }
@@ -311,7 +311,7 @@ int tcp_client::do_write() {
 //释放链接资源,重置连接
 void tcp_client::clean_conn() {
     if (_sockfd != -1) {
-        printf("clean conn, del socket!\n");
+        printf("[clean conn] del socket!\n");
         _loop->del_io_event(_sockfd);
         close(_sockfd);
     }
