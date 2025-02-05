@@ -172,7 +172,7 @@ void lars_client::report(int modid, int cmdid, std::string &ip, int port, int re
     int rt = sendto(_sockfd[index], write_buf, report.ByteSizeLong() + MESSAGE_HEAD_LEN, 0, nullptr, 0);
     qc_assert(rt != -1);
 
-    std::cout << "report done!!!" << std::endl;
+    std::cout << "[report] done!!!" << std::endl;
 }
 
 /// @brief lars系统获取某个modid/cmdid全部的hosts(route)信息 
@@ -218,7 +218,7 @@ int lars_client::get_route(int modid, int cmdid, route_set &route) {
     memcpy(&head, read_buf, MESSAGE_HEAD_LEN);
     // 4.1 判断是否合法
     if (head.msgid != lars::ID_API_GetRouteResponse) {
-        fprintf(stderr, "message ID error!\n");
+        fprintf(stderr, "[message ID IAG] error!\n");
         return lars::RET_SYSTEM_ERR;
     }
 
@@ -245,7 +245,7 @@ int lars_client::get_route(int modid, int cmdid, route_set &route) {
         int port = host.port();
         route.push_back(ip_port(ip, port));
     }
-    std::cout << "get_rout done!" << std::endl;
+    std::cout << "[get_rout] done!" << std::endl;
     return lars::RET_SUCC;
 }
 

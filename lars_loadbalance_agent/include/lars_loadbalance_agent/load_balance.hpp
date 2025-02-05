@@ -37,7 +37,7 @@ public:
     // 从当前的双队列中获取host信息
     int choice_one_host(lars::GetHostResponse &rsp);
 
-    // 如果list中没有host信息,需要从远程的DNS Server中发送GetHostRequest消息获取host信息
+    // 如果list中没有host信息,需要从远程的DNS Server中发送GetRouteRequest消息获取host信息
     int pull(); 
 
     // 根据dns_server返回的结果更新_host_map;
@@ -46,7 +46,7 @@ public:
     // 获取当前lb下所有host的信息
     void get_all_hosts(std::vector<host_info*> &vec);
 
-    void report(int ip, int port, int retcode);
+    void report(uint ip, uint port, uint retcode);
 
     void commit();
 

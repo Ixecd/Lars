@@ -7,7 +7,7 @@
 // 与dns_client通信的thread_queue消息队列
 extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
 // 与report_client通信的消息队列
-extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
+extern qc::thread_queue<lars::ReportStatusRequest> *report_queue;
 // load_balance配置文件
 extern struct load_balance_config lb_config;
 namespace qc {
@@ -46,11 +46,11 @@ int load_balance::choice_one_host(lars::GetHostResponse &rsp) {
             } else {
                 // 1.4 返回错误
                 ++_access_cnt;
-                std::cout << "CUR SYSTEM OVERLOAD\n";
+                std::cout << "[SYSTEM] OVERLOAD\n";
                 return lars::RET_OVERLOAD;
             }
         } else {
-            std::cout << "CUR SYSTEM ERR\n";
+            std::cout << "[SYSTEM] ERR\n";
             return lars::RET_SYSTEM_ERR;
         }
     } else {
@@ -278,7 +278,7 @@ void load_balance::report(int ip, int port, int retcode) {
 void load_balance::commit() {
     if (this->empty()) return;
     // 1.封装请求消息
-    lars::ReportStatusReq req;
+    lars::ReportStatusRequest req;
     req.set_modid(_modid);
     req.set_cmdid(_cmdid);
     req.set_caller(lb_config.local_ip);

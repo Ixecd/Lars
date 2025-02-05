@@ -71,8 +71,8 @@ void route_lb::report_host(lars::ReportRequest req) {
     int modid = req.modid();
     int cmdid = req.cmdid();
     int retcode = req.retcode();
-    int ip = req.host().ip();
-    int port = req.host().port();
+    uint ip = req.host().ip();
+    uint port = req.host().port();
 
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
     
@@ -99,7 +99,6 @@ void route_lb::reset_lb_status() {
 // API层GetRoute 具体实现
 // agent获取某个modid/cmdid的全部主机,放到rsp传出参数中
 int route_lb::get_route(int modid, int cmdid, lars::GetRouteResponse &rsp) {
-    std::cout << "route_lb::get_route() start..." << std::endl;
     int rt = lars::RET_SUCC;
     uint64_t key = ((uint64_t)modid << 32) + cmdid;
     // 范围锁
@@ -117,7 +116,7 @@ int route_lb::get_route(int modid, int cmdid, lars::GetRouteResponse &rsp) {
         
         // 新建好之后从dns service服务拉取具体的modid/cmdid信息
         lb->pull();
-        rt = lars::RET_SUCC;
+        rt = lars::RET_NOEXIST;
     } else {
         // 本来这个lb就在map中,直接取出来用
         load_balance *lb = _route_lb_map[key];

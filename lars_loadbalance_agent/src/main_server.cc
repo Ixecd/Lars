@@ -23,7 +23,7 @@ using namespace qc;
 
 // 每个Agent UDP server的负载均衡路由 route_lb
 // 一个route_lb管理多个load_balance
-route_lb* r_lb[3];
+route_lb* r_lb[ROUTE_NUM];
 // 在源文件中声明一个变量,之后都用这个
 struct load_balance_config lb_config;
 

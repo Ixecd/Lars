@@ -72,7 +72,7 @@ static void conn_init(net_connection *conn, void *args) {
 }
 
 void *dns_client_thread(void *args) {
-    std::cout << "cur dns_client_thread start..." << std::endl;
+    std::cout << "[Dns Client Thread] start..." << std::endl;
 
     event_loop loop;
     // 加载配置信息

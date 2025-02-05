@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
         std::cout << "get route succ!" << std::endl;
         // 直接把信息输出出来
         for (route_set_it it = route.begin(); it != route.end(); ++it) {
-            std::cout << "host ip = " << (*it).first << ", port = " << (*it).first << std::endl;
+            std::cout << "host ip = " << (*it).first << ", port = " << (*it).second << std::endl;
         }
     }
 

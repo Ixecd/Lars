@@ -3,14 +3,7 @@
 #include <lars_loadbalance_agent/main_server.hpp>
 
 // 与report_client通信的thread_queue消息队列
-extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
-// 与dns_client通信的thread_queue消息队列
-// qc::thread_queue<lars::GetRouteRequest> *dns_queue;
-
-// 与report_client通信的thread_queue消息队列
-// extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
-// 与dns_client通信的thread_queue消息队列
-// extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
+extern qc::thread_queue<lars::ReportStatusRequest> *report_queue;
 
 namespace qc {
 
@@ -19,13 +12,13 @@ void new_report_request(event_loop *loop, int fd, void *args) {
     udp_client *client = (udp_client *)args;
 
     // 1. 将请求从队列中取出来
-    std::queue<lars::ReportStatusReq> msgs;
+    std::queue<lars::ReportStatusRequest> msgs;
     qc_assert(report_queue != nullptr);
     report_queue->recv(msgs);
 
     // 2. 遍历队列,通过client依次将每个msg发送给reporter service
     while (!msgs.empty()) {
-        lars::ReportStatusReq reportReq;
+        lars::ReportStatusRequest reportReq;
         reportReq = msgs.front();
         msgs.pop();
 
@@ -36,12 +29,12 @@ void new_report_request(event_loop *loop, int fd, void *args) {
 
         // 4. 客户端发送消息
         client->send_message(requestString.c_str(), requestString.size(),
-                             lars::ID_ReportStatusReques);
+                             lars::ID_ReportStatusRequest);
     }
 }
 
 void *report_client_thread(void *args) {
-    std::cout << "report client thread is running...\n";
+    std::cout << "[Reporter Client Thread] is running...\n";
 #if 1
     event_loop loop;
 
@@ -57,7 +50,7 @@ void *report_client_thread(void *args) {
     tcp_client client(&loop, ip.c_str(), port, "reporter client");
 
     // 将thread_queue消息回调事件绑定到loop中
-    report_queue = (qc::thread_queue<lars::ReportStatusReq> *)args;
+    report_queue = (qc::thread_queue<lars::ReportStatusRequest> *)args;
     report_queue->set_loop(&loop);
     report_queue->set_callback(new_report_request, &client);
 
@@ -66,7 +59,7 @@ void *report_client_thread(void *args) {
     return nullptr;
 }
 
-void start_report_client(qc::thread_queue<lars::ReportStatusReq> *report_queue) {
+void start_report_client(qc::thread_queue<lars::ReportStatusRequest> *report_queue) {
     // 开辟一个线程
     pthread_t tid;
 

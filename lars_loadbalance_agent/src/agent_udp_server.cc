@@ -19,7 +19,7 @@
 
 // 与report_client通信的thread_queue消息队列
 // extern qc::thread_queue<lars::ReportStatusReq> *report_queue;
-qc::thread_queue<lars::ReportStatusReq> *report_queue;
+qc::thread_queue<lars::ReportStatusRequest> *report_queue;
 // 与dns_client通信的thread_queue消息队列
 // extern qc::thread_queue<lars::GetRouteRequest> *dns_queue;
 qc::thread_queue<lars::GetRouteRequest> *dns_queue;
@@ -110,10 +110,8 @@ void *agent_server_main(void *args) {
     long index = (long)args;
     // int index = (int)args;
 
-    std::cout << "----- agent_server_main -----" << std::endl;
-
-    std::cout << "index = " << index << std::endl;
     short port = index + 8888;
+
     event_loop loop;
 
     udp_server server(&loop, "0.0.0.0", port);
@@ -130,11 +128,11 @@ void *agent_server_main(void *args) {
     server.add_msg_router(lars::ID_API_GetRouteRequest, get_route_cb,
                           r_lb[port - 8888]);
 
-    std::cout << "agent UDP server: port " << port << " is started...\n";
-
+    std::cout << "[Agent UDP Server]" << " port : " << port << " is started."
+              << std::endl;
 
     // 3. 启动report client
-    report_queue = new thread_queue<lars::ReportStatusReq>();
+    report_queue = new thread_queue<lars::ReportStatusRequest>();
     qc_assert(report_queue != nullptr);
     start_report_client(report_queue);
 
