@@ -1,14 +1,3 @@
-/**
- * @file message.hpp
- * @author qc
- * @brief 解决TCP粘包问题,规定使用的协议
- * @version 0.1
- * @date 2024-04-28
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 
 #include <unordered_map>

@@ -1,14 +1,3 @@
-/**
- * @file thread_pool.hpp
- * @author qc
- * @brief 线程池封装
- * @version 0.1
- * @date 2024-05-06
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 
 #include <pthread.h>

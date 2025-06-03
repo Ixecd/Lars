@@ -1,14 +1,3 @@
-/**
- * @file udp_server.cc
- * @author qc
- * @brief udp通信实现(简单版单线程)
- * @version 0.1
- * @date 2024-05-07
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_reactor/udp_server.hpp>
 
 #include <signal.h>

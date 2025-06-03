@@ -1,14 +1,3 @@
-/**
- * @file dns_route.cc
- * @author qc
- * @brief dns_route的封装 + Mysql
- * @version 0.1
- * @date 2024-05-13
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>

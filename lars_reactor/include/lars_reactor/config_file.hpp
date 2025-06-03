@@ -1,20 +1,3 @@
-/**
- * @file config_file.hpp
- * @author qc
- * @brief 配置文件
- * @details
-            [reactor]
-            ip = 127.0.0.1
-            port = 7777
-            maxConn = 1024
-            thredNum = 5
- * @version 0.1
- * @date 2024-05-07
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 
 #include <string>

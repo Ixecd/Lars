@@ -1,14 +1,3 @@
-/**
- * @file task_msg.hpp
- * @author qc
- * @brief 消息队列中只对消息的封装,队列在另一个文件中实现
- * @version 0.1
- * @date 2024-05-06
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 
 #include <functional>

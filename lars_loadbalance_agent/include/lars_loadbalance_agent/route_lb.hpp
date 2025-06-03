@@ -1,17 +1,3 @@
-/**
- * @file route_lb.hpp
- * @author qc
- * @brief
- * @version 0.1
- * @date 2024-05-30
- *
- * @copyright Copyright (c) 2024
- *
- */
-
-/// @details
-/// 关于route->指的是客户端业务函数可能有很多种,应该对他们进行分类,之后根据id分发给不同的线程
-
 #pragma once
 
 #include <unordered_map>

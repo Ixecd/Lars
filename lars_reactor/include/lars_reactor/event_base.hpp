@@ -1,14 +1,3 @@
-/**
- * @file event_base.hpp
- * @author qc
- * @brief IO事件基本封装类
- * @version 0.1
- * @date 2024-04-27
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 
 #include <functional>

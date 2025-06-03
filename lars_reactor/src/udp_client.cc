@@ -1,13 +1,3 @@
-/**
- * @file udp_client.cc
- * @author qc
- * @brief udp_client 封装
- * @version 0.1
- * @date 2024-05-07
- *
- * @copyright Copyright (c) 2024
- *
- */
 #include <lars_reactor/udp_client.hpp>
 
 #include <string.h>

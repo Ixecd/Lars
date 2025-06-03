@@ -1,14 +1,3 @@
-/**
- * @file tcp_client.cc
- * @author qc
- * @brief tcp连接客户端的封装
- * @version 0.1
- * @date 2024-04-29
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_reactor/tcp_client.hpp>
 #include <lars_reactor/tcp_server.hpp>
 #include <stdio.h>

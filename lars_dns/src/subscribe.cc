@@ -1,14 +1,3 @@
-/**
- * @file subscribe.cc
- * @author qc
- * @brief Route 订阅
- * @version 0.1
- * @date 2024-05-15
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_dns/subscribe.hpp>
 
 /// @brief 声明一变量,保证程序执行过程中只有一个实例,链接的时候在其他文件中查找

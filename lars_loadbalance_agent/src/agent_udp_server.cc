@@ -1,14 +1,3 @@
-/**
- * @file agent_udp_server.cc
- * @author qc
- * @brief 针对API发送的report的ID_ReportRequest进行处理
- * @version 0.3
- * @date 2024-06-01
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_loadbalance_agent/main_server.hpp>
 #include <lars_loadbalance_agent/route_lb.hpp>
 #include <lars_reactor/lars_reactor.hpp>

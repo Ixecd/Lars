@@ -1,14 +1,3 @@
-/**
- * @file noncopyable.hpp
- * @author qc
- * @brief 不可拷贝类封装
- * @version 0.1
- * @date 2024-05-06
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #ifndef __NONCOPYABLE_HPP__
 #define __NONCOPYABLE_HPP__
 

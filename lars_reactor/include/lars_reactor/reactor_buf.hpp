@@ -1,13 +1,3 @@
-/**
- * @file reactor_buf.hpp
- * @author qc
- * @brief 读写buffer机制
- * @version 0.1
- * @date 2024-04-26
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 #include <unistd.h>

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 # 设置项目名称
-project(qps)
+project(simulator)
 
 add_compile_options(-fPIC)
 
@@ -45,16 +45,16 @@ else ()
 endif ()
 
 # 将 src 目录中的源文件添加到工程中
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.cc")
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/simulator.cc")
 # "${CMAKE_SOURCE_DIR}/../lars_api/*.cc"
 
 # 创建可执行文件
-add_executable(qps ${SOURCES})
+add_executable(simulator ${SOURCES})
 
 
 # 链接静态库
-target_link_libraries(qps PUBLIC Threads::Threads)
+target_link_libraries(simulator PUBLIC Threads::Threads)
 # It Work !!
-target_link_libraries(qps PUBLIC lars_client base protobuf)
+target_link_libraries(simulator PUBLIC lars_client base protobuf)
 
 

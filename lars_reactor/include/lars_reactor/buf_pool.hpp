@@ -1,13 +1,3 @@
-/**
- * @file buf_pool.hpp
- * @author qc
- * @brief 方法只有开辟一块内存和回收一块内存
- * @version 0.1
- * @date 2024-04-26
- *
- * @copyright Copyright (c) 2024
- *
- */
 #ifndef __BUF_POOL_HPP__
 #define __BUF_POOL_HPP__
 

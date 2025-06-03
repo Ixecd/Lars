@@ -1,13 +1,3 @@
-/**
- * @file tcp_conn.cc
- * @author qc
- * @brief tcp_conn 封装类
- * @version 0.1
- * @date 2024-04-28
- *
- * @copyright Copyright (c) 2024
- *
- */
 #include <lars_reactor/tcp_conn.hpp>
 
 #include <fcntl.h>

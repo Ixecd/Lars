@@ -1,14 +1,3 @@
-/**
- * @file net_connection.hpp
- * @author qc
- * @brief 抽象类,其子类有tcp_client和tcp_conn
- * @details 有时候需要在写消息回调的时候,希望conn绑定一些属性,配置这种功能到net_connection上
- * @version 0.2
- * @date 2024-05-04
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 #include <functional>

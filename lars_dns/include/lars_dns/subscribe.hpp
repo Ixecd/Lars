@@ -1,13 +1,3 @@
-/**
- * @file subscribe.hpp
- * @author qc
- * @brief Route订阅模式
- * @version 0.1
- * @date 2024-05-15
- *
- * @copyright Copyright (c) 2024
- *
- */
 #pragma once
 
 #include <proto/lars.pb.h>

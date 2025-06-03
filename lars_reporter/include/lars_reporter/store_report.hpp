@@ -1,14 +1,3 @@
-/**
- * @file store_report.hpp
- * @author qc
- * @brief 存储report
- * @version 0.1
- * @date 2024-05-18
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 
 #include "mysql.h"

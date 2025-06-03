@@ -1,14 +1,3 @@
-/**
- * @file main_server.hpp
- * @author qc
- * @brief 主服务端头文件
- * @version 2
- * @date 2024-05-21
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 #include <netdb.h>
 #include <lars_reactor/lars_reactor.hpp>

@@ -1,14 +1,3 @@
-/**
- * @file io_buf.cc
- * @author qc
- * @brief io_buffer封装
- * @version 0.1
- * @date 2024-04-26
- * 
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <string.h>
 #include <lars_reactor/io_buf.hpp>
 #include <lars_reactor/qc.hpp>

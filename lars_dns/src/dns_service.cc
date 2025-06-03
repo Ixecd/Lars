@@ -1,13 +1,3 @@
-/**
- * @file dns_service.cc
- * @author qc
- * @brief 实现针对ID_GetRouteRequest信息指令的业务
- * @version 0.3
- * @date 2024-05-14
- *
- * @copyright Copyright (c) 2024
- *
- */
 #include <proto/lars.pb.h>
 
 #include <cstring>

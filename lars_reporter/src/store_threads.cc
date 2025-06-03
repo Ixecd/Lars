@@ -1,13 +1,3 @@
-/**
- * @file store_threads.cc
- * @author qc
- * @brief 存储线程池的实现
- * @version 0.1
- * @date 2024-05-19
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #include <proto/lars.pb.h>
 #include <lars_reactor/lars_reactor.hpp>
 #include <lars_reporter/store_report.hpp>

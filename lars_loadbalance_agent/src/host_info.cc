@@ -1,14 +1,3 @@
-/**
- * @file host_info.cc
- * @author qc
- * @brief host_info信息
- * @version 0.1
- * @date 2024-06-01
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_loadbalance_agent/host_info.hpp>
 #include <lars_loadbalance_agent/main_server.hpp>
 

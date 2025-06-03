@@ -1,13 +1,3 @@
-/**
- * @file dns_client.cc
- * @author qc
- * @brief 定期拉取最新路由信息
- * @version 0.1
- * @date 2024-06-03
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #include <lars_loadbalance_agent/main_server.hpp>
 #include <lars_loadbalance_agent/route_lb.hpp>
 #include <lars_reactor/lars_reactor.hpp>

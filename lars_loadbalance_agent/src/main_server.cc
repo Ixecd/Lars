@@ -1,14 +1,3 @@
-/**
- * @file main_server.cc
- * @author qc
- * @brief 主服务器实现
- * @version 0.2
- * @date 2024-05-21
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_loadbalance_agent/main_server.hpp>
 #include <lars_loadbalance_agent/route_lb.hpp>
 

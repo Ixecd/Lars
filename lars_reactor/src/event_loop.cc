@@ -1,14 +1,3 @@
-/**
- * @file event_loop.cc
- * @author qc
- * @brief 实现io_event的基本增删操作
- * @version 0.1
- * @date 2024-04-27
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_reactor/event_loop.hpp>
 #include <lars_reactor/qc.hpp>
 // 集成协程 + 定时器

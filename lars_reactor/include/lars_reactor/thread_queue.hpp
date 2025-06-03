@@ -1,14 +1,3 @@
-/**
- * @file thread_queue.hpp
- * @author qc
- * @brief 消息队列封装,每个线程都有自己的消息队列
- * @version 0.1
- * @date 2024-05-06
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 
 #include <queue>

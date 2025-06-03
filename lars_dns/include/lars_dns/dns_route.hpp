@@ -1,14 +1,3 @@
-/**
- * @file dns_route.hpp
- * @author qc
- * @brief dns_route -> key : modid/cmdid.
- *                     value : set<uint64_t> ip + port
- * @version 0.1
- * @date 2024-05-13
- *
- * @copyright Copyright (c) 2024
- *
- */
 #pragma once
 #include <pthread.h>
 

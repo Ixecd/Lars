@@ -1,14 +1,3 @@
-/**
- * @file tcp_client.hpp
- * @author qc
- * @brief tcp客户端封装
- * @version 0.1
- * @date 2024-04-29
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #ifndef __TCP_CLIENT_HPP__
 #define __TCP_CLIENT_HPP__
 

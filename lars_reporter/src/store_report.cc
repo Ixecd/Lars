@@ -1,14 +1,3 @@
-/**
- * @file store_report.cc
- * @author qc
- * @brief 存储记录封装
- * @version 0.1
- * @date 2024-05-18
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #include <lars_reactor/lars_reactor.hpp>
 #include <lars_reporter/store_report.hpp>
 
@@ -54,7 +43,7 @@ StoreReport::StoreReport() {
 /// @brief
 /// 对于StoreReport类来说,不需要单独的数据结构来存储结果,直接通过MYSQL将结果存储在数据库中
 void StoreReport::store(lars::ReportStatusRequest &req) {
-    std::cout << "[report_store] report..." << std::endl;
+    // std::cout << "[report_store] report..." << std::endl;
     for (int i = 0; i < req.results_size(); ++i) {
         /// @brief
         /// 在ReportStatusRep中可以有多个客户端发起Report,这些信息都记录在ReportStatusReq中的results中
@@ -109,7 +98,7 @@ void StoreReport::store(lars::ReportStatusRequest &req) {
 
         qc_assert(rt == 0);
 
-        std::cout << "[report_store] succ" << std::endl;
+        // std::cout << "[report_store] succ" << std::endl;
     }
 }
 

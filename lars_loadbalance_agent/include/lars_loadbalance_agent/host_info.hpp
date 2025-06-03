@@ -1,14 +1,3 @@
-/**
- * @file host_info.hpp
- * @author qc
- * @brief 主机信息封装
- * @version 0.1
- * @date 2024-05-24
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 #include <lars_loadbalance_agent/main_server.hpp>
 

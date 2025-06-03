@@ -1,13 +1,3 @@
-/**
- * @file singleton.hpp
- * @author qc
- * @brief 单例模式封装
- * @version 0.1
- * @date 2024-04-26
- *
- * @copyright Copyright (c) 2024
- *
- */
 #pragma once
 #include <memory>
 

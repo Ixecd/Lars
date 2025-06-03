@@ -1,15 +1,3 @@
-/**
- * @file udp_server.hpp
- * @author qc
- * @brief 简单处理,单线程
- * @details UDP是一种无连接的协议，每个数据包都是独立的，所以在UDP通信中需要保存对方的地址信息才能进行通信
- * @version 0.1
- * @date 2024-05-07
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 
 #include <netinet/in.h>

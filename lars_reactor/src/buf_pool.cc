@@ -1,13 +1,3 @@
-/**
- * @file buf_pool.cc
- * @author qc
- * @brief 内存池管理模板封装
- * @version 0.1
- * @date 2024-04-26
- *
- * @copyright Copyright (c) 2024
- *
- */
 #include <stdlib.h>
 #include <algorithm>
 #include <lars_reactor/buf_pool.hpp>

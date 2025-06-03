@@ -1,14 +1,3 @@
-/**
- * @file udp_client.hpp
- * @author qc
- * @brief udp通讯 - 客户端实现
- * @version 0.1
- * @date 2024-05-07
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #pragma once
 #include <arpa/inet.h>
 #include <sys/socket.h>

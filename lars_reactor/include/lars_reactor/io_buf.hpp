@@ -1,14 +1,3 @@
-/**
- * @file io_buf.hpp
- * @author qc
- * @brief 内存管理和buffer封装
- * @details 这里没有提供delete真是删除物理内存的方法，因为这里的buffer设计是不需要清理的，接下来是用一个buf_pool来管理全部未被使用的
- *          io_buf集合。而且buf_pool的管理的内存是程序开始预开辟的，不会做清理工作.
- * @version 0.1
- * @date 2024-04-26
- *
- * @copyright Copyright (c) 2024
- */
 #ifndef __IO_BUF_HPP__
 #define __IO_BUF_HPP__
 

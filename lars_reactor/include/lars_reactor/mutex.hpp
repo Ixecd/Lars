@@ -1,14 +1,3 @@
-/**
- * @file mutex.hpp
- * @author qc
- * @brief 锁的各种封装
- * @version 0.1
- * @date 2024-05-06
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #ifndef __MUTEX_HPP__
 #define __MUTEX_HPP__
 

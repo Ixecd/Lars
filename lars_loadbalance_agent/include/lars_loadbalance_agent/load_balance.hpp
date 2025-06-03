@@ -1,14 +1,3 @@
-/**
- * @file load_balance.hpp
- * @author qc
- * @brief 加载负载均衡
- * @version 0.1
- * @date 2024-05-24
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #pragma once
 #include <list>
 #include <unordered_map>

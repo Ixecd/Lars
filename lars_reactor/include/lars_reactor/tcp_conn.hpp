@@ -1,14 +1,3 @@
-/**
- * @file tcp_conn.hpp
- * @author qc
- * @brief tcp_conn连接类
- * @version 0.1
- * @date 2024-04-28
- * 
- * @copyright Copyright (c) 2024
- * 
- */
-
 #ifndef __TCP_CONN_HPP__
 #define __TCP_CONN_HPP__
 
