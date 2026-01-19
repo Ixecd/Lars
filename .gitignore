@@ -1,2 +1,10 @@
 .DS_Store
 
+# 构建产物
+build/
+*.o
+*.d
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/
+*.a

@@ -1,3 +1,0 @@
-/home/qc/Lars/api/cpp/example/build/CMakeFiles/simulator.dir
-/home/qc/Lars/api/cpp/example/build/CMakeFiles/edit_cache.dir
-/home/qc/Lars/api/cpp/example/build/CMakeFiles/rebuild_cache.dir

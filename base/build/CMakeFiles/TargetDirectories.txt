@@ -1,3 +1,0 @@
-/lars/base/build/CMakeFiles/base.dir
-/lars/base/build/CMakeFiles/edit_cache.dir
-/lars/base/build/CMakeFiles/rebuild_cache.dir
