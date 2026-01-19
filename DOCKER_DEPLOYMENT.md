@@ -32,6 +32,28 @@
 
 ## 二、详细部署步骤
 
+### 前置条件：确保使用 OrbStack
+
+**如果使用 OrbStack**，需要确保 Docker 使用 OrbStack 上下文：
+
+```bash
+# 检查当前 Docker 上下文
+docker context ls
+
+# 切换到 OrbStack 上下文（如果未激活）
+docker context use orbstack
+
+# 验证
+docker info | grep -i "name\|context"
+```
+
+**为什么需要这个？**
+- OrbStack 有自己的 Docker 环境
+- 使用正确的上下文确保容器在 OrbStack GUI 中可见
+- 容器会在 OrbStack 的容器列表中显示
+
+---
+
 ### 步骤 1: 创建 Docker 网络
 
 **目的**: 让所有容器在同一个网络中，可以通过容器名称互相访问
@@ -655,7 +677,51 @@ docker run --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 ..
 
 ---
 
-## 五、常用命令速查
+## 五、OrbStack 集成说明
+
+### 确保容器在 OrbStack GUI 中显示
+
+**问题**: 使用 `docker` 命令创建的容器不显示在 OrbStack GUI 中
+
+**解决方案**:
+
+1. **确保使用 OrbStack 上下文**:
+```bash
+# 检查当前上下文
+docker context ls
+
+# 切换到 OrbStack（如果未激活）
+docker context use orbstack
+
+# 验证
+docker info | grep -i "name\|context"
+# 应该显示: Context: orbstack, Name: orbstack
+```
+
+2. **创建容器时使用标准 Docker 命令**:
+   - 所有使用 `docker run`、`docker-compose` 等命令创建的容器
+   - 都会自动出现在 OrbStack GUI 的 Containers 列表中
+   - 无需特殊配置
+
+3. **如果容器仍然不显示**:
+   - 重启 OrbStack 应用
+   - 在 OrbStack GUI 中点击刷新按钮
+   - 检查容器是否真的在运行: `docker ps -a`
+
+4. **在 OrbStack GUI 中管理容器**:
+   - 查看容器日志
+   - 进入容器终端
+   - 启动/停止/删除容器
+   - 查看资源使用情况
+
+**注意**: 
+- OrbStack 使用标准的 Docker API
+- 所有 Docker 命令都会在 OrbStack 环境中执行
+- 容器、镜像、网络、卷等都会在 OrbStack GUI 中显示
+
+---
+
+## 六、常用命令速查
 
 ```bash
 # 查看所有容器
