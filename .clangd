@@ -1,0 +1,34 @@
+# clangd 配置文件
+# 编译标志配置
+CompileFlags:
+  Add:
+    - -I/Users/qc/Lars/base
+    - -I/Users/qc/Lars/lars_reactor/include
+    - -I/Users/qc/Lars/lars_reporter/include
+    - -I/Users/qc/Lars/lars_dns/include
+    - -I/Users/qc/Lars/lars_loadbalance_agent/include
+    - -I/Users/qc/Lars/api/cpp/lars_api
+    # MySQL 头文件路径（macOS Homebrew - 使用符号链接路径）
+    - -I/opt/homebrew/include/mysql
+    # Protobuf 头文件路径（macOS Homebrew - 使用符号链接路径）
+    - -I/opt/homebrew/include
+    # macOS 相关设置（代码实际在 Linux 运行，但 clangd 在 macOS 分析）
+    # 禁用 pthread_spinlock_t 相关警告（代码在 Linux 中运行时会正常编译）
+    - -Wno-unknown-attributes
+    - -Wno-deprecated-declarations
+    - -D__APPLE__
+    - -D_DARWIN_C_SOURCE
+    - -std=c++23
+
+# 索引配置（后台索引，提高性能）
+Index:
+  Background: Build
+
+# 诊断配置（clang-tidy 检查）
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+# 补全配置
+Completion:
+  AllScopes: true

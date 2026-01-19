@@ -91,7 +91,8 @@ int load_balance::pull() {
 }
 
 /// @brief 向自己的idle_list中添加主机信息
-/// @details load_balance pull之后等dns_server处理完返回GetRouteResponse再由update来更新
+/// @details load_balance
+/// pull之后等dns_server处理完返回GetRouteResponse再由update来更新
 void load_balance::update(lars::GetRouteResponse &rsp) {
     qc_assert(rsp.host_size() != 0);
     long current_time = time(nullptr);
@@ -144,7 +145,7 @@ void load_balance::update(lars::GetRouteResponse &rsp) {
 
 /// @brief 上报当前host主机调用情况给远端repoter service
 /// @version 2 添加过期窗口和过载超时
-void load_balance::report(int ip, int port, int retcode) {
+void load_balance::report(uint32_t ip, uint32_t port, uint32_t retcode) {
     // 定义当前时间
     long current_time = time(nullptr);
 

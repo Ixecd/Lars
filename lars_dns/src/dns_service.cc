@@ -41,8 +41,8 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
     // 2. 得到modid和cmdid
     uint modid = req.modid(), cmdid = req.cmdid();
 
-    std::cout << "[GetRouteRequest]" << "fd = " << conn->get_fd() << ";modid = " << modid << ", cmdid = " << cmdid
-              << std::endl;
+    std::cout << "[GetRouteRequest]" << "fd = " << conn->get_fd()
+              << ";modid = " << modid << ", cmdid = " << cmdid << std::endl;
 
     // 2.5 如果之前没有订阅过这个modid/cmdid 订阅
     // 一个conn对应一个client_sub_list->存储了客户端对应订阅的modid和cmdid信息
@@ -108,7 +108,9 @@ void get_route(const char *data, uint32_t len, int msgid, net_connection *conn,
 int main(int argc, char **argv) {
     event_loop loop;
 
-    config_file::setPath("/home/qc/Lars/lars_dns/conf/lars.conf");
+    std::string config_path =
+        (argc > 1) ? argv[1] : "/home/qc/Lars/lars_dns/conf/lars.conf";
+    config_file::setPath(config_path);
     // 输出所有配置信息
     // config_file::GetInstance()->get_all_info(config_file::GetInstance());
 

@@ -1,0 +1,3 @@
+/lars/lars_dns/build/CMakeFiles/lars_dns.dir
+/lars/lars_dns/build/CMakeFiles/edit_cache.dir
+/lars/lars_dns/build/CMakeFiles/rebuild_cache.dir

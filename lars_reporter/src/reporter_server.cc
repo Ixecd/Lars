@@ -1,9 +1,9 @@
-#include <string>
-
 #include <proto/lars.pb.h>
+
 #include <lars_reactor/lars_reactor.hpp>
 #include <lars_reporter/store_report.hpp>
 #include <lars_reporter/store_threads.hpp>
+#include <string>
 using namespace qc;
 
 tcp_server *server;
@@ -15,7 +15,7 @@ int threads = 0;
 
 /// @details 这里server的io入库操作,会占用我们server的CPU时间
 ///          优化:将io入库操作交给专门的一个消息队列线程池来做,之后的get_report_status调用就会立即返回,来处理其他客户端请求
-void get_report_status(const char *data, uint len, int msgid,
+void get_report_status(const char *data, uint32_t len, int msgid,
                        net_connection *conn, void *args) {
     // 封装消息访问数据库
     lars::ReportStatusRequest req;
@@ -34,7 +34,8 @@ void get_report_status(const char *data, uint len, int msgid,
 
 void create_reportdb_threads() {
     // 创建线程实现Reporter,这里默认两个线程
-    threads = config_file_instance::GetInstance()->GetNumber("reporter", "db_thread_cnt", 2);
+    threads = config_file_instance::GetInstance()->GetNumber(
+        "reporter", "db_thread_cnt", 2);
 
     // 开辟线程池的消息队列
     reportQueues = new thread_queue<lars::ReportStatusRequest> *[threads];
@@ -59,17 +60,19 @@ void create_reportdb_threads() {
     }
 }
 
-
-int main() {
+int main(int argc, char **argv) {
     event_loop loop;
 
     // 配置文件
-    config_file_instance::GetInstance()->setPath(
-        "/home/qc/Lars/lars_reporter/config/lars_reporter.conf");
+    std::string config_path =
+        (argc > 1) ? argv[1]
+                   : "/home/qc/Lars/lars_reporter/config/lars_reporter.conf";
+    config_file_instance::GetInstance()->setPath(config_path);
 
-    std::string ip =
-        config_file_instance::GetInstance()->GetString("reactor", "ip", "0.0.0.0");
-    short port = config_file_instance::GetInstance()->GetNumber("reactor", "port", 7777);
+    std::string ip = config_file_instance::GetInstance()->GetString(
+        "reactor", "ip", "0.0.0.0");
+    short port =
+        config_file_instance::GetInstance()->GetNumber("reactor", "port", 7777);
 
     server = new tcp_server(&loop, ip.c_str(), port);
     qc_assert(server != nullptr);
