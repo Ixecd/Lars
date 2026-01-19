@@ -721,7 +721,186 @@ docker info | grep -i "name\|context"
 
 ---
 
-## 六、常用命令速查
+## 六、日常运维指南
+
+### 6.1 使用运维脚本（推荐）
+
+项目提供了 `docker_ops.sh` 脚本，方便日常运维：
+
+```bash
+# 查看所有服务状态
+./docker_ops.sh status
+
+# 查看服务日志（实时）
+./docker_ops.sh logs lars_dns
+
+# 查看服务日志（最后50行）
+./docker_ops.sh logs-tail lars_dns 50
+
+# 进入容器终端
+./docker_ops.sh shell lars_dns
+
+# 在容器中执行命令
+./docker_ops.sh exec lars_dns "ps aux | grep lars"
+
+# 查看容器内进程
+./docker_ops.sh ps lars_dns
+
+# 查看端口监听状态
+./docker_ops.sh netstat lars_dns
+
+# 重启服务
+./docker_ops.sh restart lars_dns
+
+# 进入 MySQL 客户端
+./docker_ops.sh mysql
+
+# 测试服务连接
+./docker_ops.sh test
+```
+
+### 6.2 为什么进入容器是新终端？
+
+**问题**: 使用 `docker exec -it lars_dns bash` 进入容器后，看不到服务运行的终端输出。
+
+**原因**:
+- 服务使用 `docker exec -d` 以后台方式启动
+- 后台进程的输出不会显示在新终端中
+- 每个 `docker exec` 都会创建新的终端会话
+
+**解决方案**:
+
+1. **查看日志（推荐）**:
+```bash
+# 实时查看日志
+docker logs -f lars_dns
+
+# 查看最后N行
+docker logs --tail 50 lars_dns
+
+# 使用运维脚本
+./docker_ops.sh logs lars_dns
+```
+
+2. **在容器中执行命令**:
+```bash
+# 查看服务进程
+docker exec lars_dns ps aux | grep lars_dns
+
+# 查看端口监听
+docker exec lars_dns ss -tlnp
+
+# 查看服务状态
+docker exec lars_dns bash -c "cd /lars/lars_dns && ls -lh bin/"
+```
+
+3. **以前台方式运行（用于调试）**:
+```bash
+# 停止后台服务
+docker exec lars_dns pkill lars_dns
+
+# 以前台方式启动（可以看到输出）
+docker exec -it lars_dns bash -c "cd /lars/lars_dns && ./bin/lars_dns conf/lars.conf"
+# 按 Ctrl+C 可以停止服务
+```
+
+### 6.3 常用运维操作
+
+#### 查看服务状态
+```bash
+# 查看所有容器
+docker ps | grep lars
+
+# 查看服务进程
+docker exec lars_dns ps aux | grep lars_dns
+docker exec lars_reporter ps aux | grep lars_reporter
+docker exec lars_loadbalance_agent ps aux | grep lars_loadbalance_agent
+
+# 使用运维脚本
+./docker_ops.sh status
+```
+
+#### 查看日志
+```bash
+# 实时查看（推荐）
+docker logs -f lars_dns
+
+# 查看最后100行
+docker logs --tail 100 lars_dns
+
+# 查看特定时间段的日志
+docker logs --since 10m lars_dns
+
+# 使用运维脚本
+./docker_ops.sh logs lars_dns
+```
+
+#### 重启服务
+```bash
+# 方法1: 重启容器（会重启所有进程）
+docker restart lars_dns
+
+# 方法2: 只重启服务进程（不重启容器）
+docker exec lars_dns pkill lars_dns
+docker exec -d lars_dns bash -c "cd /lars/lars_dns && ./bin/lars_dns conf/lars.conf"
+
+# 使用运维脚本
+./docker_ops.sh restart lars_dns
+```
+
+#### 进入容器调试
+```bash
+# 进入容器终端
+docker exec -it lars_dns bash
+
+# 在容器中执行命令
+docker exec lars_dns bash -c "cd /lars && ls -la"
+
+# 使用运维脚本
+./docker_ops.sh shell lars_dns
+```
+
+#### 查看端口和网络
+```bash
+# 查看端口监听
+docker exec lars_dns ss -tlnp
+docker exec lars_dns netstat -tlnp
+
+# 测试端口连接
+docker exec lars_dns bash -c "timeout 2 bash -c '</dev/tcp/localhost/7775' && echo 'OK'"
+
+# 使用运维脚本
+./docker_ops.sh netstat lars_dns
+./docker_ops.sh test
+```
+
+#### MySQL 操作
+```bash
+# 进入 MySQL 客户端
+docker exec -it lars_mysql mysql -uroot -p20030329
+
+# 执行 SQL 命令
+docker exec lars_mysql mysql -uroot -p20030329 -e "SHOW DATABASES;"
+
+# 查看表数据
+docker exec lars_mysql mysql -uroot -p20030329 -e "USE lars_dns; SELECT * FROM RouteData LIMIT 5;"
+
+# 使用运维脚本
+./docker_ops.sh mysql
+```
+
+#### 查看资源使用
+```bash
+# 查看容器资源使用
+docker stats lars_dns lars_reporter lars_loadbalance_agent lars_mysql
+
+# 查看容器详细信息
+docker inspect lars_dns
+```
+
+---
+
+## 七、常用命令速查
 
 ```bash
 # 查看所有容器
